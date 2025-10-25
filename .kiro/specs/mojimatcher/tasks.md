@@ -56,8 +56,6 @@
 
 - [x] 6. Implement click detection
 
-
-
   - Create click event listener on canvas
   - Map click coordinates to emoji positions
   - Identify which emoji was clicked
@@ -65,8 +63,6 @@
   - _Requirements: 2.8_
 
 - [x] 7. Implement basic game logic
-
-
 
   - Create GameState manager with essential state
   - Implement correct match detection (clicked emoji matches the common emoji)
@@ -77,15 +73,12 @@
 
 - [x] 8. Add basic visual feedback
 
-
-
   - Show simple text feedback for correct/wrong clicks
   - Display current score on screen
   - Display which emoji is the matching one (for testing/debugging)
   - _Requirements: 5.1, 5.2_
 
-- [-] 9. Implement basic timer
-
+- [x] 9. Implement basic timer
 
   - Create countdown timer starting at 150 seconds
   - Display timer on screen
@@ -94,14 +87,14 @@
   - Subtract time (-1s) on wrong click
   - _Requirements: 3.1, 3.2, 3.9, 3.10_
 
-- [ ] 10. Implement basic scoring
+- [x] 10. Implement basic scoring
 
   - Award 25 base points for correct matches
   - Display total score
   - Track number of rounds completed
   - _Requirements: 4.1_
 
-- [ ] 11. Create simple game flow
+- [x] 11. Create simple game flow
 
   - Add "Start Game" button
   - Show game screen when started
@@ -110,7 +103,8 @@
   - Add "Play Again" button
   - _Requirements: 1.1, 1.2, 1.4, 1.5, 3.8_
 
-- [ ] 12. Test MVP functionality
+- [x] 12. Test MVP functionality
+
   - Verify emojis render with correct sizes and rotations
   - Verify exactly 1 common emoji exists between cards
   - Verify click detection works
@@ -121,6 +115,7 @@
   - _Requirements: 2.2, 2.3, 2.5, 2.6, 2.8, 3.1, 3.8, 4.1_
 
 ## Phase 2: Enhanced Features (Post-MVP)
+
 
 - [ ] 13. Implement combo system
 
