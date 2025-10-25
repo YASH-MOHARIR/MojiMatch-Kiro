@@ -2,6 +2,8 @@
 
 A lightning-fast emoji matching game built for Reddit using Devvit. Race against the clock to find the one emoji that appears on both cards in this addictive pattern-recognition challenge!
 
+> **Quick Summary:** Find the matching emoji between two cards before time runs out! Each card shows 8 emojis with random sizes and rotations. Build combos for bonus points and time extensions. Compete on daily challenges and leaderboards with the Reddit community. Built with React, TypeScript, HTML5 Canvas, and Redis.
+
 ## 🎯 What is MojiMatcher?
 
 MojiMatcher is a fast-paced visual puzzle game where players must quickly identify the single matching emoji between two cards containing 8 emojis each. With only 30 seconds on the clock, players race to complete as many rounds as possible while building combos for massive point bonuses and time extensions.
@@ -9,6 +11,8 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 **The Challenge:** Each card displays 8 emojis with random sizes (0.8x-2.5x) and rotations (0-360°), making the same emoji look completely different on each card. You must use pattern recognition skills to spot the one matching emoji before time runs out. Every correct match generates new cards with fresh challenges, while wrong clicks cost precious seconds and reset your combo multiplier.
 
 **The Goal:** Build the highest combo streak possible to maximize your score and earn time bonuses. The longer your combo, the more time you earn per match (4-13 seconds), creating a snowball effect where skilled players can extend their games significantly. Compete on multiple leaderboards (All-Time, Daily, Weekly) and unlock achievements as you master the game.
+
+**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts. Players see an eye-catching animated splash screen in their feed, click "Play Now" to launch the full-screen game, and compete with the Reddit community on daily challenges and leaderboards. All scores are automatically tied to Reddit usernames, creating a seamless social gaming experience.
 
 ### Core Features
 
@@ -20,8 +24,12 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 - **Daily Challenge Mode**: Compete with the Reddit community on the same deterministic puzzle each day
 - **Animated Splash Screen**: Eye-catching entry screen with live player stats and daily challenge preview
 - **Multi-Tier Leaderboards**: All-Time, Daily, and Weekly leaderboards with Reddit username integration
+- **Achievement System**: Unlock 15 achievements across 6 categories (Speed, Combo, Accuracy, Score, Participation, Daily)
+- **Streak Tracking**: Build consecutive day streaks by playing daily challenges
 - **Audio Feedback**: Web Audio API-powered sound effects with pitch variation based on combo level
+- **Game-End Emoji Reveal**: See the matching emoji highlighted with a golden glow when time expires
 - **Mobile Optimized**: Touch-friendly controls and responsive design for seamless mobile gameplay
+- **Personal Stats Dashboard**: Track total games, best score, average score, playtime, and achievement progress
 
 ## 🌟 What Makes MojiMatcher Innovative
 
@@ -44,8 +52,8 @@ Wrong clicks cost **2 seconds AND reset your combo**, making every decision mean
 ### 4. **Daily Challenge Mode with Seeded Generation**
 Every player gets the **same deterministic puzzle each day** using seeded random generation. This enables:
 - Fair competition on daily leaderboards
-- Community discussion about strategies
-- Streak tracking for consecutive days played
+- Community discussion about strategies in Reddit comments
+- Streak tracking for consecutive days played (with 🔥 streak indicators)
 - Comparison of different approaches to the same puzzle
 
 ### 5. **30-Second Sprint Format**
@@ -64,18 +72,23 @@ As combos build, the stakes get higher. Lose your 10x combo and you lose:
 Built specifically for Reddit with:
 - Automatic username integration (no login required)
 - Redis-backed leaderboards (All-Time, Daily, Weekly)
-- Custom animated splash screen that stands out in the feed
-- Achievement system with rarity tracking
-- Personal stats dashboard
+- Custom animated splash screen with floating emojis that stands out in the feed
+- Achievement system with rarity tracking (15 achievements across 6 categories)
+- Personal stats dashboard showing total games, best score, playtime, and more
+- Game-end emoji reveal with golden glow effect
 
 ### 9. **Multi-Tier Competition**
 Three separate leaderboards create multiple ways to compete:
-- **All-Time**: Eternal glory for the best scores ever
-- **Daily**: Fresh competition every 24 hours
+- **All-Time**: Eternal glory for the best scores ever (top 10)
+- **Daily**: Fresh competition every 24 hours (resets at UTC midnight)
 - **Weekly**: Medium-term competition that resets Monday-Sunday
 
-### 10. **Audio Feedback with Pitch Variation**
-Web Audio API generates dynamic sound effects where pitch increases with combo level, creating an escalating sense of excitement as you build streaks.
+### 10. **Visual & Audio Feedback**
+- **Combo Celebrations**: Special animated badges at 3x (✨ COMBO!), 5x (⚡ AMAZING!), and 10x (🔥 LEGENDARY!)
+- **Timer Colors**: Green (>15s), Yellow (8-15s), Red (<8s) for visual urgency
+- **Audio Pitch Variation**: Web Audio API generates dynamic sound effects where pitch increases with combo level
+- **Score Popups**: Floating "+X points" animations on correct matches
+- **Emoji Highlight**: Golden pulsing glow reveals the matching emoji when game ends
 
 ## 🎮 Game Features
 
@@ -120,78 +133,102 @@ Web Audio API generates dynamic sound effects where pitch increases with combo l
 
 #### Step 1: View the Splash Screen
 When you first open MojiMatcher in a Reddit post, you'll see an eye-catching animated splash screen featuring:
-- **Floating emoji particles** drifting across a vibrant gradient background
-- **Live community stats**: "X players online today" and "Total games played"
-- **Today's daily challenge preview**: Shows the featured emoji for today's challenge
-- **Your current streak**: If you've played consecutive days (e.g., "🔥 5 day streak!")
-- **Large "🎮 Play Now" button**: Click to enter the game
+- **Vibrant gradient background**: Purple → blue → pink with smooth transitions
+- **15+ floating emoji particles**: Drifting across the screen with random speeds, sizes, and animation delays (🎮, 🎯, ⚡, 🔥, ⭐, 💫, 🎊, 🎉, ✨, 💎, 🏆, etc.)
+- **Live community stats**: 
+  - "X players online today" (tracked via Redis with daily reset)
+  - "Total games: X,XXX" (cumulative game counter)
+- **Today's daily challenge preview**: Shows the featured emoji for today's challenge (e.g., 🎯)
+- **Large pulsing "🎮 Play Now" button**: Animated button with hover scale effect and pulse animation
+- **Quick info footer**: "⚡ 30-second rounds • 🎯 Build combos • 🏆 Compete on leaderboards"
+
+**Action:** Click "Play Now" to enter the main menu
 
 #### Step 2: Navigate the Main Menu
 After clicking "Play Now", you'll see the main menu with four options:
 
 1. **📅 Daily Challenge** (Featured Button)
-   - Play today's challenge - same puzzle for all players
-   - Shows today's featured emoji
+   - Play today's challenge - same deterministic puzzle for all players
+   - Shows today's featured emoji (e.g., 🎯)
    - Displays your current streak (e.g., "🔥 5 day streak!")
-   - Shows your best score for today if you've already played
-   - Gradient purple-to-pink styling to stand out
+   - Shows your best score for today if you've already played ("Best today: 850 pts")
+   - Gradient purple-to-pink styling with pulse animation to stand out
+   - Resets at UTC midnight each day
 
 2. **▶️ Play Game** (Standard Mode)
    - Start a game with randomly generated cards
    - Great for practice and casual play
    - Scores count toward All-Time leaderboard
+   - No streak tracking
 
 3. **🏆 Leaderboard**
    - View top scores across multiple timeframes
-   - Four tabs: All-Time, Daily, Weekly, My Stats
+   - Four tabs: All-Time (top 10), Daily (top 10), Weekly (top 10), My Stats
    - See where you rank against the community
+   - Your entry highlighted with blue gradient background
+   - Refresh button to fetch latest scores
 
 4. **⚙️ Settings**
-   - Toggle sound effects on/off
-   - Toggle music on/off
-   - Settings persist across sessions
+   - Toggle sound effects on/off (correct, wrong, combo sounds, timer warnings)
+   - Toggle music on/off (when implemented)
+   - Settings persist in browser localStorage across sessions
+
+**Bottom Section:**
+- "How to play" instructions with bullet points
+- Quick reference for game rules
 
 #### Step 3: Choose Your Game Mode
 
 **Daily Challenge Mode:**
-- Everyone gets the **same puzzle** each day (resets at UTC midnight)
-- Build your streak by playing consecutive days
-- Compete on the daily leaderboard
+- Everyone gets the **same puzzle** each day using seeded random generation (seed format: YYYYMMDD)
+- Resets at UTC midnight
+- Build your streak by playing consecutive days (tracked in Redis)
+- Compete on the daily leaderboard (separate from all-time)
 - Your best score counts (you can replay to improve)
-- Special indicator shows during gameplay
+- Special purple-pink gradient banner shows at top during gameplay with featured emoji and streak
+- Missing one day resets your streak to 0
 
 **Standard Game Mode:**
-- Randomly generated cards each round
+- Randomly generated cards each round using Math.random()
 - Great for practice and skill building
 - Scores count toward All-Time leaderboard
-- No streak tracking
+- No streak tracking or special indicators
+- Unlimited replays
 
 ### Understanding the Game Screen
 
 When you start playing, here's what you'll see:
 
 #### Top Bar (Game Stats)
-- **Score (Top Left)**: Your current point total
-  - Below score: Current combo multiplier (e.g., "5x Combo")
-- **Timer (Top Center)**: Countdown in seconds
-  - **Green** (>15s): Safe zone
-  - **Yellow** (8-15s): Caution
-  - **Red** (<8s): Danger zone
+- **Score (Top Left)**: Your current point total in large bold text
+  - Below score: Current combo multiplier (e.g., "5x Combo" in orange)
+- **Timer (Top Center)**: Countdown in seconds with color-coded background
+  - **Green background** (>15s): Safe zone
+  - **Yellow background** (8-15s): Caution
+  - **Red background** (<8s): Danger zone
+  - Timer text also changes color to match
 - **Rounds (Top Right)**: Number of rounds completed
 
 #### Main Play Area
-- **Two white cards** displayed side-by-side
+- **Two white cards** displayed side-by-side with rounded corners and shadows
 - **8 emojis per card** (16 total visible)
-- **Random sizes**: Emojis range from tiny (0.8x) to huge (2.5x)
+- **Random sizes**: Emojis range from tiny (0.8x) to huge (2.5x) scale
 - **Random rotations**: Emojis can be upside-down, sideways, or at any angle (0-360°)
-- **Smart spacing**: Emojis positioned to avoid overlaps (60px minimum distance)
+- **Smart spacing**: Emojis positioned to avoid overlaps (60px minimum distance between centers)
+- **Canvas rendering**: HTML5 Canvas at 800x500px with responsive scaling
+- **Card dimensions**: 350px × 450px each with 20px gap between them
 
 #### Special Indicators
-- **Combo Badge** (appears at 3x+): Shows your current combo level
-  - 3x: ✨ COMBO! (blue gradient)
-  - 5x: ⚡ AMAZING! (orange-red gradient)
-  - 10x: 🔥 LEGENDARY! (purple-pink gradient)
-- **Daily Challenge Banner** (if playing daily challenge): Shows at top with featured emoji and streak
+- **Combo Badge** (appears at 3x+): Floating animated badge at top center
+  - 3x: ✨ COMBO! (blue-cyan gradient, bouncing animation)
+  - 5x: ⚡ AMAZING! (orange-red gradient, bouncing animation, scale 1.05x)
+  - 10x: 🔥 LEGENDARY! (purple-pink gradient, bouncing animation, scale 1.1x)
+- **Daily Challenge Banner** (if playing daily challenge): Fixed purple-pink gradient banner at top with:
+  - 📅 icon
+  - "Daily Challenge" text
+  - Featured emoji (e.g., 🎯)
+  - Streak counter (e.g., "🔥 5 day streak")
+  - Pulse animation
 
 ### The Core Challenge
 
@@ -340,75 +377,94 @@ When you click the wrong emoji:
 
 #### 4. Game Over Sequence
 **Phase 1: Emoji Highlight (2.5 seconds)**
-- Game freezes with current cards visible
+- Game freezes with current cards visible on screen
 - Golden glowing circle appears around matching emoji on both cards
-- Pulsing animation (opacity 0.6 → 1.0 → 0.6)
+- Pulsing animation using canvas rendering (opacity 0.6 → 1.0 → 0.6 in continuous loop)
 - Large matching emoji displayed in center with "The Match!" label
-- White card with gold border in center of screen
+- White card with 4px gold border (#FFD700) in center of screen
+- Shadow blur of 30px for glow effect
 - Auto-advances to Game Over screen after 2.5 seconds
+- Fade out transition (opacity 1 → 0 over 0.3 seconds)
 
 **Phase 2: Game Over Screen**
-- Header: "⏰ Time's Up!" or "📅 Daily Challenge Complete!"
-- **Large Score Display**: Final score in red (e.g., "1,250")
-- **Statistics Grid** (4 boxes):
+- Header: "⏰ Time's Up!" or "📅 Daily Challenge Complete!" (depending on mode)
+- **Large Score Display**: Final score in red (#d93900) at 6xl size (e.g., "1,250")
+- **Statistics Grid** (4 boxes in 2x2 layout with gray backgrounds):
   - Rounds completed
-  - Accuracy percentage (correct clicks / total clicks)
-  - Best combo achieved
-  - Total clicks
+  - Accuracy percentage (correct clicks / total clicks × 100)
+  - Best combo achieved during game
+  - Total clicks (correct + wrong)
 - **Achievement Unlocks** (if any):
-  - Purple-pink gradient card
+  - Purple-pink gradient card with border
   - "🎉 New Achievements Unlocked!" header
-  - List of newly unlocked achievements with icons and descriptions
-  - Tier badges (Bronze/Silver/Gold/Platinum)
+  - List of newly unlocked achievements with:
+    - Large emoji icon (3xl size)
+    - Achievement name (bold)
+    - Description text
+    - Tier badge (Bronze/Silver/Gold/Platinum in uppercase)
+  - White background cards with shadow
 - **Action Buttons:**
-  - "🔄 Play Again" (large red button) - Restart immediately
+  - "🔄 Play Again" (large red #d93900 button) - Restart immediately in same mode
   - "← Back to Menu" (gray button) - Return to main menu
+- **Score saved automatically** to appropriate leaderboard (All-Time or Daily)
 
 #### 5. Leaderboard Screen
 **Tab Navigation:**
 - Four tabs at top: All-Time | Daily | Weekly | My Stats
-- Active tab highlighted in blue
-- Click tabs to switch views
+- Active tab highlighted in blue (#2563eb) with white text
+- Inactive tabs have gray background with hover effect
+- Click tabs to switch views (lazy loading on first access)
 
 **All-Time Tab:**
-- Top 10 scores ever recorded
-- Rank badges: 🥇 (1st), 🥈 (2nd), 🥉 (3rd), #4-10
+- Top 10 scores ever recorded (fetched from Redis sorted set)
+- Rank badges: 🥇 (1st - yellow), 🥈 (2nd - gray), 🥉 (3rd - orange), #4-10 (gray text)
 - Each entry shows:
-  - Rank badge
-  - Score (large, bold)
-  - Username (Reddit username)
+  - Rank badge (2xl size, bold)
+  - Score (xl size, bold, gray-900)
+  - Username (Reddit username from context)
   - Rounds completed
-  - Date achieved
-- Your entry highlighted with blue gradient background
-- Refresh button to fetch latest scores
+  - Date achieved (formatted as locale date string)
+- Your entry highlighted with blue gradient background (from-blue-100 to-blue-50)
+- 1st place gets special yellow gradient background (from-yellow-100 to-yellow-50)
+- Refresh button (🔄) to fetch latest scores
+- Empty state: "No scores yet! Be the first to set a record."
+- Fallback to localStorage if server fails
 
 **Daily Tab:**
 - Top 10 scores from today (resets at UTC midnight)
 - Same format as All-Time
 - Shows "Today's Top 10" header
+- Fetched from `mojimatcher:daily:leaderboard:{date}` Redis key
 - Empty state: "No scores yet! Be the first to set a record."
 
 **Weekly Tab:**
 - Top 10 scores from current week (Monday-Sunday UTC)
+- Week calculated using ISO week format (YYYY-Www)
 - Same format as All-Time
 - Shows "This Week's Top 10" header
+- Fetched from `mojimatcher:weekly:leaderboard:{week}` Redis key
 
 **My Stats Tab:**
 - Personal statistics dashboard
-- **6 stat cards** in grid layout:
-  - Total Games (blue gradient)
-  - Best Score (green gradient)
-  - Average Score (purple gradient)
-  - Daily Streak with 🔥 icon (orange gradient)
-  - Achievements (X/15) (pink gradient)
-  - Total Playtime in hours/minutes (yellow gradient)
+- **6 stat cards** in responsive grid layout (2 cols on mobile, 3 on desktop):
+  - Total Games (blue gradient, from-blue-50 to-blue-100)
+  - Best Score (green gradient, from-green-50 to-green-100)
+  - Average Score (purple gradient, from-purple-50 to-purple-100)
+  - Daily Streak with 🔥 icon (orange gradient, from-orange-50 to-orange-100)
+  - Achievements (X/15) (pink gradient, from-pink-50 to-pink-100)
+  - Total Playtime formatted as "Xh Ym" or "Ym" (yellow gradient, from-yellow-50 to-yellow-100)
+- Each card shows:
+  - Large value (3xl size, bold, colored text)
+  - Small label (xs size, gray-600)
 - **Achievement Progress Bar:**
-  - Shows percentage of achievements unlocked
-  - Gradient blue-to-purple fill
-  - Text: "Achievement Progress: X%"
+  - Shows percentage of achievements unlocked (X/15 × 100)
+  - Gradient blue-to-purple fill (from-blue-500 to-purple-500)
+  - Full width with rounded corners
+  - Height: 4 (1rem)
+  - Text above: "Achievement Progress" with percentage
 
 **Bottom Section:**
-- "← Back to Menu" button (gray)
+- "← Back to Menu" button (gray bg-gray-200, hover:bg-gray-300)
 
 #### 6. Achievement System (Integrated)
 **When You Unlock an Achievement:**
@@ -777,6 +833,35 @@ src/
 - **Streak Tracking**: Redis-based consecutive day tracking with automatic reset
 - **Global Stats**: Real-time player count and game statistics
 - **Fallback Storage**: localStorage backup when server unavailable
+
+## 🛠️ Technical Stack
+
+### Frontend
+- **React 18**: Component-based UI with hooks (useState, useCallback, useEffect)
+- **TypeScript**: Strict type checking throughout
+- **HTML5 Canvas**: 800x500px canvas for game rendering at 60 FPS
+- **Tailwind CSS**: Utility-first styling via index.css
+- **Vite**: Fast build tool with hot module replacement
+- **Web Audio API**: OscillatorNode for dynamic sound generation with pitch variation
+
+### Backend
+- **Express.js**: RESTful API server with TypeScript
+- **Devvit SDK**: Reddit platform integration (@devvit/web/server)
+- **Redis**: Data persistence for leaderboards, stats, achievements, and streaks
+- **Node.js 22.2.0+**: Server runtime
+
+### Key Libraries & Tools
+- **React Error Boundary**: Graceful error handling with recovery UI
+- **Vitest**: Unit testing framework for card generation and seeded RNG
+- **ESLint**: Code quality and consistency
+- **Prettier**: Code formatting
+
+### Architecture Patterns
+- **Monorepo**: Client, server, and shared code in single repository
+- **Custom Hooks**: useGameState, useTimer, useDailyChallenge, useAchievements
+- **Canvas Rendering**: Efficient emoji rendering with transformations (rotation, scale)
+- **Seeded Random**: Deterministic card generation for daily challenges
+- **Redis Data Structures**: Sorted sets for leaderboards, hashes for stats, sets for achievements
 
 ## 🛠️ Available Scripts
 
