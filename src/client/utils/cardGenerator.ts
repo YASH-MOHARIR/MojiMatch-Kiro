@@ -1,43 +1,79 @@
 import { Card, EmojiInstance } from '../../shared/types/game';
 import { EMOJI_POOL } from '../../shared/constants/emojis';
+import { SeededRandom } from '../../shared/utils/seededRandom';
+
+/**
+ * Random number generator interface
+ * Can be either Math.random or SeededRandom
+ */
+interface RandomGenerator {
+  next(): number;
+  nextInt(min: number, max: number): number;
+  nextFloat(min: number, max: number): number;
+  shuffle<T>(array: T[]): T[];
+  pick<T>(array: T[]): T;
+}
+
+/**
+ * Wrapper for Math.random to match SeededRandom interface
+ */
+class MathRandomGenerator implements RandomGenerator {
+  next(): number {
+    return Math.random();
+  }
+
+  nextInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  nextFloat(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+  }
+
+  shuffle<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+    }
+    return shuffled;
+  }
+
+  pick<T>(array: T[]): T {
+    return array[Math.floor(Math.random() * array.length)]!;
+  }
+}
 
 /**
  * Shuffles an array using Fisher-Yates algorithm
  */
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = shuffled[i];
-    shuffled[i] = shuffled[j]!;
-    shuffled[j] = temp!;
-  }
-  return shuffled;
+function shuffleArray<T>(array: T[], rng: RandomGenerator): T[] {
+  return rng.shuffle(array);
 }
 
 /**
  * Selects n unique random emojis from the pool, excluding specified emojis
  */
-function selectRandomEmojis(count: number, exclude: string[] = []): string[] {
+function selectRandomEmojis(count: number, exclude: string[], rng: RandomGenerator): string[] {
   const availableEmojis = EMOJI_POOL.filter(emoji => !exclude.includes(emoji));
-  const shuffled = shuffleArray(availableEmojis);
+  const shuffled = shuffleArray(availableEmojis, rng);
   return shuffled.slice(0, count);
 }
 
 /**
  * Generates a random size between 0.8x and 2.5x
  */
-function getRandomSize(): number {
+function getRandomSize(rng: RandomGenerator): number {
   const minSize = 0.8;
   const maxSize = 2.5;
-  return minSize + Math.random() * (maxSize - minSize);
+  return rng.nextFloat(minSize, maxSize);
 }
 
 /**
  * Generates a random rotation between 0 and 360 degrees
  */
-function getRandomRotation(): number {
-  return Math.random() * 360;
+function getRandomRotation(rng: RandomGenerator): number {
+  return rng.nextFloat(0, 360);
 }
 
 /**
@@ -67,6 +103,7 @@ function checkOverlap(e1: EmojiInstance, e2: EmojiInstance): boolean {
 function getRandomPositionWithoutOverlap(
   existingEmojis: EmojiInstance[],
   size: number,
+  rng: RandomGenerator,
   cardWidth: number = 350,
   cardHeight: number = 450,
   maxAttempts: number = 50
@@ -74,8 +111,8 @@ function getRandomPositionWithoutOverlap(
   const padding = 40;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const x = padding + Math.random() * (cardWidth - 2 * padding);
-    const y = padding + Math.random() * (cardHeight - 2 * padding);
+    const x = padding + rng.nextFloat(0, cardWidth - 2 * padding);
+    const y = padding + rng.nextFloat(0, cardHeight - 2 * padding);
 
     const tempEmoji: EmojiInstance = {
       emoji: '',
@@ -94,42 +131,46 @@ function getRandomPositionWithoutOverlap(
   }
 
   // If we couldn't find a non-overlapping position, return a random one
-  const x = padding + Math.random() * (cardWidth - 2 * padding);
-  const y = padding + Math.random() * (cardHeight - 2 * padding);
+  const x = padding + rng.nextFloat(0, cardWidth - 2 * padding);
+  const y = padding + rng.nextFloat(0, cardHeight - 2 * padding);
   return { x, y };
 }
 
 /**
  * Generates a pair of cards with exactly 1 matching emoji
  * Each card contains 8 emojis total
+ * @param seed Optional seed for deterministic generation (for daily challenges)
  */
-export function generateCardPair(): {
+export function generateCardPair(seed?: number): {
   cards: [Card, Card];
   matchingEmoji: string;
 } {
+  // Use seeded RNG if seed provided, otherwise use Math.random
+  const rng: RandomGenerator = seed !== undefined ? new SeededRandom(seed) : new MathRandomGenerator();
+
   // Step 1: Select 1 matching emoji from pool
-  const matchingEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]!;
+  const matchingEmoji = rng.pick(EMOJI_POOL);
 
   // Step 2: Select 7 unique emojis for card 1 (excluding matching emoji)
-  const card1Emojis = selectRandomEmojis(7, [matchingEmoji]);
+  const card1Emojis = selectRandomEmojis(7, [matchingEmoji], rng);
 
   // Step 3: Select 7 unique emojis for card 2 (excluding matching emoji and card 1 emojis)
-  const card2Emojis = selectRandomEmojis(7, [matchingEmoji, ...card1Emojis]);
+  const card2Emojis = selectRandomEmojis(7, [matchingEmoji, ...card1Emojis], rng);
 
   // Step 4: Add matching emoji to both cards
   const card1AllEmojis = [...card1Emojis, matchingEmoji];
   const card2AllEmojis = [...card2Emojis, matchingEmoji];
 
   // Step 5: Shuffle emoji order on each card
-  const card1Shuffled = shuffleArray(card1AllEmojis);
-  const card2Shuffled = shuffleArray(card2AllEmojis);
+  const card1Shuffled = shuffleArray(card1AllEmojis, rng);
+  const card2Shuffled = shuffleArray(card2AllEmojis, rng);
 
   // Create emoji instances with random size, rotation, and position (with overlap prevention)
   const card1Instances: EmojiInstance[] = [];
   for (const emoji of card1Shuffled) {
-    const size = getRandomSize();
-    const rotation = getRandomRotation();
-    const position = getRandomPositionWithoutOverlap(card1Instances, size);
+    const size = getRandomSize(rng);
+    const rotation = getRandomRotation(rng);
+    const position = getRandomPositionWithoutOverlap(card1Instances, size, rng);
 
     card1Instances.push({
       emoji: emoji!,
@@ -142,9 +183,9 @@ export function generateCardPair(): {
 
   const card2Instances: EmojiInstance[] = [];
   for (const emoji of card2Shuffled) {
-    const size = getRandomSize();
-    const rotation = getRandomRotation();
-    const position = getRandomPositionWithoutOverlap(card2Instances, size);
+    const size = getRandomSize(rng);
+    const rotation = getRandomRotation(rng);
+    const position = getRandomPositionWithoutOverlap(card2Instances, size, rng);
 
     card2Instances.push({
       emoji: emoji!,

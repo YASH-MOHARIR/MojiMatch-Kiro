@@ -12,6 +12,13 @@ export interface Card {
   emojis: EmojiInstance[];
 }
 
+export type CardEmoji = EmojiInstance;
+
+export interface CardPair {
+  card1: Card;
+  card2: Card;
+}
+
 export interface GameState {
   screen: 'menu' | 'game' | 'gameover' | 'leaderboard';
   score: number;
@@ -22,6 +29,7 @@ export interface GameState {
   matchingEmoji: string | null;
   isGameActive: boolean;
   stats: GameStats;
+  showEmojiHighlight?: boolean;
 }
 
 export interface GameStats {

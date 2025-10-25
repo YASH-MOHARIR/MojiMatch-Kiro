@@ -205,9 +205,17 @@ export function useGameState() {
         ...prev,
         screen: 'gameover',
         isGameActive: false,
+        showEmojiHighlight: true, // Show highlight before game over screen
       };
     });
   }, [saveToLeaderboard]);
+
+  const hideEmojiHighlight = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      showEmojiHighlight: false,
+    }));
+  }, []);
 
   const returnToMenu = useCallback(() => {
     setGameState(prev => ({
@@ -236,5 +244,6 @@ export function useGameState() {
     setGameState,
     lastPointsEarned,
     clearLastPoints: () => setLastPointsEarned(null),
+    hideEmojiHighlight,
   };
 }

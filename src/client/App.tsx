@@ -1,14 +1,18 @@
+import { useState } from 'react';
+import { SplashScreen } from './components/SplashScreen';
 import { MenuScreen } from './components/MenuScreen';
 import { GameCanvas } from './components/GameCanvas';
 import { GameUI } from './components/GameUI';
 import { GameOverScreen } from './components/GameOverScreen';
 import { LeaderboardScreen } from './components/LeaderboardScreen';
 import { ComboIndicator } from './components/ComboIndicator';
+import { EmojiHighlight } from './components/EmojiHighlight';
 import { useGameState } from './hooks/useGameState';
 import { useTimer } from './hooks/useTimer';
 
 export const App = () => {
-  const { gameState, startGame, handleEmojiClick, updateTimer, endGame, returnToMenu, viewLeaderboard } =
+  const [showSplash, setShowSplash] = useState(true);
+  const { gameState, startGame, handleEmojiClick, updateTimer, endGame, returnToMenu, viewLeaderboard, hideEmojiHighlight } =
     useGameState();
 
   // Timer hook
@@ -18,6 +22,11 @@ export const App = () => {
     onTick: updateTimer,
     onExpire: endGame,
   });
+
+  // Splash Screen
+  if (showSplash) {
+    return <SplashScreen onStart={() => setShowSplash(false)} />;
+  }
 
   // Menu Screen
   if (gameState.screen === 'menu') {
@@ -63,6 +72,31 @@ export const App = () => {
 
   // Game Over Screen
   if (gameState.screen === 'gameover') {
+    // Show emoji highlight first, then game over screen
+    if (gameState.showEmojiHighlight && gameState.currentCards && gameState.matchingEmoji) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen gap-4 sm:gap-6 p-2 sm:p-4 bg-gradient-to-b from-blue-50 to-blue-100">
+          <GameUI
+            score={gameState.score}
+            timer={gameState.timer}
+            roundsCompleted={gameState.roundsCompleted}
+            combo={gameState.combo}
+            matchingEmoji={gameState.matchingEmoji}
+            showDebug={false}
+          />
+
+          <div className="w-full max-w-[800px] px-2 relative">
+            <GameCanvas cards={gameState.currentCards} onEmojiClick={() => {}} />
+            <EmojiHighlight
+              matchingEmoji={gameState.matchingEmoji}
+              cards={{ card1: gameState.currentCards[0], card2: gameState.currentCards[1] }}
+              onComplete={hideEmojiHighlight}
+            />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-purple-50 to-purple-100">
         <GameOverScreen
