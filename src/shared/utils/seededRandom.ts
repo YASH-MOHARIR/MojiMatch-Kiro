@@ -50,7 +50,7 @@ export class SeededRandom {
     const result = [...array];
     for (let i = result.length - 1; i > 0; i--) {
       const j = this.nextInt(0, i + 1);
-      [result[i], result[j]] = [result[j], result[i]];
+      [result[i], result[j]] = [result[j]!, result[i]!];
     }
     return result;
   }
@@ -61,7 +61,7 @@ export class SeededRandom {
    * @returns Random element from the array
    */
   pick<T>(array: T[]): T {
-    return array[this.nextInt(0, array.length)];
+    return array[this.nextInt(0, array.length)]!;
   }
 
   /**
@@ -96,6 +96,6 @@ export function generateSeedFromDate(dateString: string): number {
  * @returns Seed for today's date
  */
 export function getTodaySeed(): number {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0]!;
   return generateSeedFromDate(today);
 }

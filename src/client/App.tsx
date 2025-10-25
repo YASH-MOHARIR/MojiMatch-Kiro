@@ -10,7 +10,11 @@ import { useGameState } from './hooks/useGameState';
 import { useTimer } from './hooks/useTimer';
 import { useDailyChallenge } from './hooks/useDailyChallenge';
 
+import { useState } from 'react';
+import { SplashScreen } from './components/SplashScreen';
+
 export const App = () => {
+  const [showRecordingSplash, setShowRecordingSplash] = useState(true);
   const { dailyChallenge } = useDailyChallenge();
   const { 
     gameState, 
@@ -32,6 +36,11 @@ export const App = () => {
     onTick: updateTimer,
     onExpire: endGame,
   });
+
+  // Show recording splash (just background, no buttons)
+  if (showRecordingSplash) {
+    return <SplashScreen onStart={() => setShowRecordingSplash(false)} recordingMode={true} />;
+  }
 
   // Menu Screen
   if (gameState.screen === 'menu') {
@@ -117,9 +126,9 @@ export const App = () => {
           score={gameState.score}
           roundsCompleted={gameState.roundsCompleted}
           stats={gameState.stats}
-          matchingEmoji={gameState.matchingEmoji || undefined}
+          matchingEmoji={gameState.matchingEmoji ?? undefined}
           newAchievements={newlyUnlockedAchievements}
-          isDailyChallenge={gameState.isDailyChallenge}
+          isDailyChallenge={gameState.isDailyChallenge ?? false}
           onPlayAgain={startGame}
           onReturnToMenu={returnToMenu}
         />

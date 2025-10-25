@@ -193,11 +193,10 @@ function renderCard(
  */
 function renderEmoji(
   ctx: CanvasRenderingContext2D,
-  emojiInstance: { emoji?: string; x: number; y: number; size: number; rotation: number },
+  emojiInstance: { emoji: string; x: number; y: number; size: number; rotation: number },
   cardX: number,
   cardY: number
 ) {
-  if (!emojiInstance.emoji) return;
   
   ctx.save();
 

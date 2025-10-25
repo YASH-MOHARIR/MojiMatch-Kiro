@@ -10,7 +10,6 @@ export const createPost = async () => {
     splash: {
       // Eye-catching Splash Screen for Reddit Feed
       appDisplayName: 'MojiMatcher',
-      entryUri: 'index.html',
       buttonLabel: '🎮 Play Now',
       description:
         '⚡ 30-second rounds • 🎯 Build combos • 🏆 Daily challenges • 📊 Compete on leaderboards\n\nFind the ONE emoji that appears on both cards before time runs out!',

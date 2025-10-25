@@ -144,10 +144,16 @@ router.post('/api/save-score', async (req, res): Promise<void> => {
     await redis.set('mojimatcher:global:stats', JSON.stringify(stats));
 
     // Track unique player today
-    const today = new Date().toISOString().split('T')[0];
-    await redis.sAdd(`mojimatcher:players:${today}`, username);
-    // Set expiration for tomorrow
-    await redis.expire(`mojimatcher:players:${today}`, 86400);
+    const today = new Date().toISOString().split('T')[0]!;
+    const playersKey = `mojimatcher:players:${today}`;
+    const playersData = await redis.get(playersKey);
+    const players = playersData ? JSON.parse(playersData) : [];
+    if (!players.includes(username)) {
+      players.push(username);
+      await redis.set(playersKey, JSON.stringify(players), {
+        expiration: new Date(Date.now() + 86400000),
+      });
+    }
 
     // Save to all-time leaderboard (sorted set)
     const alltimeKey = 'mojimatcher:alltime:leaderboard';
@@ -184,7 +190,9 @@ router.post('/api/save-score', async (req, res): Promise<void> => {
     });
 
     // Check if score made top 5
-    const rank = leaderboard.findIndex((entry) => entry.username === username && entry.score === score);
+    const rank = leaderboard.findIndex(
+      (entry) => entry.username === username && entry.score === score
+    );
 
     res.json({
       success: true,
@@ -234,9 +242,9 @@ router.get('/api/leaderboard/daily', async (_req, res): Promise<void> => {
   try {
     const today = new Date().toISOString().split('T')[0];
     const leaderboardKey = `mojimatcher:daily:leaderboard:${today}`;
-    
+
     const entries = await redis.zRange(leaderboardKey, 0, 9, { by: 'rank', reverse: true });
-    
+
     const scores = entries.map((entry, index) => {
       const [username, score, rounds, timestamp] = entry.member.split(':');
       return {
@@ -267,11 +275,11 @@ router.get('/api/leaderboard/weekly', async (_req, res): Promise<void> => {
     const days = Math.floor((now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
     const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
     const weekKey = `${now.getFullYear()}-W${weekNumber.toString().padStart(2, '0')}`;
-    
+
     const leaderboardKey = `mojimatcher:weekly:leaderboard:${weekKey}`;
-    
+
     const entries = await redis.zRange(leaderboardKey, 0, 9, { by: 'rank', reverse: true });
-    
+
     const scores = entries.map((entry, index) => {
       const [username, score, rounds, timestamp] = entry.member.split(':');
       return {
@@ -297,9 +305,9 @@ router.get('/api/leaderboard/weekly', async (_req, res): Promise<void> => {
 router.get('/api/leaderboard/alltime', async (_req, res): Promise<void> => {
   try {
     const leaderboardKey = 'mojimatcher:alltime:leaderboard';
-    
+
     const entries = await redis.zRange(leaderboardKey, 0, 9, { by: 'rank', reverse: true });
-    
+
     const scores = entries.map((entry, index) => {
       const [username, score, rounds, timestamp] = entry.member.split(':');
       return {
@@ -325,7 +333,7 @@ router.get('/api/leaderboard/alltime', async (_req, res): Promise<void> => {
 router.get('/api/stats/:username', async (req, res): Promise<void> => {
   try {
     const { username } = req.params;
-    
+
     if (!username) {
       res.status(400).json({
         success: false,
@@ -336,19 +344,19 @@ router.get('/api/stats/:username', async (req, res): Promise<void> => {
 
     // Get user stats
     const statsData = await redis.hGetAll(`mojimatcher:user:${username}:stats`);
-    
+
     // Get user streak
     const streakData = await redis.get(`mojimatcher:streak:${username}`);
     const streak = streakData ? JSON.parse(streakData) : { count: 0 };
-    
+
     // Get user achievements count
     const achievements = await redis.sMembers(`mojimatcher:user:${username}:achievements`);
-    
+
     // Calculate average score
     const totalGames = parseInt(statsData.totalGames || '0', 10);
     const totalScore = parseInt(statsData.totalScore || '0', 10);
     const averageScore = totalGames > 0 ? Math.round(totalScore / totalGames) : 0;
-    
+
     res.json({
       totalGames: totalGames,
       bestScore: parseInt(statsData.bestScore || '0', 10),
@@ -394,8 +402,9 @@ router.get('/api/stats/global', async (_req, res): Promise<void> => {
       });
     }
 
-    // Get unique players today from a set
-    const playersToday = (await redis.sCard(`mojimatcher:players:${today}`)) || 0;
+    // Get unique players today from stored array
+    const playersData = await redis.get(`mojimatcher:players:${today}`);
+    const playersToday = playersData ? JSON.parse(playersData).length : 0;
 
     res.json({
       totalGames: stats.totalGames || 0,
@@ -567,26 +576,37 @@ router.post('/api/achievements/unlock', async (req, res): Promise<void> => {
     const achievementsKey = `mojimatcher:user:${username}:achievements`;
 
     // Check if already unlocked
-    const hasAchievement = await redis.sIsMember(achievementsKey, achievementId);
+    const achievementsData = await redis.get(achievementsKey);
+    const achievements = achievementsData ? JSON.parse(achievementsData) : [];
 
-    if (hasAchievement) {
+    if (achievements.includes(achievementId)) {
       res.json({ success: true, alreadyUnlocked: true });
       return;
     }
 
     // Unlock achievement
-    await redis.sAdd(achievementsKey, achievementId);
+    achievements.push(achievementId);
+    await redis.set(achievementsKey, JSON.stringify(achievements));
 
     // Calculate rarity (percentage of players who have it)
     const allPlayersKey = 'mojimatcher:all:players';
     const achievementCountKey = `mojimatcher:achievement:${achievementId}:count`;
 
-    await redis.sAdd(allPlayersKey, username);
-    await redis.incr(achievementCountKey);
+    // Add to all players
+    const allPlayersData = await redis.get(allPlayersKey);
+    const allPlayers = allPlayersData ? JSON.parse(allPlayersData) : [];
+    if (!allPlayers.includes(username)) {
+      allPlayers.push(username);
+      await redis.set(allPlayersKey, JSON.stringify(allPlayers));
+    }
 
-    const totalPlayers = (await redis.sCard(allPlayersKey)) || 1;
-    const achievementCount = parseInt((await redis.get(achievementCountKey)) || '1', 10);
-    const rarity = (achievementCount / totalPlayers) * 100;
+    // Increment achievement count
+    const currentCount = await redis.get(achievementCountKey);
+    const newCount = currentCount ? parseInt(currentCount, 10) + 1 : 1;
+    await redis.set(achievementCountKey, newCount.toString());
+
+    const totalPlayers = allPlayers.length || 1;
+    const rarity = (newCount / totalPlayers) * 100;
 
     res.json({
       success: true,
@@ -616,12 +636,15 @@ router.get('/api/achievements/:username', async (req, res): Promise<void> => {
     }
 
     const achievementsKey = `mojimatcher:user:${username}:achievements`;
-    const unlockedIds = await redis.sMembers(achievementsKey);
+    const achievementsData = await redis.get(achievementsKey);
+    const unlockedIds: string[] = achievementsData ? JSON.parse(achievementsData) : [];
 
     // Get rarity for each achievement
-    const totalPlayers = (await redis.sCard('mojimatcher:all:players')) || 1;
+    const allPlayersData = await redis.get('mojimatcher:all:players');
+    const totalPlayers = allPlayersData ? JSON.parse(allPlayersData).length : 1;
+
     const achievements = await Promise.all(
-      unlockedIds.map(async (id) => {
+      unlockedIds.map(async (id: string) => {
         const countKey = `mojimatcher:achievement:${id}:count`;
         const count = parseInt((await redis.get(countKey)) || '0', 10);
         const rarity = (count / totalPlayers) * 100;

@@ -10,8 +10,8 @@ interface RandomGenerator {
   next(): number;
   nextInt(min: number, max: number): number;
   nextFloat(min: number, max: number): number;
-  shuffle<T>(array: T[]): T[];
-  pick<T>(array: T[]): T;
+  shuffle<T>(array: readonly T[]): T[];
+  pick<T>(array: readonly T[]): T;
 }
 
 /**
@@ -30,7 +30,7 @@ class MathRandomGenerator implements RandomGenerator {
     return Math.random() * (max - min) + min;
   }
 
-  shuffle<T>(array: T[]): T[] {
+  shuffle<T>(array: readonly T[]): T[] {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -39,7 +39,7 @@ class MathRandomGenerator implements RandomGenerator {
     return shuffled;
   }
 
-  pick<T>(array: T[]): T {
+  pick<T>(array: readonly T[]): T {
     return array[Math.floor(Math.random() * array.length)]!;
   }
 }
@@ -47,7 +47,7 @@ class MathRandomGenerator implements RandomGenerator {
 /**
  * Shuffles an array using Fisher-Yates algorithm
  */
-function shuffleArray<T>(array: T[], rng: RandomGenerator): T[] {
+function shuffleArray<T>(array: readonly T[], rng: RandomGenerator): T[] {
   return rng.shuffle(array);
 }
 

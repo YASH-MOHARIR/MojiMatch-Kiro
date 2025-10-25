@@ -3,6 +3,7 @@ import './SplashScreen.css';
 
 interface SplashScreenProps {
   onStart: () => void;
+  recordingMode?: boolean;
 }
 
 interface GlobalStats {
@@ -12,13 +13,17 @@ interface GlobalStats {
   dailyChallengeDate: string;
 }
 
-export function SplashScreen({ onStart }: SplashScreenProps) {
+export function SplashScreen({ onStart, recordingMode = false }: SplashScreenProps) {
   const [stats, setStats] = useState<GlobalStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchGlobalStats();
-  }, []);
+    if (!recordingMode) {
+      fetchGlobalStats();
+    } else {
+      setLoading(false);
+    }
+  }, [recordingMode]);
 
   const fetchGlobalStats = async () => {
     try {
@@ -57,53 +62,55 @@ export function SplashScreen({ onStart }: SplashScreenProps) {
         ))}
       </div>
 
-      {/* Main content */}
-      <div className="splash-content">
-        <div className="splash-logo">
-          <h1 className="splash-title">
-            <span className="emoji-icon">🎮</span>
-            MojiMatcher
-          </h1>
-          <p className="splash-subtitle">Find the matching emoji!</p>
-        </div>
-
-        {/* Stats section */}
-        {!loading && stats && (
-          <div className="splash-stats">
-            <div className="stat-item">
-              <span className="stat-icon">👥</span>
-              <span className="stat-value">{stats.playersToday}</span>
-              <span className="stat-label">players today</span>
-            </div>
-            <div className="stat-divider">•</div>
-            <div className="stat-item">
-              <span className="stat-icon">🎯</span>
-              <span className="stat-value">{stats.totalGames.toLocaleString()}</span>
-              <span className="stat-label">total games</span>
-            </div>
+      {/* Main content - hidden in recording mode */}
+      {!recordingMode && (
+        <div className="splash-content">
+          <div className="splash-logo">
+            <h1 className="splash-title">
+              <span className="emoji-icon">🎮</span>
+              MojiMatcher
+            </h1>
+            <p className="splash-subtitle">Find the matching emoji!</p>
           </div>
-        )}
 
-        {/* Daily challenge preview */}
-        {!loading && stats && (
-          <div className="daily-challenge-preview">
-            <span className="daily-icon">📅</span>
-            <span className="daily-text">Today's Challenge:</span>
-            <span className="daily-emoji">{stats.dailyChallengeEmoji}</span>
+          {/* Stats section */}
+          {!loading && stats && (
+            <div className="splash-stats">
+              <div className="stat-item">
+                <span className="stat-icon">👥</span>
+                <span className="stat-value">{stats.playersToday}</span>
+                <span className="stat-label">players today</span>
+              </div>
+              <div className="stat-divider">•</div>
+              <div className="stat-item">
+                <span className="stat-icon">🎯</span>
+                <span className="stat-value">{stats.totalGames.toLocaleString()}</span>
+                <span className="stat-label">total games</span>
+              </div>
+            </div>
+          )}
+
+          {/* Daily challenge preview */}
+          {!loading && stats && (
+            <div className="daily-challenge-preview">
+              <span className="daily-icon">📅</span>
+              <span className="daily-text">Today's Challenge:</span>
+              <span className="daily-emoji">{stats.dailyChallengeEmoji}</span>
+            </div>
+          )}
+
+          {/* Play button */}
+          <button onClick={onStart} className="splash-play-button">
+            <span className="button-icon">🎮</span>
+            <span className="button-text">Play Now</span>
+          </button>
+
+          {/* Quick info */}
+          <div className="splash-info">
+            <p>⚡ 30-second rounds • 🎯 Build combos • 🏆 Compete on leaderboards</p>
           </div>
-        )}
-
-        {/* Play button */}
-        <button onClick={onStart} className="splash-play-button">
-          <span className="button-icon">🎮</span>
-          <span className="button-text">Play Now</span>
-        </button>
-
-        {/* Quick info */}
-        <div className="splash-info">
-          <p>⚡ 30-second rounds • 🎯 Build combos • 🏆 Compete on leaderboards</p>
         </div>
-      </div>
+      )}
     </div>
   );
 }

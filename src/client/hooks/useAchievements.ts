@@ -45,7 +45,7 @@ export function useAchievements(): UseAchievementsReturn {
 
       if (response.ok) {
         const data = await response.json();
-        const ids = new Set(data.achievements.map((a: any) => a.id));
+        const ids = new Set<string>(data.achievements.map((a: any) => a.id));
         setUnlockedIds(ids);
 
         // Merge with achievement definitions
