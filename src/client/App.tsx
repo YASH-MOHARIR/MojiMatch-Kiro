@@ -4,15 +4,18 @@ import { MenuScreen } from './components/MenuScreen';
 import { GameCanvas } from './components/GameCanvas';
 import { GameUI } from './components/GameUI';
 import { GameOverScreen } from './components/GameOverScreen';
-import { LeaderboardScreen } from './components/LeaderboardScreen';
+import { EnhancedLeaderboard } from './components/EnhancedLeaderboard';
 import { ComboIndicator } from './components/ComboIndicator';
 import { EmojiHighlight } from './components/EmojiHighlight';
+import { DailyChallengeIndicator } from './components/DailyChallengeIndicator';
 import { useGameState } from './hooks/useGameState';
 import { useTimer } from './hooks/useTimer';
+import { useDailyChallenge } from './hooks/useDailyChallenge';
 
 export const App = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const { gameState, startGame, handleEmojiClick, updateTimer, endGame, returnToMenu, viewLeaderboard, hideEmojiHighlight } =
+  const { dailyChallenge } = useDailyChallenge();
+  const { gameState, startGame, startDailyChallenge, handleEmojiClick, updateTimer, endGame, returnToMenu, viewLeaderboard, hideEmojiHighlight } =
     useGameState();
 
   // Timer hook
@@ -32,7 +35,11 @@ export const App = () => {
   if (gameState.screen === 'menu') {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
-        <MenuScreen onStartGame={startGame} onViewLeaderboard={viewLeaderboard} />
+        <MenuScreen 
+          onStartGame={startGame} 
+          onStartDailyChallenge={startDailyChallenge}
+          onViewLeaderboard={viewLeaderboard} 
+        />
       </div>
     );
   }
@@ -41,7 +48,7 @@ export const App = () => {
   if (gameState.screen === 'leaderboard') {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-blue-100">
-        <LeaderboardScreen onBack={returnToMenu} />
+        <EnhancedLeaderboard onBack={returnToMenu} />
       </div>
     );
   }
@@ -50,6 +57,11 @@ export const App = () => {
   if (gameState.screen === 'game') {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 sm:gap-6 p-2 sm:p-4 bg-gradient-to-b from-blue-50 to-blue-100">
+        {/* Daily Challenge Indicator */}
+        {gameState.isDailyChallenge && dailyChallenge && (
+          <DailyChallengeIndicator emoji={dailyChallenge.emoji} streak={dailyChallenge.streak} />
+        )}
+
         <ComboIndicator combo={gameState.combo} />
 
         <GameUI

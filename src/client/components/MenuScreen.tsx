@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { audioManager } from '../utils/audioManager';
+import { useDailyChallenge } from '../hooks/useDailyChallenge';
 
 interface MenuScreenProps {
   onStartGame: () => void;
+  onStartDailyChallenge: () => void;
   onViewLeaderboard: () => void;
 }
 
-export function MenuScreen({ onStartGame, onViewLeaderboard }: MenuScreenProps) {
+export function MenuScreen({ onStartGame, onStartDailyChallenge, onViewLeaderboard }: MenuScreenProps) {
   const [showSettings, setShowSettings] = useState(false);
   const [sfxEnabled, setSfxEnabled] = useState(audioManager.isSFXEnabled());
   const [musicEnabled, setMusicEnabled] = useState(audioManager.isMusicEnabled());
+  const { dailyChallenge, loading } = useDailyChallenge();
 
   const handleToggleSFX = () => {
     const newValue = !sfxEnabled;
@@ -31,6 +34,30 @@ export function MenuScreen({ onStartGame, onViewLeaderboard }: MenuScreenProps) 
       </div>
 
       <div className="flex flex-col gap-4 w-full max-w-xs">
+        {/* Daily Challenge Button */}
+        {!loading && dailyChallenge && (
+          <button
+            onClick={onStartDailyChallenge}
+            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-bold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg transform hover:scale-105"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <span>📅</span>
+              <span>Daily Challenge</span>
+              <span className="text-2xl">{dailyChallenge.emoji}</span>
+            </div>
+            {dailyChallenge.streak > 0 && (
+              <div className="text-sm mt-1 opacity-90">
+                🔥 {dailyChallenge.streak} day streak!
+              </div>
+            )}
+            {dailyChallenge.hasPlayed && dailyChallenge.bestScore && (
+              <div className="text-sm mt-1 opacity-90">
+                Best today: {dailyChallenge.bestScore} pts
+              </div>
+            )}
+          </button>
+        )}
+
         <button
           onClick={onStartGame}
           className="px-8 py-4 bg-[#d93900] text-white text-xl font-bold rounded-lg hover:bg-[#c13300] transition-colors shadow-lg"

@@ -149,8 +149,42 @@ router.post('/api/save-score', async (req, res): Promise<void> => {
     // Set expiration for tomorrow
     await redis.expire(`mojimatcher:players:${today}`, 86400);
 
+    // Save to all-time leaderboard (sorted set)
+    const alltimeKey = 'mojimatcher:alltime:leaderboard';
+    await redis.zAdd(alltimeKey, {
+      member: `${username}:${score}:${rounds}:${Date.now()}`,
+      score: score,
+    });
+
+    // Save to weekly leaderboard
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const days = Math.floor((now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+    const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+    const weekKey = `${now.getFullYear()}-W${weekNumber.toString().padStart(2, '0')}`;
+    const weeklyKey = `mojimatcher:weekly:leaderboard:${weekKey}`;
+    await redis.zAdd(weeklyKey, {
+      member: `${username}:${score}:${rounds}:${Date.now()}`,
+      score: score,
+    });
+    await redis.expire(weeklyKey, 604800); // 7 days
+
+    // Update user stats
+    const userStatsKey = `mojimatcher:user:${username}:stats`;
+    const userStats = await redis.hGetAll(userStatsKey);
+    const currentBestScore = parseInt(userStats.bestScore || '0', 10);
+    const currentTotalGames = parseInt(userStats.totalGames || '0', 10);
+    const currentTotalScore = parseInt(userStats.totalScore || '0', 10);
+
+    await redis.hSet(userStatsKey, {
+      totalGames: (currentTotalGames + 1).toString(),
+      bestScore: Math.max(currentBestScore, score).toString(),
+      totalScore: (currentTotalScore + score).toString(),
+      lastPlayed: Date.now().toString(),
+    });
+
     // Check if score made top 5
-    const rank = leaderboard.findIndex(entry => entry.username === username && entry.score === score);
+    const rank = leaderboard.findIndex((entry) => entry.username === username && entry.score === score);
 
     res.json({
       success: true,
@@ -165,7 +199,7 @@ router.post('/api/save-score', async (req, res): Promise<void> => {
   }
 });
 
-// MojiMatcher: Get leaderboard
+// MojiMatcher: Get leaderboard (legacy - all-time)
 router.get('/api/leaderboard', async (_req, res): Promise<void> => {
   try {
     const leaderboardData = await redis.get('mojimatcher:leaderboard');
@@ -191,6 +225,145 @@ router.get('/api/leaderboard', async (_req, res): Promise<void> => {
     res.status(500).json({
       success: false,
       error: { code: 'SERVER_ERROR', message: 'Failed to fetch leaderboard' },
+    });
+  }
+});
+
+// MojiMatcher: Get daily leaderboard
+router.get('/api/leaderboard/daily', async (_req, res): Promise<void> => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const leaderboardKey = `mojimatcher:daily:leaderboard:${today}`;
+    
+    const entries = await redis.zRange(leaderboardKey, 0, 9, { by: 'rank', reverse: true });
+    
+    const scores = entries.map((entry, index) => {
+      const [username, score, rounds, timestamp] = entry.member.split(':');
+      return {
+        rank: index + 1,
+        username: username!,
+        score: parseInt(score!, 10),
+        rounds: parseInt(rounds!, 10),
+        timestamp: parseInt(timestamp!, 10),
+      };
+    });
+
+    res.json({ scores });
+  } catch (error) {
+    console.error('Error fetching daily leaderboard:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Failed to fetch daily leaderboard' },
+    });
+  }
+});
+
+// MojiMatcher: Get weekly leaderboard
+router.get('/api/leaderboard/weekly', async (_req, res): Promise<void> => {
+  try {
+    // Calculate current week (ISO week format: YYYY-Www)
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const days = Math.floor((now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+    const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+    const weekKey = `${now.getFullYear()}-W${weekNumber.toString().padStart(2, '0')}`;
+    
+    const leaderboardKey = `mojimatcher:weekly:leaderboard:${weekKey}`;
+    
+    const entries = await redis.zRange(leaderboardKey, 0, 9, { by: 'rank', reverse: true });
+    
+    const scores = entries.map((entry, index) => {
+      const [username, score, rounds, timestamp] = entry.member.split(':');
+      return {
+        rank: index + 1,
+        username: username!,
+        score: parseInt(score!, 10),
+        rounds: parseInt(rounds!, 10),
+        timestamp: parseInt(timestamp!, 10),
+      };
+    });
+
+    res.json({ scores });
+  } catch (error) {
+    console.error('Error fetching weekly leaderboard:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Failed to fetch weekly leaderboard' },
+    });
+  }
+});
+
+// MojiMatcher: Get all-time leaderboard (top 10)
+router.get('/api/leaderboard/alltime', async (_req, res): Promise<void> => {
+  try {
+    const leaderboardKey = 'mojimatcher:alltime:leaderboard';
+    
+    const entries = await redis.zRange(leaderboardKey, 0, 9, { by: 'rank', reverse: true });
+    
+    const scores = entries.map((entry, index) => {
+      const [username, score, rounds, timestamp] = entry.member.split(':');
+      return {
+        rank: index + 1,
+        username: username!,
+        score: parseInt(score!, 10),
+        rounds: parseInt(rounds!, 10),
+        timestamp: parseInt(timestamp!, 10),
+      };
+    });
+
+    res.json({ scores });
+  } catch (error) {
+    console.error('Error fetching all-time leaderboard:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Failed to fetch all-time leaderboard' },
+    });
+  }
+});
+
+// MojiMatcher: Get personal stats
+router.get('/api/stats/:username', async (req, res): Promise<void> => {
+  try {
+    const { username } = req.params;
+    
+    if (!username) {
+      res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_INPUT', message: 'Username is required' },
+      });
+      return;
+    }
+
+    // Get user stats
+    const statsData = await redis.hGetAll(`mojimatcher:user:${username}:stats`);
+    
+    // Get user streak
+    const streakData = await redis.get(`mojimatcher:streak:${username}`);
+    const streak = streakData ? JSON.parse(streakData) : { count: 0 };
+    
+    // Get user achievements count
+    const achievements = await redis.sMembers(`mojimatcher:user:${username}:achievements`);
+    
+    // Calculate average score
+    const totalGames = parseInt(statsData.totalGames || '0', 10);
+    const totalScore = parseInt(statsData.totalScore || '0', 10);
+    const averageScore = totalGames > 0 ? Math.round(totalScore / totalGames) : 0;
+    
+    res.json({
+      totalGames: totalGames,
+      bestScore: parseInt(statsData.bestScore || '0', 10),
+      averageScore: averageScore,
+      totalPlaytime: parseInt(statsData.totalPlaytime || '0', 10),
+      achievementCount: achievements.length,
+      totalAchievements: 15, // Total number of achievements available
+      dailyStreak: streak.count,
+      weeklyRank: null, // TODO: Calculate from weekly leaderboard
+    });
+  } catch (error) {
+    console.error('Error fetching personal stats:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Failed to fetch personal stats' },
     });
   }
 });
@@ -373,6 +546,100 @@ router.post('/internal/on-app-install', async (_req, res): Promise<void> => {
     res.status(400).json({
       status: 'error',
       message: 'Failed to create post',
+    });
+  }
+});
+
+// MojiMatcher: Unlock achievement
+router.post('/api/achievements/unlock', async (req, res): Promise<void> => {
+  try {
+    const { achievementId } = req.body;
+
+    if (!achievementId) {
+      res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_INPUT', message: 'Achievement ID is required' },
+      });
+      return;
+    }
+
+    const username = (await reddit.getCurrentUsername()) ?? 'anonymous';
+    const achievementsKey = `mojimatcher:user:${username}:achievements`;
+
+    // Check if already unlocked
+    const hasAchievement = await redis.sIsMember(achievementsKey, achievementId);
+
+    if (hasAchievement) {
+      res.json({ success: true, alreadyUnlocked: true });
+      return;
+    }
+
+    // Unlock achievement
+    await redis.sAdd(achievementsKey, achievementId);
+
+    // Calculate rarity (percentage of players who have it)
+    const allPlayersKey = 'mojimatcher:all:players';
+    const achievementCountKey = `mojimatcher:achievement:${achievementId}:count`;
+
+    await redis.sAdd(allPlayersKey, username);
+    await redis.incr(achievementCountKey);
+
+    const totalPlayers = (await redis.sCard(allPlayersKey)) || 1;
+    const achievementCount = parseInt((await redis.get(achievementCountKey)) || '1', 10);
+    const rarity = (achievementCount / totalPlayers) * 100;
+
+    res.json({
+      success: true,
+      alreadyUnlocked: false,
+      rarity: Math.round(rarity * 10) / 10,
+    });
+  } catch (error) {
+    console.error('Error unlocking achievement:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Failed to unlock achievement' },
+    });
+  }
+});
+
+// MojiMatcher: Get user achievements
+router.get('/api/achievements/:username', async (req, res): Promise<void> => {
+  try {
+    const { username } = req.params;
+
+    if (!username) {
+      res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_INPUT', message: 'Username is required' },
+      });
+      return;
+    }
+
+    const achievementsKey = `mojimatcher:user:${username}:achievements`;
+    const unlockedIds = await redis.sMembers(achievementsKey);
+
+    // Get rarity for each achievement
+    const totalPlayers = (await redis.sCard('mojimatcher:all:players')) || 1;
+    const achievements = await Promise.all(
+      unlockedIds.map(async (id) => {
+        const countKey = `mojimatcher:achievement:${id}:count`;
+        const count = parseInt((await redis.get(countKey)) || '0', 10);
+        const rarity = (count / totalPlayers) * 100;
+
+        return {
+          id,
+          unlockedAt: Date.now(), // TODO: Store actual unlock time
+          rarity: Math.round(rarity * 10) / 10,
+        };
+      })
+    );
+
+    res.json({ achievements });
+  } catch (error) {
+    console.error('Error fetching achievements:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Failed to fetch achievements' },
     });
   }
 });

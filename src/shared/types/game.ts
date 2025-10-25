@@ -30,6 +30,8 @@ export interface GameState {
   isGameActive: boolean;
   stats: GameStats;
   showEmojiHighlight?: boolean;
+  isDailyChallenge?: boolean;
+  dailyChallengeSeed?: number | undefined;
 }
 
 export interface GameStats {

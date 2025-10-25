@@ -51,14 +51,13 @@
 
 - [x] 4.3 Integrate seeded RNG with card generation
 
-
   - Modify `cardGenerator.ts` to accept optional seed parameter
   - Use `SeededRandom` for emoji selection, positions, sizes, and rotations when seed provided
   - Ensure deterministic card generation for same seed
   - Add unit tests to verify identical cards from same seed
   - _Requirements: 3.1, 3.2_
 
-- [ ] 4.4 Add daily challenge UI components
+- [x] 4.4 Add daily challenge UI components
 
   - Add "📅 Daily Challenge" button to `MenuScreen.tsx`
   - Create `DailyChallengeIndicator.tsx` component for in-game UI
@@ -68,7 +67,7 @@
   - _Requirements: 3.3, 3.4, 3.7, 3.8, 3.9_
 
 - [ ] 5. Build enhanced multi-view leaderboard system
-- [ ] 5.1 Create server-side leaderboard endpoints
+- [x] 5.1 Create server-side leaderboard endpoints
 
   - Add `GET /api/leaderboard/daily` endpoint for today's scores
   - Add `GET /api/leaderboard/weekly` endpoint for current week's scores
@@ -78,7 +77,7 @@
   - Add logic to calculate weekly key (YYYY-Www format)
   - _Requirements: 4.4, 4.5, 4.6, 4.7_
 
-- [ ] 5.2 Create enhanced leaderboard component
+- [x] 5.2 Create enhanced leaderboard component
 
   - Create `EnhancedLeaderboard.tsx` with tab navigation
   - Implement tabs: All-Time, Daily, Weekly, My Stats
@@ -106,14 +105,18 @@
   - _Requirements: 4.3_
 
 - [ ] 6. Implement achievement and badge system
-- [ ] 6.1 Define achievement data structure
+- [x] 6.1 Define achievement data structure
+
+
 
   - Create achievement definitions in `src/shared/constants/achievements.ts`
   - Define 15 achievements across 6 categories (speed, combo, accuracy, score, participation, daily)
   - Include achievement metadata: id, name, description, icon, category, tier, condition
   - _Requirements: 5.7_
 
-- [ ] 6.2 Create server-side achievement endpoints
+
+- [x] 6.2 Create server-side achievement endpoints
+
 
   - Add `POST /api/achievements/unlock` endpoint to unlock achievements
   - Add `GET /api/achievements/:username` endpoint to fetch user achievements
@@ -122,7 +125,9 @@
   - Prevent duplicate unlocks
   - _Requirements: 5.5, 5.9_
 
-- [ ] 6.3 Create achievement tracking hook
+
+- [x] 6.3 Create achievement tracking hook
+
 
   - Create `useAchievements.ts` hook to manage achievements
   - Implement `checkAchievements()` function to evaluate conditions after each game
@@ -131,7 +136,9 @@
   - Call server endpoint to persist unlocks
   - _Requirements: 5.1, 5.2_
 
-- [ ] 6.4 Create achievement popup component
+
+- [x] 6.4 Create achievement popup component
+
 
   - Create `AchievementPopup.tsx` for unlock notifications
   - Display achievement icon, name, description, and tier badge
@@ -141,7 +148,8 @@
   - Queue multiple achievements if unlocked simultaneously
   - _Requirements: 5.2, 5.6_
 
-- [ ] 6.5 Create achievement gallery screen
+- [x] 6.5 Create achievement gallery screen
+
 
   - Create `AchievementScreen.tsx` to display all achievements
   - Show unlocked achievements with unlock date
@@ -152,7 +160,8 @@
   - _Requirements: 5.3, 5.8, 5.9_
 
 - [ ] 7. Build particle system and celebration animations
-- [ ] 7.1 Create particle system foundation
+- [x] 7.1 Create particle system foundation
+
 
   - Create `ParticleSystem.tsx` component with canvas rendering
   - Define `Particle` interface with position, velocity, life, size, color, type
@@ -162,7 +171,8 @@
   - Limit max particles to 300 for performance
   - _Requirements: 6.9_
 
-- [ ] 7.2 Implement click particle effects
+- [x] 7.2 Implement click particle effects
+
 
   - Create `spawnParticles()` function for correct match clicks
   - Spawn 8-12 circular particles radiating from click point
@@ -171,13 +181,15 @@
   - Add gravity effect and fade out over 0.5 seconds
   - _Requirements: 6.1_
 
-- [ ] 7.3 Implement score popup particles
+- [x] 7.3 Implement score popup particles
+
 
   - Create `spawnScorePopup()` function to display "+[points]" text
   - Render text particles that float upward
   - Scale font size based on points earned
   - Fade out over 1 second
   - _Requirements: 6.2_
+
 
 - [ ] 7.4 Implement confetti effect
 
@@ -188,6 +200,7 @@
   - Last 2-3 seconds
   - _Requirements: 6.4_
 
+
 - [ ] 7.5 Implement emoji trail effect
 
   - Create cursor/touch trail with small emoji particles
@@ -195,6 +208,7 @@
   - Fade quickly (0.3 seconds) to avoid clutter
   - Use low spawn rate for performance
   - _Requirements: 6.6_
+
 
 - [ ] 7.6 Create combo milestone celebrations
 
@@ -207,12 +221,14 @@
   - Auto-dismiss after 1 second
   - _Requirements: 6.3, 6.7, 6.13_
 
+
 - [ ] 7.7 Implement sound pitch variation
 
   - Modify `audioManager.ts` to accept combo level parameter
   - Calculate frequency based on combo: `baseFrequency * Math.pow(1.06, comboLevel)`
   - Apply pitch variation to success sound effect
   - Test that higher combos produce higher pitch
+
   - _Requirements: 6.5, 6.12_
 
 - [ ] 7.8 Add wrong click particle effect
@@ -221,6 +237,7 @@
   - Spawn particles that quickly fade (0.3 seconds)
   - Use red color to indicate error
   - _Requirements: 6.10_
+
 
 - [ ] 7.9 Optimize particle performance
 
@@ -231,7 +248,8 @@
   - Test performance with maximum particles
   - _Requirements: 6.9, 6.11_
 
-- [ ] 8. Implement global stats tracking
+- [x] 8. Implement global stats tracking
+
 
   - Create `global:stats` Redis hash for tracking total games, players, etc.
   - Increment counters on game completion
@@ -240,6 +258,7 @@
   - Cache stats on client for 5 minutes
   - Display stats on splash screen
   - _Requirements: 1.4_
+
 
 - [ ] 9. Implement user streak tracking
 
@@ -250,7 +269,9 @@
   - Add streak achievements (3, 7, 30 days)
   - _Requirements: 1.8, 3.9_
 
-- [ ] 10. Update game state management
+
+- [x] 10. Update game state management
+
 
   - Extend `useGameState.ts` to support daily challenge mode
   - Add flag to indicate if current game is daily challenge

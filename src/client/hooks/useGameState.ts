@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 import { GameState } from '../../shared/types/game';
 import { generateCardPair } from '../utils/cardGenerator';
 import { audioManager } from '../utils/audioManager';
+import { useDailyChallenge } from './useDailyChallenge';
+import { useAchievements } from './useAchievements';
 
 export function useGameState() {
   const [gameState, setGameState] = useState<GameState>({
@@ -13,6 +15,8 @@ export function useGameState() {
     currentCards: null,
     matchingEmoji: null,
     isGameActive: false,
+    isDailyChallenge: false,
+    dailyChallengeSeed: undefined,
     stats: {
       totalClicks: 0,
       correctClicks: 0,
@@ -22,6 +26,8 @@ export function useGameState() {
   });
 
   const [lastPointsEarned, setLastPointsEarned] = useState<number | null>(null);
+  const { dailyChallenge } = useDailyChallenge();
+  const { checkAchievements, unlockAchievement, newlyUnlocked, clearNewlyUnlocked } = useAchievements();
 
   const startGame = useCallback(() => {
     const { cards, matchingEmoji } = generateCardPair();
@@ -35,6 +41,8 @@ export function useGameState() {
       currentCards: cards,
       matchingEmoji,
       isGameActive: true,
+      isDailyChallenge: false,
+      dailyChallengeSeed: undefined,
       stats: {
         totalClicks: 0,
         correctClicks: 0,
@@ -43,6 +51,31 @@ export function useGameState() {
       },
     });
   }, []);
+
+  const startDailyChallenge = useCallback(() => {
+    if (!dailyChallenge) return;
+    
+    const { cards, matchingEmoji } = generateCardPair(dailyChallenge.seed);
+    audioManager.playSound('start');
+    setGameState({
+      screen: 'game',
+      score: 0,
+      timer: 30,
+      combo: 0,
+      roundsCompleted: 0,
+      currentCards: cards,
+      matchingEmoji,
+      isGameActive: true,
+      isDailyChallenge: true,
+      dailyChallengeSeed: dailyChallenge.seed,
+      stats: {
+        totalClicks: 0,
+        correctClicks: 0,
+        highestCombo: 0,
+        startTime: Date.now(),
+      },
+    });
+  }, [dailyChallenge]);
 
   const calculatePoints = useCallback((combo: number): number => {
     // Base points: 25
@@ -55,8 +88,10 @@ export function useGameState() {
 
   const handleCorrectMatch = useCallback(() => {
     setGameState(prev => {
-      // Generate new cards
-      const { cards, matchingEmoji } = generateCardPair();
+      // Generate new cards (use seed if daily challenge)
+      const { cards, matchingEmoji } = prev.isDailyChallenge && prev.dailyChallengeSeed
+        ? generateCardPair(prev.dailyChallengeSeed + prev.roundsCompleted + 1)
+        : generateCardPair();
 
       const newCombo = prev.combo + 1;
       const pointsEarned = calculatePoints(newCombo);
@@ -145,10 +180,13 @@ export function useGameState() {
   }, []);
 
   const saveToLeaderboard = useCallback(
-    async (score: number, rounds: number, highestCombo: number, accuracy: number) => {
+    async (score: number, rounds: number, highestCombo: number, accuracy: number, isDailyChallenge: boolean) => {
       try {
+        // Choose endpoint based on game mode
+        const endpoint = isDailyChallenge ? '/api/daily-challenge/score' : '/api/save-score';
+        
         // Try to save to server
-        const response = await fetch('/api/save-score', {
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ score, rounds, highestCombo, accuracy }),
@@ -199,7 +237,7 @@ export function useGameState() {
         prev.stats.totalClicks > 0 ? (prev.stats.correctClicks / prev.stats.totalClicks) * 100 : 0;
 
       // Save score to leaderboard
-      saveToLeaderboard(prev.score, prev.roundsCompleted, prev.stats.highestCombo, accuracy);
+      saveToLeaderboard(prev.score, prev.roundsCompleted, prev.stats.highestCombo, accuracy, prev.isDailyChallenge || false);
 
       return {
         ...prev,
@@ -236,6 +274,7 @@ export function useGameState() {
   return {
     gameState,
     startGame,
+    startDailyChallenge,
     handleEmojiClick,
     updateTimer,
     endGame,
@@ -245,5 +284,7 @@ export function useGameState() {
     lastPointsEarned,
     clearLastPoints: () => setLastPointsEarned(null),
     hideEmojiHighlight,
+    newlyUnlockedAchievements: newlyUnlocked,
+    clearNewlyUnlockedAchievements: clearNewlyUnlocked,
   };
 }
