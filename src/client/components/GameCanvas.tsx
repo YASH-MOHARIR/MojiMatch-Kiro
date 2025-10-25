@@ -60,7 +60,7 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
     // Find which emoji was clicked
     const clickedEmoji = getClickedEmoji(x, y, cards);
     if (clickedEmoji) {
-      onEmojiClick(clickedEmoji);
+      onEmojiClick(clickedEmoji, false);
     }
   };
 
@@ -72,6 +72,8 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const touch = event.touches[0] || event.changedTouches[0];
+    
+    if (!touch) return;
 
     // Get touch coordinates relative to canvas
     const scaleX = canvas.width / rect.width;
@@ -82,7 +84,7 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
     // Find which emoji was touched
     const clickedEmoji = getClickedEmoji(x, y, cards);
     if (clickedEmoji) {
-      onEmojiClick(clickedEmoji);
+      onEmojiClick(clickedEmoji, false);
     }
   };
 
@@ -191,10 +193,12 @@ function renderCard(
  */
 function renderEmoji(
   ctx: CanvasRenderingContext2D,
-  emojiInstance: { emoji: string; x: number; y: number; size: number; rotation: number },
+  emojiInstance: { emoji?: string; x: number; y: number; size: number; rotation: number },
   cardX: number,
   cardY: number
 ) {
+  if (!emojiInstance.emoji) return;
+  
   ctx.save();
 
   // Calculate absolute position

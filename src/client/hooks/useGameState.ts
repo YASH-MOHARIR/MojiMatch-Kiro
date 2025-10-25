@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { GameState, Card } from '../../shared/types/game';
+import { GameState } from '../../shared/types/game';
 import { generateCardPair } from '../utils/cardGenerator';
 import { audioManager } from '../utils/audioManager';
 
@@ -29,7 +29,7 @@ export function useGameState() {
     setGameState({
       screen: 'game',
       score: 0,
-      timer: 150,
+      timer: 30, // Changed from 150 to 30 seconds
       combo: 0,
       roundsCompleted: 0,
       currentCards: cards,
@@ -62,6 +62,10 @@ export function useGameState() {
       const pointsEarned = calculatePoints(newCombo);
       const newScore = prev.score + pointsEarned;
 
+      // Calculate time bonus based on combo
+      // Base: +3 seconds, +1 second per combo level
+      const timeBonus = 3 + newCombo;
+
       // Set last points earned for popup
       setLastPointsEarned(pointsEarned);
 
@@ -77,6 +81,7 @@ export function useGameState() {
         emoji: prev.matchingEmoji,
         combo: newCombo,
         pointsEarned,
+        timeBonus,
         totalScore: newScore,
       });
 
@@ -87,7 +92,7 @@ export function useGameState() {
         roundsCompleted: prev.roundsCompleted + 1,
         currentCards: cards,
         matchingEmoji,
-        timer: prev.timer + 10, // Add 10 seconds
+        timer: prev.timer + timeBonus, // Dynamic time bonus based on combo
         stats: {
           ...prev.stats,
           correctClicks: prev.stats.correctClicks + 1,
@@ -110,7 +115,7 @@ export function useGameState() {
       return {
         ...prev,
         combo: 0, // Reset combo
-        timer: Math.max(0, prev.timer - 1), // Subtract 1 second
+        timer: Math.max(0, prev.timer - 2), // Subtract 2 seconds (increased penalty)
         stats: {
           ...prev.stats,
           totalClicks: prev.stats.totalClicks + 1,

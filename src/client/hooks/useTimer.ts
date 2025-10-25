@@ -21,11 +21,11 @@ export function useTimer({ isActive, timer, onTick, onExpire }: UseTimerProps) {
       return;
     }
 
-    // Play timer warning sounds
-    if (timer === 20) {
+    // Play timer warning sounds (adjusted for 30s game)
+    if (timer === 10) {
       audioManager.playSound('tick');
-    } else if (timer <= 10 && timer > 0) {
-      // Play fast tick every second for last 10 seconds
+    } else if (timer <= 5 && timer > 0) {
+      // Play fast tick every second for last 5 seconds
       if (timer !== lastTickSoundRef.current) {
         audioManager.playSound('fasttick');
         lastTickSoundRef.current = timer;

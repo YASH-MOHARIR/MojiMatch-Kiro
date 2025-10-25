@@ -98,9 +98,3 @@ export function runCardGeneratorTests() {
 
   return { passedTests, totalTests };
 }
-
-// Auto-run tests in development
-if (import.meta.env.DEV) {
-  console.log('Running card generator tests...');
-  runCardGeneratorTests();
-}

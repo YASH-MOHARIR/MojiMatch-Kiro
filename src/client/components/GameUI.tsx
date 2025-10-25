@@ -15,16 +15,16 @@ export function GameUI({
   matchingEmoji,
   showDebug = false,
 }: GameUIProps) {
-  // Determine timer color based on time remaining
+  // Determine timer color based on time remaining (adjusted for 30s game)
   const getTimerColor = () => {
-    if (timer > 75) return 'text-green-600'; // Green
-    if (timer > 30) return 'text-yellow-600'; // Yellow
-    return 'text-red-600'; // Red
+    if (timer > 15) return 'text-green-600'; // Green (>15s)
+    if (timer > 7) return 'text-yellow-600'; // Yellow (8-15s)
+    return 'text-red-600'; // Red (<8s)
   };
 
   const getTimerBgColor = () => {
-    if (timer > 75) return 'bg-green-50';
-    if (timer > 30) return 'bg-yellow-50';
+    if (timer > 15) return 'bg-green-50';
+    if (timer > 7) return 'bg-yellow-50';
     return 'bg-red-50';
   };
 

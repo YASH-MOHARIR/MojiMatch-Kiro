@@ -7,11 +7,6 @@ import { ComboIndicator } from './components/ComboIndicator';
 import { useGameState } from './hooks/useGameState';
 import { useTimer } from './hooks/useTimer';
 
-// Import tests in development
-if (import.meta.env.DEV) {
-  import('./utils/cardGenerator.test');
-}
-
 export const App = () => {
   const { gameState, startGame, handleEmojiClick, updateTimer, endGame, returnToMenu, viewLeaderboard } =
     useGameState();

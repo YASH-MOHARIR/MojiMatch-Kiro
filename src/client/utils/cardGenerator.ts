@@ -8,7 +8,9 @@ function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    const temp = shuffled[i];
+    shuffled[i] = shuffled[j]!;
+    shuffled[j] = temp!;
   }
   return shuffled;
 }
@@ -43,9 +45,9 @@ function getRandomRotation(): number {
  */
 function checkOverlap(e1: EmojiInstance, e2: EmojiInstance): boolean {
   const baseFontSize = 40;
-  const minDistance = 50; // Minimum distance between emoji centers
+  const minDistance = 60; // Increased minimum distance between emoji centers
 
-  // Calculate effective radius for each emoji
+  // Calculate effective radius for each emoji (accounting for size)
   const radius1 = (baseFontSize * e1.size) / 2 + minDistance / 2;
   const radius2 = (baseFontSize * e2.size) / 2 + minDistance / 2;
 
@@ -106,7 +108,7 @@ export function generateCardPair(): {
   matchingEmoji: string;
 } {
   // Step 1: Select 1 matching emoji from pool
-  const matchingEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
+  const matchingEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]!;
 
   // Step 2: Select 7 unique emojis for card 1 (excluding matching emoji)
   const card1Emojis = selectRandomEmojis(7, [matchingEmoji]);
@@ -130,7 +132,7 @@ export function generateCardPair(): {
     const position = getRandomPositionWithoutOverlap(card1Instances, size);
 
     card1Instances.push({
-      emoji,
+      emoji: emoji!,
       x: position.x,
       y: position.y,
       size,
@@ -145,7 +147,7 @@ export function generateCardPair(): {
     const position = getRandomPositionWithoutOverlap(card2Instances, size);
 
     card2Instances.push({
-      emoji,
+      emoji: emoji!,
       x: position.x,
       y: position.y,
       size,

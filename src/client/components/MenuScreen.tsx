@@ -99,9 +99,9 @@ export function MenuScreen({ onStartGame, onViewLeaderboard }: MenuScreenProps) 
         <ul className="text-left list-disc list-inside space-y-1">
           <li>Find the ONE emoji that appears on both cards</li>
           <li>Click it before time runs out!</li>
-          <li>Correct match: +25 base points, +10 seconds</li>
-          <li>Build combos for bonus points!</li>
-          <li>Wrong click: -1 second, combo reset</li>
+          <li>Correct match: +25 base points, +3-13 seconds (combo bonus!)</li>
+          <li>Build combos for more points and time!</li>
+          <li>Wrong click: -2 seconds, combo reset</li>
         </ul>
       </div>
     </div>

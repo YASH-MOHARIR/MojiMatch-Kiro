@@ -15,7 +15,6 @@ type SoundName =
   | 'gameover';
 
 class AudioManager {
-  private sounds: Map<SoundName, HTMLAudioElement> = new Map();
   private music: HTMLAudioElement | null = null;
   private sfxEnabled: boolean = true;
   private musicEnabled: boolean = true;
