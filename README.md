@@ -12,7 +12,7 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 
 **The Goal:** Build the highest combo streak possible to maximize your score and earn time bonuses. The longer your combo, the more time you earn per match (4-13 seconds), creating a snowball effect where skilled players can extend their games significantly. Compete on multiple leaderboards (All-Time, Daily, Weekly) and unlock achievements as you master the game.
 
-**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts. Players can jump straight into the game from the main menu, compete with the Reddit community on daily challenges and leaderboards, and have their scores automatically tied to their Reddit usernames for seamless social gaming.
+**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts. Players can jump straight into the game from an eye-catching animated splash screen, compete with the Reddit community on daily challenges and leaderboards, and have their scores automatically tied to their Reddit usernames for seamless social gaming.
 
 ### Core Features
 
@@ -22,12 +22,13 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 - **Time Bonuses**: Earn 4-13 seconds per match based on your combo level (higher combos = more time)
 - **Visual Chaos**: Every emoji has random size (0.8x-2.5x) and rotation (0-360°) for unique challenges
 - **Daily Challenge Mode**: Compete with the Reddit community on the same deterministic puzzle each day
-- **Animated Splash Screen**: Eye-catching entry screen with live player stats and daily challenge preview
+- **Animated Splash Screen**: Eye-catching entry screen with floating emoji particles, live player stats, and daily challenge preview
 - **Multi-Tier Leaderboards**: All-Time, Daily, and Weekly leaderboards with Reddit username integration
 - **Achievement System**: Unlock 15 achievements across 6 categories (Speed, Combo, Accuracy, Score, Participation, Daily)
-- **Streak Tracking**: Build consecutive day streaks by playing daily challenges
+- **Streak Tracking**: Build consecutive day streaks by playing daily challenges with 🔥 streak indicators
 - **Audio Feedback**: Web Audio API-powered sound effects with pitch variation based on combo level
-- **Game-End Emoji Reveal**: See the matching emoji highlighted with a golden glow when time expires
+- **Game-End Emoji Reveal**: See the matching emoji highlighted with a golden pulsing glow when time expires
+- **Combo Celebrations**: Special animated badges at 3x (✨ COMBO!), 5x (⚡ AMAZING!), and 10x (🔥 LEGENDARY!)
 - **Mobile Optimized**: Touch-friendly controls and responsive design for seamless mobile gameplay
 - **Personal Stats Dashboard**: Track total games, best score, average score, playtime, and achievement progress
 
@@ -35,10 +36,20 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 
 **MojiMatcher** stands out from traditional matching games through several unique design choices that create a genuinely challenging and addictive experience:
 
-### 1. **Dynamic Visual Chaos**
+### 1. **Eye-Catching Animated Splash Screen**
+Unlike most Reddit games that jump straight to gameplay, MojiMatcher greets players with a stunning animated splash screen featuring:
+- **Floating emoji particles** with randomized positions, sizes, and animation delays
+- **Live global statistics** showing real-time player counts and total games played
+- **Daily challenge preview** with today's featured emoji
+- **Vibrant gradient background** (purple → blue → pink) that stands out in the Reddit feed
+- **Pulsing "Play Now" button** with scale animations that invites interaction
+
+This creates an immediate visual impact that draws players in and sets the tone for the fast-paced gameplay ahead.
+
+### 2. **Dynamic Visual Chaos**
 Unlike static matching games, every emoji has random size (0.8x-2.5x) and rotation (0-360°), making pattern recognition genuinely challenging. The same emoji might appear tiny and upside-down on one card, then huge and sideways on the other. This prevents memorization strategies and keeps every round fresh.
 
-### 2. **Escalating Combo System with Time Rewards**
+### 3. **Escalating Combo System with Time Rewards**
 The combo system doesn't just increase points - it also increases time bonuses using the formula: **3 + combo level seconds**. This creates a snowball effect:
 - 1x combo: +4 seconds
 - 5x combo: +8 seconds  
@@ -46,49 +57,49 @@ The combo system doesn't just increase points - it also increases time bonuses u
 
 Skilled players can extend their games indefinitely by maintaining high combos, turning a 30-second sprint into a marathon.
 
-### 3. **High-Stakes Risk-Reward Balance**
+### 4. **High-Stakes Risk-Reward Balance**
 Wrong clicks cost **2 seconds AND reset your combo**, making every decision meaningful. At 10x combo, a wrong click doesn't just cost 2 seconds - it costs the potential for 13-second time bonuses. This creates intense pressure as combos build.
 
-### 4. **Daily Challenge Mode with Seeded Generation**
+### 5. **Daily Challenge Mode with Seeded Generation**
 Every player gets the **same deterministic puzzle each day** using seeded random generation. This enables:
 - Fair competition on daily leaderboards
 - Community discussion about strategies in Reddit comments
 - Streak tracking for consecutive days played (with 🔥 streak indicators)
 - Comparison of different approaches to the same puzzle
+- Special purple-pink gradient banner during gameplay to indicate daily challenge mode
 
-### 5. **30-Second Sprint Format**
+### 6. **30-Second Sprint Format**
 Quick, intense sessions designed for "one more game" appeal - perfect for Reddit's mobile-first browsing experience. Games last 30-90 seconds, making it easy to play during short breaks.
 
-### 6. **Physics-Based Layout with Overlap Prevention**
+### 7. **Physics-Based Layout with Overlap Prevention**
 Smart emoji positioning with 60px minimum spacing prevents overlaps while maintaining visual complexity. Emojis are strategically placed to avoid clustering, ensuring every emoji is visible and clickable.
 
-### 7. **Progressive Difficulty Through Stakes**
+### 8. **Progressive Difficulty Through Stakes**
 As combos build, the stakes get higher. Lose your 10x combo and you lose:
 - 13 seconds of potential time bonus per match
 - 90+ points per match (vs 25 base points)
 - The psychological momentum of a hot streak
 
-### 8. **Reddit-Native Experience**
+### 9. **Reddit-Native Experience**
 Built specifically for Reddit with:
 - Automatic username integration (no login required)
 - Redis-backed leaderboards (All-Time, Daily, Weekly)
-- Instant access from main menu - no splash screen delays
+- Animated splash screen that stands out in the Reddit feed
 - Achievement system with rarity tracking (15 achievements across 6 categories)
 - Personal stats dashboard showing total games, best score, playtime, and more
-- Game-end emoji reveal with golden glow effect
+- Game-end emoji reveal with golden pulsing glow effect
 
-### 9. **Multi-Tier Competition**
+### 10. **Multi-Tier Competition**
 Three separate leaderboards create multiple ways to compete:
 - **All-Time**: Eternal glory for the best scores ever (top 10)
 - **Daily**: Fresh competition every 24 hours (resets at UTC midnight)
 - **Weekly**: Medium-term competition that resets Monday-Sunday
 
-### 10. **Visual & Audio Feedback**
+### 11. **Visual & Audio Feedback**
 - **Combo Celebrations**: Special animated badges at 3x (✨ COMBO!), 5x (⚡ AMAZING!), and 10x (🔥 LEGENDARY!)
 - **Timer Colors**: Green (>15s), Yellow (8-15s), Red (<8s) for visual urgency
 - **Audio Pitch Variation**: Web Audio API generates dynamic sound effects where pitch increases with combo level
-- **Score Popups**: Floating "+X points" animations on correct matches
-- **Emoji Highlight**: Golden pulsing glow reveals the matching emoji when game ends
+- **Emoji Highlight**: Golden pulsing glow reveals the matching emoji when game ends, helping players learn from their mistakes
 
 ## 🎮 Game Features
 
@@ -131,18 +142,29 @@ Three separate leaderboards create multiple ways to compete:
 
 ### Quick Start
 
-1. **Open the game** in a Reddit post
-2. **Choose a game mode** from the main menu (Daily Challenge or Play Game)
-3. **Find the matching emoji** between two cards before time runs out
-4. **Click/tap the matching emoji** on either card
-5. **Build combos** for bonus points and time extensions
-6. **Compete** on leaderboards and unlock achievements
+1. **Open the game** in a Reddit post - you'll see an animated splash screen with floating emojis
+2. **Click "Play Now"** to enter the main menu
+3. **Choose a game mode** from the main menu (Daily Challenge or Play Game)
+4. **Find the matching emoji** between two cards before time runs out
+5. **Click/tap the matching emoji** on either card
+6. **Build combos** for bonus points and time extensions
+7. **Compete** on leaderboards and unlock achievements
 
 ### Detailed Instructions
 
+#### Step 0: Animated Splash Screen
+When you first open MojiMatcher in a Reddit post, you'll be greeted by an eye-catching animated splash screen featuring:
+
+- **Floating Emoji Particles**: 15-20 animated emojis floating across a vibrant purple-to-pink gradient background
+- **Live Global Stats**: See how many players are online today and total games played
+- **Daily Challenge Preview**: View today's featured emoji (e.g., 🎯) for the daily challenge
+- **Play Now Button**: Large, pulsing "🎮 Play Now" button with hover effects
+- **Quick Info**: "⚡ 30-second rounds • 🎯 Build combos • 🏆 Compete on leaderboards"
+
+Click the **"🎮 Play Now"** button to enter the main menu and start playing!
+
 #### Step 1: Navigate the Main Menu
-When you open MojiMatcher in a Reddit post, you'll see the main menu with several options:
-The main menu presents you with four options:
+After clicking through the splash screen, you'll see the main menu with four options:
 
 1. **📅 Daily Challenge** (Featured Button)
    - Play today's challenge - same deterministic puzzle for all players
@@ -212,7 +234,7 @@ When you start playing, here's what you'll see:
 - **Random sizes**: Emojis range from tiny (0.8x) to huge (2.5x) scale
 - **Random rotations**: Emojis can be upside-down, sideways, or at any angle (0-360°)
 - **Smart spacing**: Emojis positioned to avoid overlaps (60px minimum distance between centers)
-- **Canvas rendering**: HTML5 Canvas at 800x500px with responsive scaling
+- **Canvas rendering**: HTML5 Canvas at 800x500px with responsive scaling for mobile
 - **Card dimensions**: 350px × 450px each with 20px gap between them
 
 #### Special Indicators
@@ -225,7 +247,7 @@ When you start playing, here's what you'll see:
   - "Daily Challenge" text
   - Featured emoji (e.g., 🎯)
   - Streak counter (e.g., "🔥 5 day streak")
-  - Pulse animation
+  - Pulse animation to stand out
 
 #### Step 4: The Core Challenge
 
@@ -369,6 +391,7 @@ When you click the wrong emoji:
 - Shadow blur of 30px for glow effect
 - Auto-advances to Game Over screen after 2.5 seconds
 - Fade out transition (opacity 1 → 0 over 0.3 seconds)
+- This helps you learn which emoji was correct and understand what you missed
 
 **Phase 2: Game Over Screen**
 - Header: "⏰ Time's Up!" or "📅 Daily Challenge Complete!" (depending on mode)
