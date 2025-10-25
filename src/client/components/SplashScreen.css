@@ -4,9 +4,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: white;
   overflow: hidden;
   padding: 2rem;
+}
+
+.splash-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 235, 59, 0.2) 0%,    /* Subtle yellow */
+    rgba(76, 175, 80, 0.2) 25%,    /* Subtle green */
+    rgba(33, 150, 243, 0.2) 50%,   /* Subtle blue */
+    rgba(244, 67, 54, 0.2) 75%,    /* Subtle red */
+    rgba(255, 235, 59, 0.2) 100%   /* Back to yellow */
+  );
+  pointer-events: none;
 }
 
 /* Floating emojis animation */
