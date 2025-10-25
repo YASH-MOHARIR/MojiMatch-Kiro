@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { SplashScreen } from './components/SplashScreen';
 import { MenuScreen } from './components/MenuScreen';
 import { GameCanvas } from './components/GameCanvas';
 import { GameUI } from './components/GameUI';
@@ -13,7 +11,6 @@ import { useTimer } from './hooks/useTimer';
 import { useDailyChallenge } from './hooks/useDailyChallenge';
 
 export const App = () => {
-  const [showSplash, setShowSplash] = useState(true);
   const { dailyChallenge } = useDailyChallenge();
   const { 
     gameState, 
@@ -35,11 +32,6 @@ export const App = () => {
     onTick: updateTimer,
     onExpire: endGame,
   });
-
-  // Splash Screen
-  if (showSplash) {
-    return <SplashScreen onStart={() => setShowSplash(false)} />;
-  }
 
   // Menu Screen
   if (gameState.screen === 'menu') {
