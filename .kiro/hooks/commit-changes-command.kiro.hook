@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Commit Changes Command",
+  "description": "When the user says \"commit these changes\", analyze all modified files, generate a descriptive commit message with proper title, and commit everything to GitHub",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "The user has requested to commit changes. Please:\n1. Check git status to see all modified, added, and deleted files\n2. Review the changes in each file to understand what was modified\n3. Generate a clear, descriptive commit title (50 chars or less) that summarizes the changes\n4. Generate a detailed commit description explaining what changed and why\n5. Stage all changes with `git add .`\n6. Commit with the generated title and description using `git commit -m \"title\" -m \"description\"`\n7. Push to GitHub with `git push`\n8. Confirm to the user that the commit was successful with a summary of what was committed"
+  }
+}

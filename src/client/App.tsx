@@ -1,61 +1,57 @@
-import { navigateTo } from '@devvit/web/client';
-import { useCounter } from './hooks/useCounter';
+import { useState, useEffect } from 'react';
+import { GameCanvas } from './components/GameCanvas';
+import { generateCardPair, verifyCardPair } from './utils/cardGenerator';
+import { Card } from '../shared/types/game';
 
 export const App = () => {
-  const { count, username, loading, increment, decrement } = useCounter();
+  const [cards, setCards] = useState<[Card, Card] | null>(null);
+  const [matchingEmoji, setMatchingEmoji] = useState<string | null>(null);
+
+  // Generate initial cards on mount
+  useEffect(() => {
+    generateNewCards();
+  }, []);
+
+  const generateNewCards = () => {
+    const { cards: newCards, matchingEmoji: newMatch } = generateCardPair();
+    setCards(newCards);
+    setMatchingEmoji(newMatch);
+
+    // Verify card pair (for testing)
+    const verification = verifyCardPair(newCards[0], newCards[1]);
+    console.log('Card verification:', verification);
+    console.log('Matching emoji:', newMatch);
+  };
+
   return (
-    <div className="flex relative flex-col justify-center items-center min-h-screen gap-4">
-      <img className="object-contain w-1/2 max-w-[250px] mx-auto" src="/snoo.png" alt="Snoo" />
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-bold text-center text-gray-900 ">
-          {username ? `Hey ${username} 👋` : ''}
-        </h1>
-        <p className="text-base text-center text-gray-600 ">
-          Edit <span className="bg-[#e5ebee]  px-1 py-0.5 rounded">src/client/App.tsx</span> to get
-          started.
+    <div className="flex relative flex-col justify-center items-center min-h-screen gap-4 p-4">
+      <h1 className="text-3xl font-bold text-center text-gray-900">MojiMatcher MVP</h1>
+
+      <div className="flex flex-col items-center gap-4">
+        <p className="text-lg text-center text-gray-700">
+          Find the matching emoji! (Hint: <span className="text-2xl">{matchingEmoji}</span>)
         </p>
+
+        {cards && <GameCanvas cards={cards} />}
+
+        <button
+          className="px-6 py-3 bg-[#d93900] text-white rounded-lg font-semibold hover:bg-[#c13300] transition-colors"
+          onClick={generateNewCards}
+        >
+          Generate New Cards
+        </button>
+
+        <div className="text-sm text-gray-600 text-center max-w-md">
+          <p>✅ Task 1-5 Complete:</p>
+          <ul className="list-disc list-inside text-left mt-2">
+            <li>30 emoji pool created</li>
+            <li>Card generation with exactly 1 matching emoji</li>
+            <li>Random sizes (0.8x - 2.5x)</li>
+            <li>Random rotations (0-360°)</li>
+            <li>Canvas rendering with transformations</li>
+          </ul>
+        </div>
       </div>
-      <div className="flex items-center justify-center mt-5">
-        <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors"
-          onClick={decrement}
-          disabled={loading}
-        >
-          -
-        </button>
-        <span className="text-[1.8em] font-medium mx-5 min-w-[50px] text-center leading-none text-gray-900">
-          {loading ? '...' : count}
-        </span>
-        <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors"
-          onClick={increment}
-          disabled={loading}
-        >
-          +
-        </button>
-      </div>
-      <footer className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 text-[0.8em] text-gray-600">
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://developers.reddit.com/docs')}
-        >
-          Docs
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://www.reddit.com/r/Devvit')}
-        >
-          r/Devvit
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://discord.com/invite/R7yu2wh9Qz')}
-        >
-          Discord
-        </button>
-      </footer>
     </div>
   );
 };
