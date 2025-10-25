@@ -17,11 +17,9 @@
   right: 0;
   bottom: 0;
   background: linear-gradient(135deg, 
-    rgba(255, 235, 59, 0.2) 0%,    /* Subtle yellow */
-    rgba(76, 175, 80, 0.2) 25%,    /* Subtle green */
-    rgba(33, 150, 243, 0.2) 50%,   /* Subtle blue */
-    rgba(244, 67, 54, 0.2) 75%,    /* Subtle red */
-    rgba(255, 235, 59, 0.2) 100%   /* Back to yellow */
+    rgba(135, 206, 250, 0.2) 0%,   /* Light blue */
+    rgba(32, 178, 170, 0.2) 50%,   /* Sea green */
+    rgba(144, 238, 144, 0.2) 100%  /* Light green */
   );
   pointer-events: none;
 }

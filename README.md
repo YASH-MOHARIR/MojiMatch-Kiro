@@ -12,7 +12,7 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 
 **The Goal:** Build the highest combo streak possible to maximize your score and earn time bonuses. The longer your combo, the more time you earn per match (4-13 seconds), creating a snowball effect where skilled players can extend their games significantly. Compete on multiple leaderboards (All-Time, Daily, Weekly) and unlock achievements as you master the game.
 
-**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts. Players can jump straight into the game from an eye-catching animated splash screen, compete with the Reddit community on daily challenges and leaderboards, and have their scores automatically tied to their Reddit usernames for seamless social gaming.
+**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts. Players can jump straight into the game from an eye-catching animated splash screen with floating emoji particles, compete with the Reddit community on daily challenges and leaderboards, and have their scores automatically tied to their Reddit usernames for seamless social gaming.
 
 ### Core Features
 
@@ -38,11 +38,12 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 
 ### 1. **Eye-Catching Animated Splash Screen**
 Unlike most Reddit games that jump straight to gameplay, MojiMatcher greets players with a stunning animated splash screen featuring:
-- **Floating emoji particles** with randomized positions, sizes, and animation delays
+- **Floating emoji particles** with randomized positions, sizes, and animation delays (15-20 emojis floating across the screen)
 - **Live global statistics** showing real-time player counts and total games played
 - **Daily challenge preview** with today's featured emoji
-- **Vibrant gradient background** (purple → blue → pink) that stands out in the Reddit feed
-- **Pulsing "Play Now" button** with scale animations that invites interaction
+- **Subtle rainbow gradient overlay** on white background (yellow → green → blue → red → yellow) that creates a vibrant, eye-catching effect
+- **Pulsing "Play Now" button** with scale animations and gradient styling that invites interaction
+- **Quick info bar** showing "⚡ 30-second rounds • 🎯 Build combos • 🏆 Compete on leaderboards"
 
 This creates an immediate visual impact that draws players in and sets the tone for the fast-paced gameplay ahead.
 
@@ -155,10 +156,13 @@ Three separate leaderboards create multiple ways to compete:
 #### Step 0: Animated Splash Screen
 When you first open MojiMatcher in a Reddit post, you'll be greeted by an eye-catching animated splash screen featuring:
 
-- **Floating Emoji Particles**: 15-20 animated emojis floating across a vibrant purple-to-pink gradient background
-- **Live Global Stats**: See how many players are online today and total games played
-- **Daily Challenge Preview**: View today's featured emoji (e.g., 🎯) for the daily challenge
-- **Play Now Button**: Large, pulsing "🎮 Play Now" button with hover effects
+- **Floating Emoji Particles**: 15-20 animated emojis (🎮, 🎯, ⚡, 🔥, ⭐, 💫, 🎊, 🎉, ✨, 💎, 🏆, etc.) floating upward across the screen with rotation animations
+- **Subtle Rainbow Gradient**: White background with a subtle rainbow gradient overlay (yellow → green → blue → red → yellow at 20% opacity) that creates a vibrant, eye-catching effect
+- **Live Global Stats**: Two stat boxes showing:
+  - 👥 Players today (real-time count)
+  - 🎯 Total games (cumulative count)
+- **Daily Challenge Preview**: Purple-pink gradient box showing "📅 Today's Challenge: [emoji]" with today's featured emoji
+- **Play Now Button**: Large red gradient button (🎮 Play Now) with pulse animation and hover scale effect
 - **Quick Info**: "⚡ 30-second rounds • 🎯 Build combos • 🏆 Compete on leaderboards"
 
 Click the **"🎮 Play Now"** button to enter the main menu and start playing!
