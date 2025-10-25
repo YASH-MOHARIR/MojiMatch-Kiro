@@ -2,11 +2,32 @@ interface GameUIProps {
   score: number;
   timer: number;
   roundsCompleted: number;
+  combo: number;
   matchingEmoji?: string | null;
   showDebug?: boolean;
 }
 
-export function GameUI({ score, timer, roundsCompleted, matchingEmoji, showDebug = false }: GameUIProps) {
+export function GameUI({
+  score,
+  timer,
+  roundsCompleted,
+  combo,
+  matchingEmoji,
+  showDebug = false,
+}: GameUIProps) {
+  // Determine timer color based on time remaining
+  const getTimerColor = () => {
+    if (timer > 75) return 'text-green-600'; // Green
+    if (timer > 30) return 'text-yellow-600'; // Yellow
+    return 'text-red-600'; // Red
+  };
+
+  const getTimerBgColor = () => {
+    if (timer > 75) return 'bg-green-50';
+    if (timer > 30) return 'bg-yellow-50';
+    return 'bg-red-50';
+  };
+
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-[800px]">
       {/* Score and Timer Display */}
@@ -14,11 +35,16 @@ export function GameUI({ score, timer, roundsCompleted, matchingEmoji, showDebug
         <div className="text-left">
           <div className="text-sm text-gray-600">Score</div>
           <div className="text-3xl font-bold text-gray-900">{score}</div>
+          {combo > 0 && <div className="text-xs text-orange-600 font-semibold mt-1">{combo}x Combo</div>}
         </div>
 
         <div className="text-center">
           <div className="text-sm text-gray-600">Timer</div>
-          <div className="text-3xl font-bold text-gray-900">{timer}s</div>
+          <div
+            className={`text-3xl font-bold ${getTimerColor()} px-4 py-2 rounded-lg ${getTimerBgColor()} transition-colors duration-300`}
+          >
+            {timer}s
+          </div>
         </div>
 
         <div className="text-right">

@@ -39,12 +39,59 @@ function getRandomRotation(): number {
 }
 
 /**
- * Generates random position within card boundaries
- * Card dimensions: 350px × 450px
- * Adds padding to keep emojis within bounds
+ * Checks if two emojis overlap
  */
-function getRandomPosition(cardWidth: number = 350, cardHeight: number = 450): { x: number; y: number } {
-  const padding = 40; // Padding from edges to keep emojis visible
+function checkOverlap(e1: EmojiInstance, e2: EmojiInstance): boolean {
+  const baseFontSize = 40;
+  const minDistance = 50; // Minimum distance between emoji centers
+
+  // Calculate effective radius for each emoji
+  const radius1 = (baseFontSize * e1.size) / 2 + minDistance / 2;
+  const radius2 = (baseFontSize * e2.size) / 2 + minDistance / 2;
+
+  // Calculate distance between centers
+  const dx = e1.x - e2.x;
+  const dy = e1.y - e2.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  // Check if they overlap
+  return distance < radius1 + radius2;
+}
+
+/**
+ * Generates random position within card boundaries with overlap prevention
+ * Card dimensions: 350px × 450px
+ */
+function getRandomPositionWithoutOverlap(
+  existingEmojis: EmojiInstance[],
+  size: number,
+  cardWidth: number = 350,
+  cardHeight: number = 450,
+  maxAttempts: number = 50
+): { x: number; y: number } {
+  const padding = 40;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const x = padding + Math.random() * (cardWidth - 2 * padding);
+    const y = padding + Math.random() * (cardHeight - 2 * padding);
+
+    const tempEmoji: EmojiInstance = {
+      emoji: '',
+      x,
+      y,
+      size,
+      rotation: 0,
+    };
+
+    // Check if this position overlaps with any existing emoji
+    const hasOverlap = existingEmojis.some(existing => checkOverlap(tempEmoji, existing));
+
+    if (!hasOverlap) {
+      return { x, y };
+    }
+  }
+
+  // If we couldn't find a non-overlapping position, return a random one
   const x = padding + Math.random() * (cardWidth - 2 * padding);
   const y = padding + Math.random() * (cardHeight - 2 * padding);
   return { x, y };
@@ -75,32 +122,39 @@ export function generateCardPair(): {
   const card1Shuffled = shuffleArray(card1AllEmojis);
   const card2Shuffled = shuffleArray(card2AllEmojis);
 
-  // Create emoji instances with random size, rotation, and position
-  const card1: Card = {
-    emojis: card1Shuffled.map(emoji => {
-      const position = getRandomPosition();
-      return {
-        emoji,
-        x: position.x,
-        y: position.y,
-        size: getRandomSize(),
-        rotation: getRandomRotation(),
-      };
-    }),
-  };
+  // Create emoji instances with random size, rotation, and position (with overlap prevention)
+  const card1Instances: EmojiInstance[] = [];
+  for (const emoji of card1Shuffled) {
+    const size = getRandomSize();
+    const rotation = getRandomRotation();
+    const position = getRandomPositionWithoutOverlap(card1Instances, size);
 
-  const card2: Card = {
-    emojis: card2Shuffled.map(emoji => {
-      const position = getRandomPosition();
-      return {
-        emoji,
-        x: position.x,
-        y: position.y,
-        size: getRandomSize(),
-        rotation: getRandomRotation(),
-      };
-    }),
-  };
+    card1Instances.push({
+      emoji,
+      x: position.x,
+      y: position.y,
+      size,
+      rotation,
+    });
+  }
+
+  const card2Instances: EmojiInstance[] = [];
+  for (const emoji of card2Shuffled) {
+    const size = getRandomSize();
+    const rotation = getRandomRotation();
+    const position = getRandomPositionWithoutOverlap(card2Instances, size);
+
+    card2Instances.push({
+      emoji,
+      x: position.x,
+      y: position.y,
+      size,
+      rotation,
+    });
+  }
+
+  const card1: Card = { emojis: card1Instances };
+  const card2: Card = { emojis: card2Instances };
 
   return {
     cards: [card1, card2],

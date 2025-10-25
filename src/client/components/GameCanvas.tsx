@@ -1,13 +1,21 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card } from '../../shared/types/game';
 
 interface GameCanvasProps {
   cards: [Card, Card] | null;
-  onEmojiClick?: (emoji: string) => void;
+  onEmojiClick?: (emoji: string, isCorrect: boolean) => void;
+}
+
+interface ClickAnimation {
+  x: number;
+  y: number;
+  type: 'correct' | 'wrong';
+  timestamp: number;
 }
 
 export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [clickAnimation, setClickAnimation] = useState<ClickAnimation | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current || !cards) return;
@@ -21,7 +29,21 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
 
     // Render both cards
     renderCards(ctx, cards);
-  }, [cards]);
+
+    // Render click animation if active
+    if (clickAnimation) {
+      const elapsed = Date.now() - clickAnimation.timestamp;
+      if (elapsed < 500) {
+        renderClickAnimation(ctx, clickAnimation, elapsed);
+        // Request next frame
+        requestAnimationFrame(() => {
+          setClickAnimation({ ...clickAnimation });
+        });
+      } else {
+        setClickAnimation(null);
+      }
+    }
+  }, [cards, clickAnimation]);
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current || !cards || !onEmojiClick) return;
@@ -133,7 +155,7 @@ function renderCard(
   ctx.restore();
 
   // Render emojis on this card
-  card.emojis.forEach(emojiInstance => {
+  card.emojis.forEach((emojiInstance) => {
     renderEmoji(ctx, emojiInstance, x, y);
   });
 }
@@ -214,7 +236,6 @@ function checkEmojiClick(
   cardX: number,
   cardY: number
 ): string | null {
-  const baseFontSize = 40;
   const hitRadius = 30; // Approximate hit area radius
 
   // Check each emoji (in reverse order to match rendering order)
@@ -236,4 +257,57 @@ function checkEmojiClick(
   }
 
   return null;
+}
+
+/**
+ * Renders click animation (green flash or red shake)
+ */
+function renderClickAnimation(
+  ctx: CanvasRenderingContext2D,
+  animation: ClickAnimation,
+  elapsed: number
+) {
+  const progress = elapsed / 500; // 500ms animation
+  const opacity = 1 - progress;
+
+  ctx.save();
+
+  if (animation.type === 'correct') {
+    // Green flash animation
+    const radius = 50 + progress * 100;
+    const gradient = ctx.createRadialGradient(
+      animation.x,
+      animation.y,
+      0,
+      animation.x,
+      animation.y,
+      radius
+    );
+    gradient.addColorStop(0, `rgba(34, 197, 94, ${opacity * 0.6})`);
+    gradient.addColorStop(1, `rgba(34, 197, 94, 0)`);
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  } else {
+    // Red shake animation
+    const shakeAmount = Math.sin(elapsed * 0.05) * 10 * (1 - progress);
+    ctx.translate(shakeAmount, 0);
+
+    const radius = 50;
+    const gradient = ctx.createRadialGradient(
+      animation.x,
+      animation.y,
+      0,
+      animation.x,
+      animation.y,
+      radius
+    );
+    gradient.addColorStop(0, `rgba(239, 68, 68, ${opacity * 0.6})`);
+    gradient.addColorStop(1, `rgba(239, 68, 68, 0)`);
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  }
+
+  ctx.restore();
 }

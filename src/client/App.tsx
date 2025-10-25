@@ -2,6 +2,8 @@ import { MenuScreen } from './components/MenuScreen';
 import { GameCanvas } from './components/GameCanvas';
 import { GameUI } from './components/GameUI';
 import { GameOverScreen } from './components/GameOverScreen';
+import { LeaderboardScreen } from './components/LeaderboardScreen';
+import { ComboIndicator } from './components/ComboIndicator';
 import { useGameState } from './hooks/useGameState';
 import { useTimer } from './hooks/useTimer';
 
@@ -11,7 +13,7 @@ if (import.meta.env.DEV) {
 }
 
 export const App = () => {
-  const { gameState, startGame, handleEmojiClick, updateTimer, endGame, returnToMenu } =
+  const { gameState, startGame, handleEmojiClick, updateTimer, endGame, returnToMenu, viewLeaderboard } =
     useGameState();
 
   // Timer hook
@@ -26,7 +28,16 @@ export const App = () => {
   if (gameState.screen === 'menu') {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
-        <MenuScreen onStartGame={startGame} />
+        <MenuScreen onStartGame={startGame} onViewLeaderboard={viewLeaderboard} />
+      </div>
+    );
+  }
+
+  // Leaderboard Screen
+  if (gameState.screen === 'leaderboard') {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-blue-100">
+        <LeaderboardScreen onBack={returnToMenu} />
       </div>
     );
   }
@@ -35,10 +46,13 @@ export const App = () => {
   if (gameState.screen === 'game') {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-4 bg-gradient-to-b from-blue-50 to-blue-100">
+        <ComboIndicator combo={gameState.combo} />
+
         <GameUI
           score={gameState.score}
           timer={gameState.timer}
           roundsCompleted={gameState.roundsCompleted}
+          combo={gameState.combo}
           matchingEmoji={gameState.matchingEmoji}
           showDebug={true}
         />

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { GameState, Card } from '../../shared/types/game';
 import { generateCardPair } from '../utils/cardGenerator';
+import { audioManager } from '../utils/audioManager';
 
 export function useGameState() {
   const [gameState, setGameState] = useState<GameState>({
@@ -20,8 +21,11 @@ export function useGameState() {
     },
   });
 
+  const [lastPointsEarned, setLastPointsEarned] = useState<number | null>(null);
+
   const startGame = useCallback(() => {
     const { cards, matchingEmoji } = generateCardPair();
+    audioManager.playSound('start');
     setGameState({
       screen: 'game',
       score: 0,
@@ -40,18 +44,40 @@ export function useGameState() {
     });
   }, []);
 
+  const calculatePoints = useCallback((combo: number): number => {
+    // Base points: 25
+    // Combo bonus: (combo - 1) × 10
+    // Formula: 25 + (combo - 1) × 10
+    const basePoints = 25;
+    const comboBonus = combo > 0 ? (combo - 1) * 10 : 0;
+    return basePoints + comboBonus;
+  }, []);
+
   const handleCorrectMatch = useCallback(() => {
     setGameState(prev => {
       // Generate new cards
       const { cards, matchingEmoji } = generateCardPair();
 
       const newCombo = prev.combo + 1;
-      const newScore = prev.score + 25; // Base points for now
+      const pointsEarned = calculatePoints(newCombo);
+      const newScore = prev.score + pointsEarned;
+
+      // Set last points earned for popup
+      setLastPointsEarned(pointsEarned);
+
+      // Play correct sound
+      audioManager.playSound('correct');
+
+      // Play combo sounds
+      if (newCombo === 3) audioManager.playSound('combo3');
+      else if (newCombo === 5) audioManager.playSound('combo5');
+      else if (newCombo === 10) audioManager.playSound('combo10');
 
       console.log('✅ Correct match!', {
         emoji: prev.matchingEmoji,
         combo: newCombo,
-        score: newScore,
+        pointsEarned,
+        totalScore: newScore,
       });
 
       return {
@@ -70,9 +96,11 @@ export function useGameState() {
         },
       };
     });
-  }, []);
+  }, [calculatePoints]);
 
   const handleWrongClick = useCallback((clickedEmoji: string) => {
+    audioManager.playSound('wrong');
+
     setGameState(prev => {
       console.log('❌ Wrong click!', {
         clicked: clickedEmoji,
@@ -111,18 +139,61 @@ export function useGameState() {
     }));
   }, []);
 
-  const endGame = useCallback(() => {
-    setGameState(prev => ({
-      ...prev,
-      screen: 'gameover',
-      isGameActive: false,
-    }));
+  const saveToLeaderboard = useCallback((score: number, rounds: number) => {
+    const stored = localStorage.getItem('mojimatcher:leaderboard');
+    let leaderboard: Array<{ rank: number; score: number; rounds: number; timestamp: number }> = stored
+      ? JSON.parse(stored)
+      : [];
+
+    // Add new score
+    leaderboard.push({
+      rank: 0,
+      score,
+      rounds,
+      timestamp: Date.now(),
+    });
+
+    // Sort by score descending
+    leaderboard.sort((a, b) => b.score - a.score);
+
+    // Keep only top 5
+    leaderboard = leaderboard.slice(0, 5);
+
+    // Update ranks
+    leaderboard.forEach((entry, index) => {
+      entry.rank = index + 1;
+    });
+
+    // Save back to localStorage
+    localStorage.setItem('mojimatcher:leaderboard', JSON.stringify(leaderboard));
   }, []);
+
+  const endGame = useCallback(() => {
+    audioManager.playSound('gameover');
+    setGameState(prev => {
+      // Save score to leaderboard
+      saveToLeaderboard(prev.score, prev.roundsCompleted);
+
+      return {
+        ...prev,
+        screen: 'gameover',
+        isGameActive: false,
+      };
+    });
+  }, [saveToLeaderboard]);
 
   const returnToMenu = useCallback(() => {
     setGameState(prev => ({
       ...prev,
       screen: 'menu',
+      isGameActive: false,
+    }));
+  }, []);
+
+  const viewLeaderboard = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      screen: 'leaderboard',
       isGameActive: false,
     }));
   }, []);
@@ -134,6 +205,9 @@ export function useGameState() {
     updateTimer,
     endGame,
     returnToMenu,
+    viewLeaderboard,
     setGameState,
+    lastPointsEarned,
+    clearLastPoints: () => setLastPointsEarned(null),
   };
 }

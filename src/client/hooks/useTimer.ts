@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { audioManager } from '../utils/audioManager';
 
 interface UseTimerProps {
   isActive: boolean;
@@ -9,6 +10,7 @@ interface UseTimerProps {
 
 export function useTimer({ isActive, timer, onTick, onExpire }: UseTimerProps) {
   const intervalRef = useRef<number | null>(null);
+  const lastTickSoundRef = useRef<number>(0);
 
   useEffect(() => {
     if (!isActive) {
@@ -17,6 +19,17 @@ export function useTimer({ isActive, timer, onTick, onExpire }: UseTimerProps) {
         intervalRef.current = null;
       }
       return;
+    }
+
+    // Play timer warning sounds
+    if (timer === 20) {
+      audioManager.playSound('tick');
+    } else if (timer <= 10 && timer > 0) {
+      // Play fast tick every second for last 10 seconds
+      if (timer !== lastTickSoundRef.current) {
+        audioManager.playSound('fasttick');
+        lastTickSoundRef.current = timer;
+      }
     }
 
     // Start timer
