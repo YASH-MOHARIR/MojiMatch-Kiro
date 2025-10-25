@@ -45,7 +45,7 @@ export const App = () => {
   // Game Screen
   if (gameState.screen === 'game') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-4 bg-gradient-to-b from-blue-50 to-blue-100">
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4 sm:gap-6 p-2 sm:p-4 bg-gradient-to-b from-blue-50 to-blue-100">
         <ComboIndicator combo={gameState.combo} />
 
         <GameUI
@@ -57,9 +57,11 @@ export const App = () => {
           showDebug={true}
         />
 
-        {gameState.currentCards && (
-          <GameCanvas cards={gameState.currentCards} onEmojiClick={handleEmojiClick} />
-        )}
+        <div className="w-full max-w-[800px] px-2">
+          {gameState.currentCards && (
+            <GameCanvas cards={gameState.currentCards} onEmojiClick={handleEmojiClick} />
+          )}
+        </div>
       </div>
     );
   }

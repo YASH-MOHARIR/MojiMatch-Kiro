@@ -139,40 +139,62 @@ export function useGameState() {
     }));
   }, []);
 
-  const saveToLeaderboard = useCallback((score: number, rounds: number) => {
-    const stored = localStorage.getItem('mojimatcher:leaderboard');
-    let leaderboard: Array<{ rank: number; score: number; rounds: number; timestamp: number }> = stored
-      ? JSON.parse(stored)
-      : [];
+  const saveToLeaderboard = useCallback(
+    async (score: number, rounds: number, highestCombo: number, accuracy: number) => {
+      try {
+        // Try to save to server
+        const response = await fetch('/api/save-score', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ score, rounds, highestCombo, accuracy }),
+        });
 
-    // Add new score
-    leaderboard.push({
-      rank: 0,
-      score,
-      rounds,
-      timestamp: Date.now(),
-    });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.rank) {
+            console.log(`🏆 Made it to rank ${data.rank} on the leaderboard!`);
+          }
+        } else {
+          throw new Error('Server save failed');
+        }
+      } catch (error) {
+        console.warn('Failed to save to server, using localStorage:', error);
 
-    // Sort by score descending
-    leaderboard.sort((a, b) => b.score - a.score);
+        // Fallback to localStorage
+        const stored = localStorage.getItem('mojimatcher:leaderboard');
+        let leaderboard: Array<{ rank: number; score: number; rounds: number; timestamp: number }> = stored
+          ? JSON.parse(stored)
+          : [];
 
-    // Keep only top 5
-    leaderboard = leaderboard.slice(0, 5);
+        leaderboard.push({
+          rank: 0,
+          score,
+          rounds,
+          timestamp: Date.now(),
+        });
 
-    // Update ranks
-    leaderboard.forEach((entry, index) => {
-      entry.rank = index + 1;
-    });
+        leaderboard.sort((a, b) => b.score - a.score);
+        leaderboard = leaderboard.slice(0, 5);
 
-    // Save back to localStorage
-    localStorage.setItem('mojimatcher:leaderboard', JSON.stringify(leaderboard));
-  }, []);
+        leaderboard.forEach((entry, index) => {
+          entry.rank = index + 1;
+        });
+
+        localStorage.setItem('mojimatcher:leaderboard', JSON.stringify(leaderboard));
+      }
+    },
+    []
+  );
 
   const endGame = useCallback(() => {
     audioManager.playSound('gameover');
     setGameState(prev => {
+      // Calculate accuracy
+      const accuracy =
+        prev.stats.totalClicks > 0 ? (prev.stats.correctClicks / prev.stats.totalClicks) * 100 : 0;
+
       // Save score to leaderboard
-      saveToLeaderboard(prev.score, prev.roundsCompleted);
+      saveToLeaderboard(prev.score, prev.roundsCompleted, prev.stats.highestCombo, accuracy);
 
       return {
         ...prev,

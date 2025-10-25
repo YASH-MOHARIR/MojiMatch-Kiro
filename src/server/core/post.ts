@@ -9,19 +9,19 @@ export const createPost = async () => {
   return await reddit.submitCustomPost({
     splash: {
       // Splash Screen Configuration
-      appDisplayName: '<% name %>',
+      appDisplayName: 'MojiMatcher',
       backgroundUri: 'default-splash.png',
-      buttonLabel: 'Tap to Start',
-      description: 'An exciting interactive experience',
+      buttonLabel: '🎮 Play Now',
+      description: 'Find the matching emoji between two cards before time runs out! Build combos for bonus points!',
       entryUri: 'index.html',
-      heading: 'Welcome to the Game!',
+      heading: '🎮 MojiMatcher',
       appIconUri: 'default-icon.png',
     },
     postData: {
-      gameState: 'initial',
-      score: 0,
+      gameState: 'ready',
+      version: '1.0.0',
     },
     subredditName: subredditName,
-    title: '<% name %>',
+    title: '🎮 MojiMatcher - Find the Matching Emoji!',
   });
 };

@@ -91,6 +91,98 @@ router.post<{ postId: string }, DecrementResponse | { status: string; message: s
   }
 );
 
+// MojiMatcher: Save score to leaderboard
+router.post('/api/save-score', async (req, res): Promise<void> => {
+  try {
+    const { score, rounds, highestCombo, accuracy } = req.body;
+
+    if (typeof score !== 'number' || typeof rounds !== 'number') {
+      res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_INPUT', message: 'Score and rounds are required' },
+      });
+      return;
+    }
+
+    // Get current username
+    const username = (await reddit.getCurrentUsername()) ?? 'anonymous';
+
+    // Get current leaderboard
+    const leaderboardData = await redis.get('mojimatcher:leaderboard');
+    let leaderboard: Array<{
+      username: string;
+      score: number;
+      rounds: number;
+      highestCombo: number;
+      accuracy: number;
+      timestamp: number;
+    }> = leaderboardData ? JSON.parse(leaderboardData) : [];
+
+    // Add new score
+    leaderboard.push({
+      username,
+      score,
+      rounds,
+      highestCombo: highestCombo ?? 0,
+      accuracy: accuracy ?? 0,
+      timestamp: Date.now(),
+    });
+
+    // Sort by score descending
+    leaderboard.sort((a, b) => b.score - a.score);
+
+    // Keep only top 5
+    leaderboard = leaderboard.slice(0, 5);
+
+    // Save back to Redis
+    await redis.set('mojimatcher:leaderboard', JSON.stringify(leaderboard));
+
+    // Check if score made top 5
+    const rank = leaderboard.findIndex(entry => entry.username === username && entry.score === score);
+
+    res.json({
+      success: true,
+      rank: rank >= 0 ? rank + 1 : undefined,
+    });
+  } catch (error) {
+    console.error('Error saving score:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Failed to save score' },
+    });
+  }
+});
+
+// MojiMatcher: Get leaderboard
+router.get('/api/leaderboard', async (_req, res): Promise<void> => {
+  try {
+    const leaderboardData = await redis.get('mojimatcher:leaderboard');
+    const leaderboard: Array<{
+      username: string;
+      score: number;
+      rounds: number;
+      timestamp: number;
+    }> = leaderboardData ? JSON.parse(leaderboardData) : [];
+
+    // Add rank to each entry
+    const scores = leaderboard.map((entry, index) => ({
+      rank: index + 1,
+      username: entry.username,
+      score: entry.score,
+      rounds: entry.rounds,
+      timestamp: entry.timestamp,
+    }));
+
+    res.json({ scores });
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Failed to fetch leaderboard' },
+    });
+  }
+});
+
 router.post('/internal/on-app-install', async (_req, res): Promise<void> => {
   try {
     const post = await createPost();

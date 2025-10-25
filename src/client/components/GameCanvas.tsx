@@ -64,18 +64,44 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
     }
   };
 
+  const handleCanvasTouch = (event: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || !cards || !onEmojiClick) return;
+
+    event.preventDefault(); // Prevent scrolling
+
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const touch = event.touches[0] || event.changedTouches[0];
+
+    // Get touch coordinates relative to canvas
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (touch.clientX - rect.left) * scaleX;
+    const y = (touch.clientY - rect.top) * scaleY;
+
+    // Find which emoji was touched
+    const clickedEmoji = getClickedEmoji(x, y, cards);
+    if (clickedEmoji) {
+      onEmojiClick(clickedEmoji);
+    }
+  };
+
   return (
     <canvas
       ref={canvasRef}
       width={800}
       height={500}
       onClick={handleCanvasClick}
+      onTouchEnd={handleCanvasTouch}
       style={{
         maxWidth: '100%',
+        width: '100%',
+        height: 'auto',
         border: '2px solid #333',
         borderRadius: '8px',
         backgroundColor: '#f5f5f5',
         cursor: 'pointer',
+        touchAction: 'manipulation', // Improve touch responsiveness
       }}
     />
   );

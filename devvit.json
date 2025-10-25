@@ -1,11 +1,15 @@
 {
   "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
   "name": "mojimatch2",
+  "version": "1.0.0",
+  "permissions": ["redis"],
   "post": {
     "dir": "dist/client",
     "entrypoints": {
       "default": {
-        "entry": "index.html"
+        "entry": "index.html",
+        "title": "🎮 MojiMatcher - Find the Match!",
+        "description": "A fast-paced emoji matching game. Find the one emoji that appears on both cards before time runs out!"
       }
     }
   },
@@ -19,8 +23,8 @@
   "menu": {
     "items": [
       {
-        "label": "Create a new post",
-        "description": "<% name %>",
+        "label": "Create MojiMatcher Post",
+        "description": "Create a new MojiMatcher game post",
         "location": "subreddit",
         "forUserType": "moderator",
         "endpoint": "/internal/menu/post-create"

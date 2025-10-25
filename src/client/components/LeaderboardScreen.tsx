@@ -1,25 +1,45 @@
-interface LeaderboardEntry {
-  rank: number;
-  score: number;
-  rounds: number;
-  timestamp: number;
-}
+import { useState, useEffect } from 'react';
+import { LeaderboardEntry, LeaderboardResponse } from '../../shared/types/api';
 
 interface LeaderboardScreenProps {
   onBack: () => void;
 }
 
 export function LeaderboardScreen({ onBack }: LeaderboardScreenProps) {
-  // Load leaderboard from localStorage
-  const loadLeaderboard = (): LeaderboardEntry[] => {
-    const stored = localStorage.getItem('mojimatcher:leaderboard');
-    if (stored) {
-      return JSON.parse(stored);
-    }
-    return [];
-  };
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const leaderboard = loadLeaderboard();
+  useEffect(() => {
+    fetchLeaderboard();
+  }, []);
+
+  const fetchLeaderboard = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/leaderboard');
+      if (!response.ok) {
+        throw new Error('Failed to fetch leaderboard');
+      }
+
+      const data: LeaderboardResponse = await response.json();
+      setLeaderboard(data.scores);
+    } catch (err) {
+      console.error('Error fetching leaderboard:', err);
+      setError('Failed to load leaderboard');
+
+      // Fallback to localStorage
+      const stored = localStorage.getItem('mojimatcher:leaderboard');
+      if (stored) {
+        const localData = JSON.parse(stored);
+        setLeaderboard(localData);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center gap-6 p-8">
@@ -29,7 +49,16 @@ export function LeaderboardScreen({ onBack }: LeaderboardScreenProps) {
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        {leaderboard.length === 0 ? (
+        {loading ? (
+          <div className="text-center text-gray-500 py-8">
+            <p className="text-lg">Loading...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500 py-8">
+            <p className="text-lg mb-2">⚠️ {error}</p>
+            <p className="text-sm">Showing local scores</p>
+          </div>
+        ) : leaderboard.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             <p className="text-lg mb-2">No scores yet!</p>
             <p className="text-sm">Play a game to set the first record.</p>
@@ -61,7 +90,9 @@ export function LeaderboardScreen({ onBack }: LeaderboardScreenProps) {
                   </div>
                   <div>
                     <div className="text-xl font-bold text-gray-900">{entry.score}</div>
-                    <div className="text-xs text-gray-600">{entry.rounds} rounds</div>
+                    <div className="text-xs text-gray-600">
+                      {entry.username} • {entry.rounds} rounds
+                    </div>
                   </div>
                 </div>
                 <div className="text-xs text-gray-500">

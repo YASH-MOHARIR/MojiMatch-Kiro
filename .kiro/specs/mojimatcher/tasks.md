@@ -155,13 +155,12 @@
 
 - [x] 18. Create full menu system
 
-
   - Main menu with multiple options
   - Leaderboard screen
   - Settings screen
   - _Requirements: 1.1, 1.3_
 
-- [ ] 19. Implement server API and leaderboard
+- [x] 19. Implement server API and leaderboard
 
   - Set up Express server
   - Create save score endpoint
@@ -169,14 +168,16 @@
   - Integrate with Redis
   - _Requirements: 7.1, 7.2, 7.3, 7.5, 9.1, 9.2, 9.3_
 
-- [ ] 20. Add responsive design and mobile optimization
+- [x] 20. Add responsive design and mobile optimization
 
   - Optimize for mobile screens
   - Improve touch targets
   - Test on multiple devices
   - _Requirements: 8.2, 8.3, 8.4_
 
-- [ ] 21. Performance optimization and polish
+- [x] 21. Performance optimization and polish
+
+
   - Optimize rendering performance
   - Add error handling
   - Write comprehensive tests
