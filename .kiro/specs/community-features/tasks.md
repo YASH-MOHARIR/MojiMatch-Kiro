@@ -30,7 +30,8 @@
   - Test that same seed produces identical sequences
   - _Requirements: 3.1, 3.2_
 
-- [-] 4. Implement daily challenge system
+- [x] 4. Implement daily challenge system
+
 
 - [x] 4.1 Create server-side daily challenge endpoints
 
@@ -88,6 +89,7 @@
   - Implement empty state with encouraging message
   - _Requirements: 4.1, 4.2, 4.8, 4.10, 4.11_
 
+
 - [ ] 5.3 Create personal stats dashboard
 
   - Create `StatsScreen.tsx` component for "My Stats" tab
@@ -97,6 +99,7 @@
   - Show daily streak and weekly rank
   - _Requirements: 4.7, 4.12_
 
+
 - [ ] 5.4 Integrate achievement badges with leaderboard
 
   - Modify leaderboard entries to include user badges
@@ -104,19 +107,16 @@
   - Add tooltip on hover to show badge name
   - _Requirements: 4.3_
 
+
 - [ ] 6. Implement achievement and badge system
 - [x] 6.1 Define achievement data structure
-
-
 
   - Create achievement definitions in `src/shared/constants/achievements.ts`
   - Define 15 achievements across 6 categories (speed, combo, accuracy, score, participation, daily)
   - Include achievement metadata: id, name, description, icon, category, tier, condition
   - _Requirements: 5.7_
 
-
 - [x] 6.2 Create server-side achievement endpoints
-
 
   - Add `POST /api/achievements/unlock` endpoint to unlock achievements
   - Add `GET /api/achievements/:username` endpoint to fetch user achievements
@@ -125,9 +125,7 @@
   - Prevent duplicate unlocks
   - _Requirements: 5.5, 5.9_
 
-
 - [x] 6.3 Create achievement tracking hook
-
 
   - Create `useAchievements.ts` hook to manage achievements
   - Implement `checkAchievements()` function to evaluate conditions after each game
@@ -136,9 +134,7 @@
   - Call server endpoint to persist unlocks
   - _Requirements: 5.1, 5.2_
 
-
 - [x] 6.4 Create achievement popup component
-
 
   - Create `AchievementPopup.tsx` for unlock notifications
   - Display achievement icon, name, description, and tier badge
@@ -149,7 +145,6 @@
   - _Requirements: 5.2, 5.6_
 
 - [x] 6.5 Create achievement gallery screen
-
 
   - Create `AchievementScreen.tsx` to display all achievements
   - Show unlocked achievements with unlock date
@@ -162,7 +157,6 @@
 - [ ] 7. Build particle system and celebration animations
 - [x] 7.1 Create particle system foundation
 
-
   - Create `ParticleSystem.tsx` component with canvas rendering
   - Define `Particle` interface with position, velocity, life, size, color, type
   - Implement particle update loop using `requestAnimationFrame`
@@ -173,7 +167,6 @@
 
 - [x] 7.2 Implement click particle effects
 
-
   - Create `spawnParticles()` function for correct match clicks
   - Spawn 8-12 circular particles radiating from click point
   - Use gradient colors (green, yellow, gold)
@@ -182,7 +175,6 @@
   - _Requirements: 6.1_
 
 - [x] 7.3 Implement score popup particles
-
 
   - Create `spawnScorePopup()` function to display "+[points]" text
   - Render text particles that float upward
@@ -207,8 +199,8 @@
   - Spawn particles following cursor movement
   - Fade quickly (0.3 seconds) to avoid clutter
   - Use low spawn rate for performance
-  - _Requirements: 6.6_
 
+  - _Requirements: 6.6_
 
 - [ ] 7.6 Create combo milestone celebrations
 
@@ -218,9 +210,9 @@
   - Add particle burst in background
   - Implement screen shake effect (translate canvas by ±5px)
   - Pause timer briefly (0.5 seconds) during celebration
+
   - Auto-dismiss after 1 second
   - _Requirements: 6.3, 6.7, 6.13_
-
 
 - [ ] 7.7 Implement sound pitch variation
 
@@ -229,15 +221,16 @@
   - Apply pitch variation to success sound effect
   - Test that higher combos produce higher pitch
 
+
   - _Requirements: 6.5, 6.12_
 
 - [ ] 7.8 Add wrong click particle effect
 
   - Create red "X" particle effect for wrong clicks
   - Spawn particles that quickly fade (0.3 seconds)
+
   - Use red color to indicate error
   - _Requirements: 6.10_
-
 
 - [ ] 7.9 Optimize particle performance
 
@@ -250,7 +243,6 @@
 
 - [x] 8. Implement global stats tracking
 
-
   - Create `global:stats` Redis hash for tracking total games, players, etc.
   - Increment counters on game completion
   - Track unique players today using Redis set with TTL
@@ -259,10 +251,7 @@
   - Display stats on splash screen
   - _Requirements: 1.4_
 
-
 - [x] 9. Implement user streak tracking
-
-
 
   - Create `user:{username}:streak` Redis hash to track consecutive days
   - Update streak on daily challenge completion
@@ -271,12 +260,7 @@
   - Add streak achievements (3, 7, 30 days)
   - _Requirements: 1.8, 3.9_
 
-
 - [x] 10. Update game state management
-
-
-
-
 
   - Extend `useGameState.ts` to support daily challenge mode
   - Add flag to indicate if current game is daily challenge
@@ -288,8 +272,6 @@
 
 - [x] 11. Integrate all features with existing game flow
 
-
-
   - Update `App.tsx` to show splash screen on initial load
   - Add navigation to achievement screen from menu
   - Update `GameOverScreen.tsx` to show matching emoji and achievement unlocks
@@ -298,9 +280,7 @@
   - Ensure all features work together seamlessly
   - _Requirements: 1.1, 2.7, 3.3, 4.1, 5.2_
 
-
 - [x] 12. Add error handling and fallbacks
-
 
   - Wrap all API calls in try-catch blocks
   - Implement localStorage fallback for leaderboards when offline
@@ -309,7 +289,6 @@
   - Handle Redis failures gracefully on server
   - Validate all incoming data on server
   - _Requirements: All requirements (error handling)_
-
 
 - [ ] 13. Implement responsive design and mobile optimization
 
@@ -321,7 +300,6 @@
   - Optimize for mobile battery life
   - _Requirements: 1.7, 6.11_
 
-
 - [ ] 14. Add accessibility features
 
   - Add ARIA labels to all interactive elements
@@ -330,7 +308,6 @@
   - Test with screen readers
   - Add focus indicators for keyboard navigation
   - _Requirements: All requirements (accessibility)_
-
 
 - [ ] 15. Write tests for new features
 
@@ -342,7 +319,9 @@
   - Test achievement unlocking end-to-end
   - _Requirements: All requirements (testing)_
 
-- [ ] 16. Performance optimization and polish
+
+- [x] 16. Performance optimization and polish
+
 
   - Profile client performance with Chrome DevTools
   - Optimize canvas rendering (batch draw calls, dirty regions)
@@ -352,6 +331,7 @@
   - Minimize repaints and reflows
   - Test on low-end devices
   - _Requirements: All requirements (performance)_
+
 
 - [ ] 17. Final integration testing and bug fixes
   - Test complete game flow from splash to game over
