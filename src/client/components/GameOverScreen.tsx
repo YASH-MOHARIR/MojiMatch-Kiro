@@ -1,3 +1,5 @@
+import { Achievement } from '../../shared/constants/achievements';
+
 interface GameOverScreenProps {
   score: number;
   roundsCompleted: number;
@@ -6,6 +8,9 @@ interface GameOverScreenProps {
     correctClicks: number;
     highestCombo: number;
   };
+  matchingEmoji?: string;
+  newAchievements?: Achievement[];
+  isDailyChallenge?: boolean;
   onPlayAgain: () => void;
   onReturnToMenu: () => void;
 }
@@ -14,6 +19,9 @@ export function GameOverScreen({
   score,
   roundsCompleted,
   stats,
+  matchingEmoji,
+  newAchievements = [],
+  isDailyChallenge = false,
   onPlayAgain,
   onReturnToMenu,
 }: GameOverScreenProps) {
@@ -24,8 +32,15 @@ export function GameOverScreen({
   return (
     <div className="flex flex-col items-center justify-center gap-6 p-8">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">⏰ Time's Up!</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          {isDailyChallenge ? '📅 Daily Challenge Complete!' : '⏰ Time\'s Up!'}
+        </h1>
         <p className="text-lg text-gray-600">Game Over</p>
+        {matchingEmoji && (
+          <div className="mt-2 text-sm text-gray-500">
+            Last match was: <span className="text-3xl">{matchingEmoji}</span>
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
@@ -56,6 +71,32 @@ export function GameOverScreen({
           </div>
         </div>
       </div>
+
+      {/* New Achievements */}
+      {newAchievements.length > 0 && (
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg shadow-lg p-6 w-full max-w-md border-2 border-purple-200">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+            🎉 New Achievements Unlocked!
+          </h3>
+          <div className="space-y-3">
+            {newAchievements.map((achievement) => (
+              <div
+                key={achievement.id}
+                className="flex items-center gap-3 bg-white rounded-lg p-3 shadow"
+              >
+                <div className="text-3xl">{achievement.icon}</div>
+                <div className="flex-1">
+                  <div className="font-bold text-gray-900">{achievement.name}</div>
+                  <div className="text-sm text-gray-600">{achievement.description}</div>
+                </div>
+                <div className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded uppercase font-bold">
+                  {achievement.tier}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col gap-3 w-full max-w-xs">
         <button

@@ -15,8 +15,18 @@ import { useDailyChallenge } from './hooks/useDailyChallenge';
 export const App = () => {
   const [showSplash, setShowSplash] = useState(true);
   const { dailyChallenge } = useDailyChallenge();
-  const { gameState, startGame, startDailyChallenge, handleEmojiClick, updateTimer, endGame, returnToMenu, viewLeaderboard, hideEmojiHighlight } =
-    useGameState();
+  const { 
+    gameState, 
+    startGame, 
+    startDailyChallenge, 
+    handleEmojiClick, 
+    updateTimer, 
+    endGame, 
+    returnToMenu, 
+    viewLeaderboard, 
+    hideEmojiHighlight,
+    newlyUnlockedAchievements 
+  } = useGameState();
 
   // Timer hook
   useTimer({
@@ -115,6 +125,9 @@ export const App = () => {
           score={gameState.score}
           roundsCompleted={gameState.roundsCompleted}
           stats={gameState.stats}
+          matchingEmoji={gameState.matchingEmoji || undefined}
+          newAchievements={newlyUnlockedAchievements}
+          isDailyChallenge={gameState.isDailyChallenge}
           onPlayAgain={startGame}
           onReturnToMenu={returnToMenu}
         />
