@@ -333,7 +333,8 @@
   - _Requirements: All requirements (performance)_
 
 
-- [x] 17. Final integration testing and bug fixes
+- [ ] 17. Final integration testing and bug fixes
+
   - Test complete game flow from splash to game over
   - Test all leaderboard views with real data
   - Test achievement unlocking for all 15 achievements

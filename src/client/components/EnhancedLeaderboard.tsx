@@ -59,11 +59,38 @@ export function EnhancedLeaderboard({ onBack, currentUsername = 'anonymous' }: E
       }
 
       const data = await response.json();
-      setLeaderboard(data.scores || []);
+      let scores = data.scores || [];
+
+      // Fallback to old leaderboard format if alltime is empty
+      if (type === 'alltime' && scores.length === 0) {
+        const oldResponse = await fetch('/api/leaderboard');
+        if (oldResponse.ok) {
+          const oldData = await oldResponse.json();
+          scores = oldData.scores || [];
+        }
+      }
+
+      setLeaderboard(scores);
     } catch (err) {
       console.error('Error fetching leaderboard:', err);
       setError('Failed to load leaderboard');
-      setLeaderboard([]);
+      
+      // Try localStorage fallback
+      if (type === 'alltime') {
+        const stored = localStorage.getItem('mojimatcher:leaderboard');
+        if (stored) {
+          try {
+            const localData = JSON.parse(stored);
+            setLeaderboard(localData);
+          } catch (e) {
+            setLeaderboard([]);
+          }
+        } else {
+          setLeaderboard([]);
+        }
+      } else {
+        setLeaderboard([]);
+      }
     } finally {
       setLoading(false);
     }
