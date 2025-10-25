@@ -12,7 +12,7 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 
 **The Goal:** Build the highest combo streak possible to maximize your score and earn time bonuses. The longer your combo, the more time you earn per match (4-13 seconds), creating a snowball effect where skilled players can extend their games significantly. Compete on multiple leaderboards (All-Time, Daily, Weekly) and unlock achievements as you master the game.
 
-**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts. Players see an eye-catching animated splash screen in their feed, click "Play Now" to launch the full-screen game, and compete with the Reddit community on daily challenges and leaderboards. All scores are automatically tied to Reddit usernames, creating a seamless social gaming experience.
+**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts. Players can jump straight into the game from the main menu, compete with the Reddit community on daily challenges and leaderboards, and have their scores automatically tied to their Reddit usernames for seamless social gaming.
 
 ### Core Features
 
@@ -72,7 +72,7 @@ As combos build, the stakes get higher. Lose your 10x combo and you lose:
 Built specifically for Reddit with:
 - Automatic username integration (no login required)
 - Redis-backed leaderboards (All-Time, Daily, Weekly)
-- Custom animated splash screen with floating emojis that stands out in the feed
+- Instant access from main menu - no splash screen delays
 - Achievement system with rarity tracking (15 achievements across 6 categories)
 - Personal stats dashboard showing total games, best score, playtime, and more
 - Game-end emoji reveal with golden glow effect
@@ -129,23 +129,20 @@ Three separate leaderboards create multiple ways to compete:
 
 ## 📖 How to Play
 
-### Getting Started
+### Quick Start
 
-#### Step 1: View the Splash Screen
-When you first open MojiMatcher in a Reddit post, you'll see an eye-catching animated splash screen featuring:
-- **Vibrant gradient background**: Purple → blue → pink with smooth transitions
-- **15+ floating emoji particles**: Drifting across the screen with random speeds, sizes, and animation delays (🎮, 🎯, ⚡, 🔥, ⭐, 💫, 🎊, 🎉, ✨, 💎, 🏆, etc.)
-- **Live community stats**: 
-  - "X players online today" (tracked via Redis with daily reset)
-  - "Total games: X,XXX" (cumulative game counter)
-- **Today's daily challenge preview**: Shows the featured emoji for today's challenge (e.g., 🎯)
-- **Large pulsing "🎮 Play Now" button**: Animated button with hover scale effect and pulse animation
-- **Quick info footer**: "⚡ 30-second rounds • 🎯 Build combos • 🏆 Compete on leaderboards"
+1. **Open the game** in a Reddit post
+2. **Choose a game mode** from the main menu (Daily Challenge or Play Game)
+3. **Find the matching emoji** between two cards before time runs out
+4. **Click/tap the matching emoji** on either card
+5. **Build combos** for bonus points and time extensions
+6. **Compete** on leaderboards and unlock achievements
 
-**Action:** Click "Play Now" to enter the main menu
+### Detailed Instructions
 
-#### Step 2: Navigate the Main Menu
-After clicking "Play Now", you'll see the main menu with four options:
+#### Step 1: Navigate the Main Menu
+When you open MojiMatcher in a Reddit post, you'll see the main menu with several options:
+The main menu presents you with four options:
 
 1. **📅 Daily Challenge** (Featured Button)
    - Play today's challenge - same deterministic puzzle for all players
@@ -177,7 +174,7 @@ After clicking "Play Now", you'll see the main menu with four options:
 - "How to play" instructions with bullet points
 - Quick reference for game rules
 
-#### Step 3: Choose Your Game Mode
+#### Step 2: Choose Your Game Mode
 
 **Daily Challenge Mode:**
 - Everyone gets the **same puzzle** each day using seeded random generation (seed format: YYYYMMDD)
@@ -195,7 +192,7 @@ After clicking "Play Now", you'll see the main menu with four options:
 - No streak tracking or special indicators
 - Unlimited replays
 
-### Understanding the Game Screen
+#### Step 3: Understanding the Game Screen
 
 When you start playing, here's what you'll see:
 
@@ -230,7 +227,7 @@ When you start playing, here's what you'll see:
   - Streak counter (e.g., "🔥 5 day streak")
   - Pulse animation
 
-### The Core Challenge
+#### Step 4: The Core Challenge
 
 **Your Mission:**
 Find the **ONE emoji that appears on BOTH cards** and click/tap it before time runs out.
@@ -248,9 +245,9 @@ Find the **ONE emoji that appears on BOTH cards** and click/tap it before time r
 - **Build combos carefully**: Higher combos are valuable but risky to maintain
 - **Manage your time**: Balance speed with accuracy
 
-### Scoring System Explained
+#### Step 5: Scoring System Explained
 
-#### Correct Match Rewards
+**Correct Match Rewards**
 When you click the matching emoji, you receive:
 
 1. **Base Points**: 25 points (always)
@@ -259,7 +256,7 @@ When you click the matching emoji, you receive:
 
 **Scoring Formula:** `25 + (combo - 1) × 10`
 
-#### Scoring Examples
+**Scoring Examples**
 
 | Combo Level | Points Earned | Time Added | Visual Feedback | Total Benefit |
 |-------------|--------------|------------|-----------------|---------------|
@@ -271,7 +268,8 @@ When you click the matching emoji, you receive:
 | 15x         | 165 points   | +18 seconds| 🔥 LEGENDARY!   | Elite level   |
 | 20x         | 215 points   | +23 seconds| 🔥 LEGENDARY!   | Master level  |
 
-#### Wrong Click Penalties
+**Wrong Click Penalties**
+
 When you click the wrong emoji:
 
 - **Time Penalty**: -2 seconds from timer (increased from -1s for higher difficulty)
@@ -288,21 +286,7 @@ When you click the wrong emoji:
 
 ### Complete Game Flow
 
-#### 1. Splash Screen (Entry Point)
-**First impression when opening the game:**
-- Vibrant gradient background (purple → blue → pink)
-- 15+ floating emoji particles with random speeds and sizes
-- Live community statistics:
-  - "X players online today"
-  - "Total games: X,XXX"
-- Today's daily challenge preview with featured emoji
-- Your current streak (if applicable): "🔥 5 day streak!"
-- Large pulsing "🎮 Play Now" button
-- Quick info footer: "⚡ 30-second rounds • 🎯 Build combos • 🏆 Compete on leaderboards"
-
-**Action:** Click "Play Now" to enter the main menu
-
-#### 2. Main Menu (Game Hub)
+#### 1. Main Menu (Game Hub)
 **Four main options:**
 
 **📅 Daily Challenge** (Featured)
@@ -333,7 +317,7 @@ When you click the wrong emoji:
 - "How to play" instructions with bullet points
 - Quick reference for game rules
 
-#### 3. Active Gameplay
+#### 2. Active Gameplay
 **Screen Layout:**
 - **Top Bar**: Score (left), Timer (center), Rounds (right)
 - **Combo Badge** (appears at 3x+): Floating badge showing combo level
@@ -375,7 +359,7 @@ When you click the wrong emoji:
   - Tick sound at 10 seconds remaining
   - Fast tick sound in last 5 seconds
 
-#### 4. Game Over Sequence
+#### 3. Game Over Sequence
 **Phase 1: Emoji Highlight (2.5 seconds)**
 - Game freezes with current cards visible on screen
 - Golden glowing circle appears around matching emoji on both cards
@@ -408,7 +392,7 @@ When you click the wrong emoji:
   - "← Back to Menu" (gray button) - Return to main menu
 - **Score saved automatically** to appropriate leaderboard (All-Time or Daily)
 
-#### 5. Leaderboard Screen
+#### 4. Leaderboard Screen
 **Tab Navigation:**
 - Four tabs at top: All-Time | Daily | Weekly | My Stats
 - Active tab highlighted in blue (#2563eb) with white text
@@ -466,7 +450,7 @@ When you click the wrong emoji:
 **Bottom Section:**
 - "← Back to Menu" button (gray bg-gray-200, hover:bg-gray-300)
 
-#### 6. Achievement System (Integrated)
+#### 5. Achievement System (Integrated)
 **When You Unlock an Achievement:**
 - Popup appears during gameplay or on game over screen
 - Achievement card with:
