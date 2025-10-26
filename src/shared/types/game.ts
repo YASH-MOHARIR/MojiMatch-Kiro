@@ -19,6 +19,8 @@ export interface CardPair {
   card2: Card;
 }
 
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'god';
+
 export interface GameState {
   screen: 'menu' | 'game' | 'gameover' | 'leaderboard';
   score: number;
@@ -30,8 +32,11 @@ export interface GameState {
   isGameActive: boolean;
   stats: GameStats;
   showEmojiHighlight?: boolean;
+  showCountdown?: boolean;
+  showResults?: boolean;
   isDailyChallenge?: boolean;
   dailyChallengeSeed?: number | undefined;
+  difficulty?: Difficulty;
 }
 
 export interface GameStats {

@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 
+/* Floating score animation */
 @keyframes float {
   0% {
     opacity: 1;
@@ -10,3 +11,426 @@
     transform: translate(-50%, -50%) translateY(-60px);
   }
 }
+
+/* Page fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide up animation */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide down animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale in animation */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Bounce in animation */
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Shake animation */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Glow animation */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(217, 57, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(217, 57, 0, 0.8), 0 0 30px rgba(217, 57, 0, 0.6);
+  }
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Rotate animation */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Utility classes */
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.6s ease-out;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.6s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.4s ease-out;
+}
+
+.animate-bounceIn {
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-rotate {
+  animation: rotate 2s linear infinite;
+}
+
+/* Stagger animations for lists */
+.animate-stagger > * {
+  opacity: 0;
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.animate-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.animate-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+.animate-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+.animate-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+.animate-stagger > *:nth-child(5) { animation-delay: 0.5s; }
+.animate-stagger > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Transition utilities */
+.transition-all-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-transform-smooth {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 3D Pushable Button Styles */
+.pushable {
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+}
+
+.pushable:hover {
+  filter: brightness(110%);
+}
+
+.pushable:active {
+  filter: brightness(90%);
+}
+
+.pushable:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.25);
+  transform: translateY(2px);
+  transition: transform 250ms ease-out;
+}
+
+.edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.front {
+  display: block;
+  position: relative;
+  border-radius: 12px;
+  color: white;
+  transform: translateY(-4px);
+  transition: transform 250ms ease-out;
+}
+
+.pushable:hover .front {
+  transform: translateY(-6px);
+  transition: transform 200ms ease-out;
+}
+
+.pushable:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 200ms ease-out;
+}
+
+.pushable:active .front {
+  transform: translateY(-2px);
+  transition: transform 100ms ease-out;
+}
+
+.pushable:active .shadow {
+  transform: translateY(1px);
+  transition: transform 100ms ease-out;
+}
+
+/* Button Color Variants */
+.btn-primary .edge {
+  background: hsl(10deg 100% 45%);
+}
+
+.btn-primary .front {
+  background: hsl(10deg 100% 60%);
+}
+
+.btn-secondary .edge {
+  background: hsl(217deg 91% 55%);
+}
+
+.btn-secondary .front {
+  background: hsl(217deg 91% 70%);
+}
+
+.btn-success .edge {
+  background: hsl(142deg 76% 40%);
+}
+
+.btn-success .front {
+  background: hsl(142deg 76% 55%);
+}
+
+.btn-purple .edge {
+  background: hsl(280deg 100% 50%);
+}
+
+.btn-purple .front {
+  background: hsl(280deg 100% 65%);
+}
+
+.btn-gray .edge {
+  background: hsl(0deg 0% 65%);
+}
+
+.btn-gray .front {
+  background: hsl(0deg 0% 85%);
+  color: hsl(0deg 0% 20%);
+}
+
+.btn-green .edge {
+  background: hsl(160deg 84% 40%);
+}
+
+.btn-green .front {
+  background: hsl(160deg 84% 55%);
+}
+
+.btn-orange .edge {
+  background: hsl(25deg 100% 50%);
+}
+
+.btn-orange .front {
+  background: hsl(25deg 100% 60%);
+}
+
+.btn-pink .edge {
+  background: hsl(330deg 100% 50%);
+}
+
+.btn-pink .front {
+  background: hsl(330deg 100% 65%);
+}
+
+/* 3D Pushable Button Styles */
+.pushable {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+}
+
+.pushable:hover {
+  filter: brightness(110%);
+}
+
+.pushable:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.pushable:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+
+.pushable:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+.edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(
+    to left,
+    hsl(0deg 0% 0% / 0.2) 0%,
+    hsl(0deg 0% 0% / 0.1) 8%,
+    hsl(0deg 0% 0% / 0.1) 92%,
+    hsl(0deg 0% 0% / 0.3) 100%
+  );
+}
+
+.front {
+  display: block;
+  position: relative;
+  padding: 12px 42px;
+  border-radius: 12px;
+  font-size: 1.25rem;
+  color: white;
+  font-weight: 700;
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.pushable:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+
+/* Button Color Variants */
+.btn-primary-bg { background: hsl(12deg 100% 35%); }
+.btn-primary-front { background: hsl(12deg 100% 43%); }
+
+.btn-daily-bg { background: hsl(280deg 100% 35%); }
+.btn-daily-front { background: linear-gradient(135deg, hsl(280deg 100% 50%), hsl(320deg 100% 50%)); }
+
+.btn-leaderboard-bg { background: hsl(210deg 100% 35%); }
+.btn-leaderboard-front { background: hsl(210deg 100% 50%); }
+
+.btn-howto-bg { background: hsl(145deg 100% 25%); }
+.btn-howto-front { background: hsl(145deg 100% 35%); }
+
+.btn-settings-bg { background: hsl(0deg 0% 50%); }
+.btn-settings-front { background: hsl(0deg 0% 70%); }
+
+.btn-back-bg { background: hsl(0deg 0% 50%); }
+.btn-back-front { background: hsl(0deg 0% 70%); }
+
+.btn-success-bg { background: hsl(145deg 100% 25%); }
+.btn-success-front { background: hsl(145deg 100% 35%); }
+
+.btn-danger-bg { background: hsl(0deg 100% 35%); }
+.btn-danger-front { background: hsl(0deg 100% 50%); }

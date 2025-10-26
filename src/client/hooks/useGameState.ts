@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
-import { GameState } from '../../shared/types/game';
+import { GameState, Difficulty } from '../../shared/types/game';
 import { generateCardPair } from '../utils/cardGenerator';
 import { audioManager } from '../utils/audioManager';
 import { useDailyChallenge } from './useDailyChallenge';
 import { useAchievements } from './useAchievements';
+import { getDifficultyConfig } from '../../shared/constants/difficulty';
 
 export function useGameState() {
   const [gameState, setGameState] = useState<GameState>({
@@ -29,20 +30,23 @@ export function useGameState() {
   const { dailyChallenge } = useDailyChallenge();
   const { checkAchievements, unlockAchievement, newlyUnlocked, clearNewlyUnlocked } = useAchievements();
 
-  const startGame = useCallback(() => {
-    const { cards, matchingEmoji } = generateCardPair();
+  const startGame = useCallback((difficulty: Difficulty = 'easy') => {
+    const difficultyConfig = getDifficultyConfig(difficulty);
+    const { cards, matchingEmoji } = generateCardPair(undefined, difficultyConfig.emojiCount);
     audioManager.playSound('start');
     setGameState({
       screen: 'game',
       score: 0,
-      timer: 30, // Changed from 150 to 30 seconds
+      timer: 30,
       combo: 0,
       roundsCompleted: 0,
       currentCards: cards,
       matchingEmoji,
-      isGameActive: true,
+      isGameActive: false,
+      showCountdown: true,
       isDailyChallenge: false,
       dailyChallengeSeed: undefined,
+      difficulty,
       stats: {
         totalClicks: 0,
         correctClicks: 0,
@@ -50,6 +54,14 @@ export function useGameState() {
         startTime: Date.now(),
       },
     });
+  }, []);
+
+  const startGameAfterCountdown = useCallback(() => {
+    setGameState((prev) => ({
+      ...prev,
+      isGameActive: true,
+      showCountdown: false,
+    }));
   }, []);
 
   const startDailyChallenge = useCallback(() => {
@@ -65,7 +77,8 @@ export function useGameState() {
       roundsCompleted: 0,
       currentCards: cards,
       matchingEmoji,
-      isGameActive: true,
+      isGameActive: false,
+      showCountdown: true,
       isDailyChallenge: true,
       dailyChallengeSeed: dailyChallenge.seed,
       stats: {
@@ -77,24 +90,28 @@ export function useGameState() {
     });
   }, [dailyChallenge]);
 
-  const calculatePoints = useCallback((combo: number): number => {
+  const calculatePoints = useCallback((combo: number, difficulty: Difficulty = 'easy'): number => {
     // Base points: 25
     // Combo bonus: (combo - 1) × 10
-    // Formula: 25 + (combo - 1) × 10
+    // Formula: (25 + (combo - 1) × 10) × difficulty multiplier
     const basePoints = 25;
     const comboBonus = combo > 0 ? (combo - 1) * 10 : 0;
-    return basePoints + comboBonus;
+    const difficultyConfig = getDifficultyConfig(difficulty);
+    return Math.round((basePoints + comboBonus) * difficultyConfig.scoreMultiplier);
   }, []);
 
   const handleCorrectMatch = useCallback(() => {
     setGameState(prev => {
+      const difficulty = prev.difficulty || 'easy';
+      const difficultyConfig = getDifficultyConfig(difficulty);
+      
       // Generate new cards (use seed if daily challenge)
       const { cards, matchingEmoji } = prev.isDailyChallenge && prev.dailyChallengeSeed
-        ? generateCardPair(prev.dailyChallengeSeed + prev.roundsCompleted + 1)
-        : generateCardPair();
+        ? generateCardPair(prev.dailyChallengeSeed + prev.roundsCompleted + 1, difficultyConfig.emojiCount)
+        : generateCardPair(undefined, difficultyConfig.emojiCount);
 
       const newCombo = prev.combo + 1;
-      const pointsEarned = calculatePoints(newCombo);
+      const pointsEarned = calculatePoints(newCombo, difficulty);
       const newScore = prev.score + pointsEarned;
 
       // Calculate time bonus based on combo
@@ -180,7 +197,7 @@ export function useGameState() {
   }, []);
 
   const saveToLeaderboard = useCallback(
-    async (score: number, rounds: number, highestCombo: number, accuracy: number, isDailyChallenge: boolean) => {
+    async (score: number, rounds: number, highestCombo: number, accuracy: number, isDailyChallenge: boolean, difficulty: Difficulty = 'easy') => {
       try {
         // Choose endpoint based on game mode
         const endpoint = isDailyChallenge ? '/api/daily-challenge/score' : '/api/save-score';
@@ -189,7 +206,7 @@ export function useGameState() {
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ score, rounds, highestCombo, accuracy }),
+          body: JSON.stringify({ score, rounds, highestCombo, accuracy, difficulty }),
         });
 
         if (response.ok) {
@@ -237,7 +254,7 @@ export function useGameState() {
         prev.stats.totalClicks > 0 ? (prev.stats.correctClicks / prev.stats.totalClicks) * 100 : 0;
 
       // Save score to leaderboard
-      saveToLeaderboard(prev.score, prev.roundsCompleted, prev.stats.highestCombo, accuracy, prev.isDailyChallenge || false);
+      saveToLeaderboard(prev.score, prev.roundsCompleted, prev.stats.highestCombo, accuracy, prev.isDailyChallenge || false, prev.difficulty || 'easy');
 
       return {
         ...prev,
@@ -274,6 +291,7 @@ export function useGameState() {
   return {
     gameState,
     startGame,
+    startGameAfterCountdown,
     startDailyChallenge,
     handleEmojiClick,
     updateTimer,

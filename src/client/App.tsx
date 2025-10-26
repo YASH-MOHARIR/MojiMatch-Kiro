@@ -1,28 +1,31 @@
+import { useState } from 'react';
 import { MenuScreen } from './components/MenuScreen';
 import { GameCanvas } from './components/GameCanvas';
 import { GameUI } from './components/GameUI';
 import { GameOverScreen } from './components/GameOverScreen';
 import { EnhancedLeaderboard } from './components/EnhancedLeaderboard';
+import { HowToPlayScreen } from './components/HowToPlayScreen';
+import { GameStartCountdown } from './components/GameStartCountdown';
 import { ComboIndicator } from './components/ComboIndicator';
 import { EmojiHighlight } from './components/EmojiHighlight';
-import { DailyChallengeIndicator } from './components/DailyChallengeIndicator';
 import { useGameState } from './hooks/useGameState';
 import { useTimer } from './hooks/useTimer';
-import { useDailyChallenge } from './hooks/useDailyChallenge';
+import { BarChart3 } from 'lucide-react';
 
 export const App = () => {
-  const { dailyChallenge } = useDailyChallenge();
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const { 
     gameState, 
-    startGame, 
-    startDailyChallenge, 
+    startGame,
+    startGameAfterCountdown,
     handleEmojiClick, 
     updateTimer, 
     endGame, 
     returnToMenu, 
     viewLeaderboard, 
     hideEmojiHighlight,
-    newlyUnlockedAchievements 
+    newlyUnlockedAchievements,
+    setGameState
   } = useGameState();
 
   // Timer hook
@@ -33,14 +36,23 @@ export const App = () => {
     onExpire: endGame,
   });
 
+  // How To Play Screen
+  if (showHowToPlay) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-green-50 to-green-100 animate-fadeIn">
+        <HowToPlayScreen onBack={() => setShowHowToPlay(false)} />
+      </div>
+    );
+  }
+
   // Menu Screen
   if (gameState.screen === 'menu') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-orange-50 to-orange-100 animate-fadeIn">
         <MenuScreen 
-          onStartGame={startGame} 
-          onStartDailyChallenge={startDailyChallenge}
-          onViewLeaderboard={viewLeaderboard} 
+          onStartGame={(difficulty) => startGame(difficulty)}
+          onViewLeaderboard={viewLeaderboard}
+          onViewHowToPlay={() => setShowHowToPlay(true)}
         />
       </div>
     );
@@ -49,7 +61,7 @@ export const App = () => {
   // Leaderboard Screen
   if (gameState.screen === 'leaderboard') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-blue-100">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 animate-fadeIn">
         <EnhancedLeaderboard onBack={returnToMenu} />
       </div>
     );
@@ -58,26 +70,36 @@ export const App = () => {
   // Game Screen
   if (gameState.screen === 'game') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4 sm:gap-6 p-2 sm:p-4 bg-gradient-to-b from-blue-50 to-blue-100">
-        {/* Daily Challenge Indicator */}
-        {gameState.isDailyChallenge && dailyChallenge && (
-          <DailyChallengeIndicator emoji={dailyChallenge.emoji} streak={dailyChallenge.streak} />
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4 sm:gap-6 p-2 sm:p-4 bg-gradient-to-b from-blue-50 to-blue-100 animate-fadeIn">
+        {/* Countdown Overlay */}
+        {gameState.showCountdown && (
+          <GameStartCountdown onComplete={startGameAfterCountdown} />
         )}
 
-        <ComboIndicator combo={gameState.combo} />
+        <div className="animate-bounceIn">
+          <ComboIndicator combo={gameState.combo} />
+        </div>
 
-        <GameUI
-          score={gameState.score}
-          timer={gameState.timer}
-          roundsCompleted={gameState.roundsCompleted}
-          combo={gameState.combo}
-          matchingEmoji={gameState.matchingEmoji}
-          showDebug={true}
-        />
+        <div className="animate-slideDown">
+          <GameUI
+            score={gameState.score}
+            timer={gameState.timer}
+            roundsCompleted={gameState.roundsCompleted}
+            combo={gameState.combo}
+            matchingEmoji={gameState.matchingEmoji}
+            showDebug={false}
+            onBack={returnToMenu}
+            difficulty={gameState.difficulty}
+          />
+        </div>
 
-        <div className="w-full max-w-[800px] px-2">
+        <div className="w-full max-w-[800px] px-2 animate-scaleIn">
           {gameState.currentCards && (
-            <GameCanvas cards={gameState.currentCards} onEmojiClick={handleEmojiClick} />
+            <GameCanvas 
+              cards={gameState.currentCards} 
+              onEmojiClick={handleEmojiClick}
+              difficulty={gameState.difficulty}
+            />
           )}
         </div>
       </div>
@@ -86,33 +108,63 @@ export const App = () => {
 
   // Game Over Screen
   if (gameState.screen === 'gameover') {
-    // Show emoji highlight first, then game over screen
-    if (gameState.showEmojiHighlight && gameState.currentCards && gameState.matchingEmoji) {
+    // Show results screen if requested
+    if (gameState.showResults) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen gap-4 sm:gap-6 p-2 sm:p-4 bg-gradient-to-b from-blue-50 to-blue-100">
-          <GameUI
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-purple-50 to-purple-100 animate-fadeIn">
+          <GameOverScreen
             score={gameState.score}
-            timer={gameState.timer}
             roundsCompleted={gameState.roundsCompleted}
-            combo={gameState.combo}
-            matchingEmoji={gameState.matchingEmoji}
-            showDebug={false}
+            stats={gameState.stats}
+            matchingEmoji={gameState.matchingEmoji || undefined}
+            newAchievements={newlyUnlockedAchievements}
+            isDailyChallenge={gameState.isDailyChallenge || false}
+            onPlayAgain={() => startGame(gameState.difficulty || 'easy')}
+            onReturnToMenu={returnToMenu}
           />
-
-          <div className="w-full max-w-[800px] px-2 relative">
-            <GameCanvas cards={gameState.currentCards} onEmojiClick={() => {}} />
-            <EmojiHighlight
-              matchingEmoji={gameState.matchingEmoji}
-              cards={{ card1: gameState.currentCards[0], card2: gameState.currentCards[1] }}
-              onComplete={hideEmojiHighlight}
-            />
-          </div>
         </div>
       );
     }
 
+    // Show final board with highlighted matching emoji
+    if (gameState.currentCards && gameState.matchingEmoji) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen gap-4 sm:gap-6 p-2 sm:p-4 bg-gradient-to-b from-purple-50 to-purple-100 animate-fadeIn">
+          <div className="text-center animate-bounceIn">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              {gameState.isDailyChallenge ? 'Daily Challenge Complete!' : 'Time\'s Up!'}
+            </h1>
+            <p className="text-lg text-gray-600">The matching emoji was:</p>
+            <div className="text-6xl my-4 animate-pulse">{gameState.matchingEmoji}</div>
+          </div>
+
+          <div className="w-full max-w-[800px] px-2 relative">
+            <GameCanvas 
+              cards={gameState.currentCards} 
+              onEmojiClick={() => {}}
+              difficulty={gameState.difficulty}
+              highlightEmoji={gameState.matchingEmoji}
+            />
+          </div>
+
+          <button 
+            onClick={() => setGameState(prev => ({ ...prev, showResults: true }))}
+            className="pushable btn-primary animate-slideUp"
+          >
+            <span className="shadow"></span>
+            <span className="edge"></span>
+            <span className="front text-xl font-bold px-8 py-4 flex items-center justify-center gap-2">
+              <BarChart3 className="w-6 h-6" />
+              <span>See Results</span>
+            </span>
+          </button>
+        </div>
+      );
+    }
+
+    // Fallback to results if no cards
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-purple-50 to-purple-100">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-purple-50 to-purple-100 animate-fadeIn">
         <GameOverScreen
           score={gameState.score}
           roundsCompleted={gameState.roundsCompleted}
@@ -120,7 +172,7 @@ export const App = () => {
           matchingEmoji={gameState.matchingEmoji || undefined}
           newAchievements={newlyUnlockedAchievements}
           isDailyChallenge={gameState.isDailyChallenge || false}
-          onPlayAgain={startGame}
+          onPlayAgain={() => startGame(gameState.difficulty || 'easy')}
           onReturnToMenu={returnToMenu}
         />
       </div>

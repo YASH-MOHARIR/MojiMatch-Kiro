@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { LeaderboardEntry, LeaderboardResponse } from '../../shared/types/api';
+import { ArrowLeft } from 'lucide-react';
 
 interface LeaderboardScreenProps {
   onBack: () => void;
@@ -42,13 +43,13 @@ export function LeaderboardScreen({ onBack }: LeaderboardScreenProps) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6 p-8">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">🏆 Leaderboard</h1>
+    <div className="flex flex-col items-center justify-center gap-6 p-8 animate-fadeIn">
+      <div className="text-center animate-slideDown">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2 animate-pulse">Leaderboard</h1>
         <p className="text-lg text-gray-600">Top 5 High Scores</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md animate-scaleIn">
         {loading ? (
           <div className="text-center text-gray-500 py-8">
             <p className="text-lg">Loading...</p>
@@ -64,13 +65,13 @@ export function LeaderboardScreen({ onBack }: LeaderboardScreenProps) {
             <p className="text-sm">Play a game to set the first record.</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 animate-stagger">
             {leaderboard.map((entry, index) => (
               <div
                 key={index}
-                className={`flex items-center justify-between p-4 rounded-lg ${
+                className={`flex items-center justify-between p-4 rounded-lg transition-all-smooth hover:scale-105 hover:shadow-md ${
                   index === 0
-                    ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 border-2 border-yellow-400'
+                    ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 border-2 border-yellow-400 animate-glow'
                     : 'bg-gray-50'
                 }`}
               >
@@ -104,11 +105,13 @@ export function LeaderboardScreen({ onBack }: LeaderboardScreenProps) {
         )}
       </div>
 
-      <button
-        onClick={onBack}
-        className="px-8 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
-      >
-        ← Back to Menu
+      <button onClick={onBack} className="pushable btn-gray animate-slideUp">
+        <span className="shadow"></span>
+        <span className="edge"></span>
+        <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Menu</span>
+        </span>
       </button>
     </div>
   );

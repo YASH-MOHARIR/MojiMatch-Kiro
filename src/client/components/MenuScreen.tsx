@@ -1,18 +1,21 @@
 import { useState } from 'react';
 import { audioManager } from '../utils/audioManager';
-import { useDailyChallenge } from '../hooks/useDailyChallenge';
+import { DifficultySelector } from './DifficultySelector';
+import { Difficulty } from '../../shared/types/game';
+import { Play, Trophy, HelpCircle, Settings } from 'lucide-react';
 
 interface MenuScreenProps {
-  onStartGame: () => void;
-  onStartDailyChallenge: () => void;
+  onStartGame: (difficulty: Difficulty) => void;
   onViewLeaderboard: () => void;
+  onViewHowToPlay: () => void;
 }
 
-export function MenuScreen({ onStartGame, onStartDailyChallenge, onViewLeaderboard }: MenuScreenProps) {
+export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: MenuScreenProps) {
   const [showSettings, setShowSettings] = useState(false);
+  const [showDifficulty, setShowDifficulty] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('easy');
   const [sfxEnabled, setSfxEnabled] = useState(audioManager.isSFXEnabled());
   const [musicEnabled, setMusicEnabled] = useState(audioManager.isMusicEnabled());
-  const { dailyChallenge, loading } = useDailyChallenge();
 
   const handleToggleSFX = () => {
     const newValue = !sfxEnabled;
@@ -27,62 +30,73 @@ export function MenuScreen({ onStartGame, onStartDailyChallenge, onViewLeaderboa
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 p-8">
-      <div className="text-center">
-        <h1 className="text-5xl font-bold text-gray-900 mb-2">🎮 MojiMatcher</h1>
+    <div className="flex flex-col items-center justify-center gap-8 p-8 animate-fadeIn">
+      <div className="text-center animate-slideDown">
+        <img 
+          src="/logo.png" 
+          alt="MojiMatcher" 
+          className="w-80 h-80 mx-auto mb-4 animate-pulse drop-shadow-2xl"
+        />
         <p className="text-lg text-gray-600">Find the matching emoji!</p>
       </div>
 
-      <div className="flex flex-col gap-4 w-full max-w-xs">
-        {/* Daily Challenge Button */}
-        {!loading && dailyChallenge && (
-          <button
-            onClick={onStartDailyChallenge}
-            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-bold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg transform hover:scale-105"
-          >
-            <div className="flex items-center justify-center gap-2">
-              <span>📅</span>
-              <span>Daily Challenge</span>
-              <span className="text-2xl">{dailyChallenge.emoji}</span>
-            </div>
-            {dailyChallenge.streak > 0 && (
-              <div className="text-sm mt-1 opacity-90">
-                🔥 {dailyChallenge.streak} day streak!
-              </div>
-            )}
-            {dailyChallenge.hasPlayed && dailyChallenge.bestScore && (
-              <div className="text-sm mt-1 opacity-90">
-                Best today: {dailyChallenge.bestScore} pts
-              </div>
-            )}
-          </button>
-        )}
-
-        <button
-          onClick={onStartGame}
-          className="px-8 py-4 bg-[#d93900] text-white text-xl font-bold rounded-lg hover:bg-[#c13300] transition-colors shadow-lg"
-        >
-          ▶️ Play Game
+      <div className="flex flex-col gap-4 w-full max-w-xs animate-stagger">
+        <button onClick={() => setShowDifficulty(true)} className="pushable btn-primary w-full">
+          <span className="shadow"></span>
+          <span className="edge"></span>
+          <span className="front text-xl font-bold px-8 py-4 flex items-center justify-center gap-2">
+            <Play className="w-6 h-6" />
+            <span>Play Game</span>
+          </span>
         </button>
 
-        <button
-          onClick={onViewLeaderboard}
-          className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          🏆 Leaderboard
+        <button onClick={onViewLeaderboard} className="pushable btn-secondary w-full">
+          <span className="shadow"></span>
+          <span className="edge"></span>
+          <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
+            <Trophy className="w-5 h-5" />
+            <span>Leaderboard</span>
+          </span>
         </button>
 
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          className="px-8 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
-        >
-          ⚙️ Settings
+        <button onClick={onViewHowToPlay} className="pushable btn-green w-full">
+          <span className="shadow"></span>
+          <span className="edge"></span>
+          <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
+            <HelpCircle className="w-5 h-5" />
+            <span>How to Play</span>
+          </span>
+        </button>
+
+        <button onClick={() => setShowSettings(!showSettings)} className="pushable btn-gray w-full">
+          <span className="shadow"></span>
+          <span className="edge"></span>
+          <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
+            <Settings className="w-5 h-5" />
+            <span>Settings</span>
+          </span>
         </button>
       </div>
 
+      {/* Difficulty Selector */}
+      {showDifficulty && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn" onClick={() => setShowDifficulty(false)}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <DifficultySelector
+              selectedDifficulty={selectedDifficulty}
+              onSelect={(difficulty) => {
+                setSelectedDifficulty(difficulty);
+                setShowDifficulty(false);
+                onStartGame(difficulty);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Settings Panel */}
       {showSettings && (
-        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs">
+        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs animate-scaleIn">
           <h3 className="text-lg font-bold mb-4">Settings</h3>
 
           <div className="space-y-4">
@@ -90,12 +104,12 @@ export function MenuScreen({ onStartGame, onStartDailyChallenge, onViewLeaderboa
               <span className="text-gray-700">Sound Effects</span>
               <button
                 onClick={handleToggleSFX}
-                className={`w-12 h-6 rounded-full transition-colors ${
+                className={`w-12 h-6 rounded-full transition-all-smooth ${
                   sfxEnabled ? 'bg-green-500' : 'bg-gray-300'
                 }`}
               >
                 <div
-                  className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
+                  className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-all-smooth ${
                     sfxEnabled ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
@@ -106,12 +120,12 @@ export function MenuScreen({ onStartGame, onStartDailyChallenge, onViewLeaderboa
               <span className="text-gray-700">Music</span>
               <button
                 onClick={handleToggleMusic}
-                className={`w-12 h-6 rounded-full transition-colors ${
+                className={`w-12 h-6 rounded-full transition-all-smooth ${
                   musicEnabled ? 'bg-green-500' : 'bg-gray-300'
                 }`}
               >
                 <div
-                  className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
+                  className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-all-smooth ${
                     musicEnabled ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
@@ -121,16 +135,7 @@ export function MenuScreen({ onStartGame, onStartDailyChallenge, onViewLeaderboa
         </div>
       )}
 
-      <div className="text-center text-sm text-gray-600 max-w-md">
-        <p className="mb-2">How to play:</p>
-        <ul className="text-left list-disc list-inside space-y-1">
-          <li>Find the ONE emoji that appears on both cards</li>
-          <li>Click it before time runs out!</li>
-          <li>Correct match: +25 base points, +3-13 seconds (combo bonus!)</li>
-          <li>Build combos for more points and time!</li>
-          <li>Wrong click: -2 seconds, combo reset</li>
-        </ul>
-      </div>
+
     </div>
   );
 }

@@ -131,11 +131,25 @@ class AudioManager {
         break;
 
       case 'gameover':
-        oscillator.frequency.value = 392.0; // G4
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        // Buzzer sound - harsh, attention-grabbing
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.value = 200; // Low frequency
+        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
         oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.5);
+        oscillator.stop(audioContext.currentTime + 0.8);
+        
+        // Add a second oscillator for more buzzer effect
+        const oscillator2 = audioContext.createOscillator();
+        const gainNode2 = audioContext.createGain();
+        oscillator2.connect(gainNode2);
+        gainNode2.connect(audioContext.destination);
+        oscillator2.type = 'square';
+        oscillator2.frequency.value = 150;
+        gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+        oscillator2.start();
+        oscillator2.stop(audioContext.currentTime + 0.8);
         break;
     }
   }

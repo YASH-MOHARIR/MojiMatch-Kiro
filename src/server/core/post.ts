@@ -12,14 +12,12 @@ export const createPost = async () => {
 
   return await reddit.submitCustomPost({
     splash: {
-      // Engaging splash screen with animated background and personalized message
+      // Engaging splash screen with animated background (logo baked into background)
       appDisplayName: 'MojiMatcher',
-      appIconUri: 'logo.png',
       backgroundUri: 'splash-background.gif',
       heading: `Hey ${displayName}! Think You're Fast Enough? 🔥`,
       description:
         "Most players can't beat the top score. 😏\n\n" +
-        '⚡ 30 seconds • 🎯 Lightning reflexes required • 🏆 Prove yourself\n\n' +
         "Can you handle the pressure? Let's see what you've got! 💪",
       buttonLabel: '🎮 I Accept the Challenge!',
     },

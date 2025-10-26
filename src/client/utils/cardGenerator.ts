@@ -138,10 +138,10 @@ function getRandomPositionWithoutOverlap(
 
 /**
  * Generates a pair of cards with exactly 1 matching emoji
- * Each card contains 8 emojis total
  * @param seed Optional seed for deterministic generation (for daily challenges)
+ * @param emojiCount Number of emojis per card (default: 8)
  */
-export function generateCardPair(seed?: number): {
+export function generateCardPair(seed?: number, emojiCount: number = 8): {
   cards: [Card, Card];
   matchingEmoji: string;
 } {
@@ -151,11 +151,11 @@ export function generateCardPair(seed?: number): {
   // Step 1: Select 1 matching emoji from pool
   const matchingEmoji = rng.pick(EMOJI_POOL);
 
-  // Step 2: Select 7 unique emojis for card 1 (excluding matching emoji)
-  const card1Emojis = selectRandomEmojis(7, [matchingEmoji], rng);
+  // Step 2: Select (emojiCount - 1) unique emojis for card 1 (excluding matching emoji)
+  const card1Emojis = selectRandomEmojis(emojiCount - 1, [matchingEmoji], rng);
 
-  // Step 3: Select 7 unique emojis for card 2 (excluding matching emoji and card 1 emojis)
-  const card2Emojis = selectRandomEmojis(7, [matchingEmoji, ...card1Emojis], rng);
+  // Step 3: Select (emojiCount - 1) unique emojis for card 2 (excluding matching emoji and card 1 emojis)
+  const card2Emojis = selectRandomEmojis(emojiCount - 1, [matchingEmoji, ...card1Emojis], rng);
 
   // Step 4: Add matching emoji to both cards
   const card1AllEmojis = [...card1Emojis, matchingEmoji];

@@ -94,7 +94,7 @@ router.post<{ postId: string }, DecrementResponse | { status: string; message: s
 // MojiMatcher: Save score to leaderboard
 router.post('/api/save-score', async (req, res): Promise<void> => {
   try {
-    const { score, rounds, highestCombo, accuracy } = req.body;
+    const { score, rounds, highestCombo, accuracy, difficulty = 'easy' } = req.body;
 
     if (typeof score !== 'number' || typeof rounds !== 'number') {
       res.status(400).json({
@@ -161,6 +161,15 @@ router.post('/api/save-score', async (req, res): Promise<void> => {
       member: `${username}:${score}:${rounds}:${Date.now()}`,
       score: score,
     });
+
+    // Save to GOD mode leaderboard if applicable
+    if (difficulty === 'god') {
+      const godKey = 'mojimatcher:god:leaderboard';
+      await redis.zAdd(godKey, {
+        member: `${username}:${score}:${rounds}:${Date.now()}`,
+        score: score,
+      });
+    }
 
     // Save to weekly leaderboard
     const now = new Date();
@@ -325,6 +334,34 @@ router.get('/api/leaderboard/alltime', async (_req, res): Promise<void> => {
     res.status(500).json({
       success: false,
       error: { code: 'SERVER_ERROR', message: 'Failed to fetch all-time leaderboard' },
+    });
+  }
+});
+
+// MojiMatcher: Get GOD mode leaderboard (top 10)
+router.get('/api/leaderboard/god', async (_req, res): Promise<void> => {
+  try {
+    const leaderboardKey = 'mojimatcher:god:leaderboard';
+
+    const entries = await redis.zRange(leaderboardKey, 0, 9, { by: 'rank', reverse: true });
+
+    const scores = entries.map((entry, index) => {
+      const [username, score, rounds, timestamp] = entry.member.split(':');
+      return {
+        rank: index + 1,
+        username: username!,
+        score: parseInt(score!, 10),
+        rounds: parseInt(rounds!, 10),
+        timestamp: parseInt(timestamp!, 10),
+      };
+    });
+
+    res.json({ scores });
+  } catch (error) {
+    console.error('Error fetching GOD mode leaderboard:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Failed to fetch GOD mode leaderboard' },
     });
   }
 });

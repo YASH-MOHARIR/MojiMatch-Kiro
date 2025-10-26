@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Card } from '../../shared/types/game';
+import { Difficulty } from '../../shared/types/game';
 
 interface GameCanvasProps {
   cards: [Card, Card] | null;
   onEmojiClick?: (emoji: string, isCorrect: boolean) => void;
+  difficulty?: Difficulty;
+  highlightEmoji?: string;
 }
 
 interface ClickAnimation {
@@ -13,9 +16,79 @@ interface ClickAnimation {
   timestamp: number;
 }
 
-export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
+interface HoverState {
+  emoji: string;
+  cardIndex: number;
+  emojiIndex: number;
+}
+
+interface SelectionState {
+  emoji: string;
+  timestamp: number;
+}
+
+export function GameCanvas({ cards, onEmojiClick, difficulty = 'easy', highlightEmoji }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [clickAnimation, setClickAnimation] = useState<ClickAnimation | null>(null);
+  const [hoveredEmoji, setHoveredEmoji] = useState<HoverState | null>(null);
+  const [selectedEmoji, setSelectedEmoji] = useState<SelectionState | null>(null);
+  const [emojiOffsets, setEmojiOffsets] = useState<Map<string, { x: number; y: number }>>(new Map());
+  const animationFrameRef = useRef<number>();
+  const [canvasDimensions, setCanvasDimensions] = useState({ width: 800, height: 500 });
+  
+  // Enable movement for Hard and GOD modes
+  const shouldMove = difficulty === 'hard' || difficulty === 'god';
+  const movementSpeed = difficulty === 'god' ? 1.2 : 0.8;
+
+  // Update canvas dimensions based on window size
+  useEffect(() => {
+    const updateDimensions = () => {
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        setCanvasDimensions({ width: Math.min(window.innerWidth - 32, 400), height: 950 });
+      } else {
+        setCanvasDimensions({ width: 800, height: 500 });
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  // Movement animation for Hard/GOD modes
+  useEffect(() => {
+    if (!shouldMove || !cards) return;
+
+    const animate = () => {
+      const time = Date.now() * 0.001; // Convert to seconds
+      const newOffsets = new Map<string, { x: number; y: number }>();
+
+      cards.forEach((card, cardIndex) => {
+        card.emojis.forEach((emoji, emojiIndex) => {
+          const key = `${cardIndex}-${emojiIndex}`;
+          // Larger movement radius for more challenge
+          const radius = difficulty === 'god' ? 15 : 10;
+          // Use smoother easing functions for fluid movement
+          const phase = time * movementSpeed + emojiIndex;
+          const offsetX = Math.sin(phase) * radius;
+          const offsetY = Math.cos(phase * 0.7) * radius;
+          newOffsets.set(key, { x: offsetX, y: offsetY });
+        });
+      });
+
+      setEmojiOffsets(newOffsets);
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [shouldMove, cards, movementSpeed]);
 
   useEffect(() => {
     if (!canvasRef.current || !cards) return;
@@ -27,8 +100,8 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Render both cards
-    renderCards(ctx, cards);
+    // Render both cards with hover and selection states
+    renderCards(ctx, cards, hoveredEmoji, selectedEmoji, emojiOffsets, highlightEmoji);
 
     // Render click animation if active
     if (clickAnimation) {
@@ -43,7 +116,44 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
         setClickAnimation(null);
       }
     }
-  }, [cards, clickAnimation]);
+
+    // Clear selection after animation
+    if (selectedEmoji) {
+      const elapsed = Date.now() - selectedEmoji.timestamp;
+      if (elapsed > 300) {
+        setSelectedEmoji(null);
+      } else {
+        requestAnimationFrame(() => {
+          setSelectedEmoji({ ...selectedEmoji });
+        });
+      }
+    }
+  }, [cards, clickAnimation, hoveredEmoji, selectedEmoji, emojiOffsets, highlightEmoji]);
+
+  // Continuous animation for highlighted emoji
+  useEffect(() => {
+    if (!highlightEmoji) return;
+
+    const animate = () => {
+      // Trigger re-render for pulsing effect
+      if (canvasRef.current) {
+        const ctx = canvasRef.current.getContext('2d');
+        if (ctx && cards) {
+          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          renderCards(ctx, cards, hoveredEmoji, selectedEmoji, emojiOffsets, highlightEmoji);
+        }
+      }
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [highlightEmoji, cards, hoveredEmoji, selectedEmoji, emojiOffsets]);
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current || !cards || !onEmojiClick) return;
@@ -60,8 +170,30 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
     // Find which emoji was clicked
     const clickedEmoji = getClickedEmoji(x, y, cards);
     if (clickedEmoji) {
+      setSelectedEmoji({ emoji: clickedEmoji, timestamp: Date.now() });
       onEmojiClick(clickedEmoji, false);
     }
+  };
+
+  const handleCanvasMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || !cards) return;
+
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+
+    // Get mouse coordinates relative to canvas
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
+
+    // Find which emoji is being hovered
+    const hoverInfo = getHoveredEmoji(x, y, cards);
+    setHoveredEmoji(hoverInfo);
+  };
+
+  const handleCanvasMouseLeave = () => {
+    setHoveredEmoji(null);
   };
 
   const handleCanvasTouch = (event: React.TouchEvent<HTMLCanvasElement>) => {
@@ -84,6 +216,7 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
     // Find which emoji was touched
     const clickedEmoji = getClickedEmoji(x, y, cards);
     if (clickedEmoji) {
+      setSelectedEmoji({ emoji: clickedEmoji, timestamp: Date.now() });
       onEmojiClick(clickedEmoji, false);
     }
   };
@@ -91,19 +224,21 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
   return (
     <canvas
       ref={canvasRef}
-      width={800}
-      height={500}
+      width={canvasDimensions.width}
+      height={canvasDimensions.height}
       onClick={handleCanvasClick}
+      onMouseMove={handleCanvasMouseMove}
+      onMouseLeave={handleCanvasMouseLeave}
       onTouchEnd={handleCanvasTouch}
       style={{
         maxWidth: '100%',
         width: '100%',
         height: 'auto',
-        border: '2px solid #333',
-        borderRadius: '8px',
+        borderRadius: '12px',
         backgroundColor: '#f5f5f5',
-        cursor: 'pointer',
-        touchAction: 'manipulation', // Improve touch responsiveness
+        cursor: hoveredEmoji ? 'pointer' : 'default',
+        touchAction: 'manipulation',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)',
       }}
     />
   );
@@ -112,31 +247,58 @@ export function GameCanvas({ cards, onEmojiClick }: GameCanvasProps) {
 /**
  * Renders both cards side-by-side on the canvas
  */
-function renderCards(ctx: CanvasRenderingContext2D, cards: [Card, Card]) {
+function renderCards(
+  ctx: CanvasRenderingContext2D,
+  cards: [Card, Card],
+  hoveredEmoji: HoverState | null,
+  selectedEmoji: SelectionState | null,
+  emojiOffsets?: Map<string, { x: number; y: number }>,
+  highlightEmoji?: string
+) {
   const cardWidth = 350;
   const cardHeight = 450;
   const gap = 20;
-  const canvasWidth = 800;
-  const canvasHeight = 500;
+  const canvasWidth = ctx.canvas.width;
+  const canvasHeight = ctx.canvas.height;
 
-  // Calculate positions to center cards
-  const totalWidth = cardWidth * 2 + gap;
-  const startX = (canvasWidth - totalWidth) / 2;
-  const startY = (canvasHeight - cardHeight) / 2;
+  // Check if we should use vertical layout (mobile)
+  const isVertical = canvasWidth < 768;
 
-  // Card 1 position
-  const card1X = startX;
-  const card1Y = startY;
+  if (isVertical) {
+    // Vertical layout for mobile
+    const totalHeight = cardHeight * 2 + gap;
+    const startX = (canvasWidth - cardWidth) / 2;
+    const startY = (canvasHeight - totalHeight) / 2;
 
-  // Card 2 position
-  const card2X = startX + cardWidth + gap;
-  const card2Y = startY;
+    // Card 1 position (top)
+    const card1X = startX;
+    const card1Y = startY;
 
-  // Render card 1
-  renderCard(ctx, cards[0], card1X, card1Y, cardWidth, cardHeight);
+    // Card 2 position (bottom)
+    const card2X = startX;
+    const card2Y = startY + cardHeight + gap;
 
-  // Render card 2
-  renderCard(ctx, cards[1], card2X, card2Y, cardWidth, cardHeight);
+    // Render cards
+    renderCard(ctx, cards[0], card1X, card1Y, cardWidth, cardHeight, 0, hoveredEmoji, selectedEmoji, emojiOffsets, highlightEmoji);
+    renderCard(ctx, cards[1], card2X, card2Y, cardWidth, cardHeight, 1, hoveredEmoji, selectedEmoji, emojiOffsets, highlightEmoji);
+  } else {
+    // Horizontal layout for desktop
+    const totalWidth = cardWidth * 2 + gap;
+    const startX = (canvasWidth - totalWidth) / 2;
+    const startY = (canvasHeight - cardHeight) / 2;
+
+    // Card 1 position (left)
+    const card1X = startX;
+    const card1Y = startY;
+
+    // Card 2 position (right)
+    const card2X = startX + cardWidth + gap;
+    const card2Y = startY;
+
+    // Render cards
+    renderCard(ctx, cards[0], card1X, card1Y, cardWidth, cardHeight, 0, hoveredEmoji, selectedEmoji, emojiOffsets, highlightEmoji);
+    renderCard(ctx, cards[1], card2X, card2Y, cardWidth, cardHeight, 1, hoveredEmoji, selectedEmoji, emojiOffsets, highlightEmoji);
+  }
 }
 
 /**
@@ -148,13 +310,19 @@ function renderCard(
   x: number,
   y: number,
   width: number,
-  height: number
+  height: number,
+  cardIndex: number,
+  hoveredEmoji: HoverState | null,
+  selectedEmoji: SelectionState | null,
+  emojiOffsets?: Map<string, { x: number; y: number }>,
+  highlightEmoji?: string
 ) {
   // Draw card background
   ctx.save();
   ctx.fillStyle = '#ffffff';
-  ctx.strokeStyle = '#333333';
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
   ctx.lineWidth = 2;
+  ctx.setLineDash([5, 5]); // Dashed border
 
   // Draw rounded rectangle for card
   const radius = 12;
@@ -173,6 +341,7 @@ function renderCard(
   // Fill and stroke
   ctx.fill();
   ctx.stroke();
+  ctx.setLineDash([]); // Reset line dash
 
   // Add shadow
   ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
@@ -183,8 +352,14 @@ function renderCard(
   ctx.restore();
 
   // Render emojis on this card
-  card.emojis.forEach((emojiInstance) => {
-    renderEmoji(ctx, emojiInstance, x, y);
+  card.emojis.forEach((emojiInstance, emojiIndex) => {
+    const isHovered =
+      hoveredEmoji?.cardIndex === cardIndex && hoveredEmoji?.emojiIndex === emojiIndex;
+    const isSelected = selectedEmoji?.emoji === emojiInstance.emoji;
+    const isHighlighted = highlightEmoji === emojiInstance.emoji;
+    const key = `${cardIndex}-${emojiIndex}`;
+    const movementOffset = emojiOffsets?.get(key);
+    renderEmoji(ctx, emojiInstance, x, y, isHovered, isSelected, selectedEmoji?.timestamp, movementOffset, isHighlighted);
   });
 }
 
@@ -195,14 +370,20 @@ function renderEmoji(
   ctx: CanvasRenderingContext2D,
   emojiInstance: { emoji: string; x: number; y: number; size: number; rotation: number },
   cardX: number,
-  cardY: number
+  cardY: number,
+  isHovered: boolean,
+  isSelected: boolean,
+  selectionTimestamp?: number,
+  movementOffset?: { x: number; y: number },
+  isHighlighted?: boolean
 ) {
-  
   ctx.save();
 
-  // Calculate absolute position
-  const absoluteX = cardX + emojiInstance.x;
-  const absoluteY = cardY + emojiInstance.y;
+  // Calculate absolute position with optional movement offset
+  const offsetX = movementOffset?.x || 0;
+  const offsetY = movementOffset?.y || 0;
+  const absoluteX = cardX + emojiInstance.x + offsetX;
+  const absoluteY = cardY + emojiInstance.y + offsetY;
 
   // Move to emoji position
   ctx.translate(absoluteX, absoluteY);
@@ -210,8 +391,42 @@ function renderEmoji(
   // Apply rotation
   ctx.rotate((emojiInstance.rotation * Math.PI) / 180);
 
+  // Calculate scale with hover and selection effects
+  let scale = emojiInstance.size;
+  
+  if (isSelected && selectionTimestamp) {
+    // Selection animation: quick scale up then down
+    const elapsed = Date.now() - selectionTimestamp;
+    const progress = Math.min(elapsed / 300, 1);
+    const bounce = Math.sin(progress * Math.PI);
+    scale = emojiInstance.size * (1 + bounce * 0.3);
+  } else if (isHovered) {
+    // Hover animation: gentle scale up with pulse
+    const pulse = Math.sin(Date.now() * 0.005) * 0.05;
+    scale = emojiInstance.size * (1.15 + pulse);
+  }
+
   // Apply scaling
-  ctx.scale(emojiInstance.size, emojiInstance.size);
+  ctx.scale(scale, scale);
+
+  // Add glow effect for highlight (game over)
+  if (isHighlighted) {
+    ctx.shadowColor = 'rgba(255, 215, 0, 1)';
+    ctx.shadowBlur = 30;
+    // Add pulsing effect
+    const pulse = Math.sin(Date.now() * 0.003) * 0.5 + 0.5;
+    ctx.globalAlpha = 0.8 + pulse * 0.2;
+  }
+  // Add glow effect for hover
+  else if (isHovered) {
+    ctx.shadowColor = 'rgba(59, 130, 246, 0.8)';
+    ctx.shadowBlur = 15;
+  }
+  // Add glow effect for selection
+  else if (isSelected) {
+    ctx.shadowColor = 'rgba(34, 197, 94, 0.9)';
+    ctx.shadowBlur = 20;
+  }
 
   // Set font and render emoji
   const baseFontSize = 40;
@@ -222,6 +437,73 @@ function renderEmoji(
   ctx.fillText(emojiInstance.emoji, 0, 0);
 
   ctx.restore();
+}
+
+/**
+ * Detects which emoji is being hovered based on mouse coordinates
+ */
+function getHoveredEmoji(mouseX: number, mouseY: number, cards: [Card, Card]): HoverState | null {
+  const cardWidth = 350;
+  const cardHeight = 450;
+  const gap = 20;
+  const canvasWidth = 800;
+  const canvasHeight = 500;
+
+  // Calculate card positions
+  const totalWidth = cardWidth * 2 + gap;
+  const startX = (canvasWidth - totalWidth) / 2;
+  const startY = (canvasHeight - cardHeight) / 2;
+
+  const card1X = startX;
+  const card1Y = startY;
+  const card2X = startX + cardWidth + gap;
+  const card2Y = startY;
+
+  // Check card 1
+  const hover1 = checkEmojiHover(mouseX, mouseY, cards[0], card1X, card1Y, 0);
+  if (hover1) return hover1;
+
+  // Check card 2
+  const hover2 = checkEmojiHover(mouseX, mouseY, cards[1], card2X, card2Y, 1);
+  if (hover2) return hover2;
+
+  return null;
+}
+
+/**
+ * Checks if mouse is hovering over any emoji on a specific card
+ */
+function checkEmojiHover(
+  mouseX: number,
+  mouseY: number,
+  card: Card,
+  cardX: number,
+  cardY: number,
+  cardIndex: number
+): HoverState | null {
+  const hitRadius = 30; // Approximate hit area radius
+
+  // Check each emoji (in reverse order to match rendering order)
+  for (let i = card.emojis.length - 1; i >= 0; i--) {
+    const emoji = card.emojis[i];
+    if (!emoji) continue;
+
+    const absoluteX = cardX + emoji.x;
+    const absoluteY = cardY + emoji.y;
+
+    // Calculate distance from mouse to emoji center
+    const dx = mouseX - absoluteX;
+    const dy = mouseY - absoluteY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Check if mouse is within hit radius (scaled by emoji size)
+    const scaledHitRadius = hitRadius * emoji.size;
+    if (distance <= scaledHitRadius) {
+      return { emoji: emoji.emoji, cardIndex, emojiIndex: i };
+    }
+  }
+
+  return null;
 }
 
 /**

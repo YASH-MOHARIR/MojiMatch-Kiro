@@ -1,3 +1,8 @@
+import { Difficulty } from '../../shared/types/game';
+import { getDifficultyConfig } from '../../shared/constants/difficulty';
+import { audioManager } from '../utils/audioManager';
+import { ArrowLeft, Volume2, VolumeX, Music } from 'lucide-react';
+
 interface GameUIProps {
   score: number;
   timer: number;
@@ -5,6 +10,8 @@ interface GameUIProps {
   combo: number;
   matchingEmoji?: string | null;
   showDebug?: boolean;
+  onBack?: () => void;
+  difficulty?: Difficulty;
 }
 
 export function GameUI({
@@ -14,7 +21,10 @@ export function GameUI({
   combo,
   matchingEmoji,
   showDebug = false,
+  onBack,
+  difficulty = 'easy',
 }: GameUIProps) {
+  const difficultyConfig = getDifficultyConfig(difficulty);
   // Determine timer color based on time remaining (adjusted for 30s game)
   const getTimerColor = () => {
     if (timer > 15) return 'text-green-600'; // Green (>15s)
@@ -30,37 +40,73 @@ export function GameUI({
 
   return (
     <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-[800px]">
+      {/* Top Bar with Back Button and Settings */}
+      <div className="w-full px-2 sm:px-4 flex justify-between items-center">
+        {onBack && (
+          <button onClick={onBack} className="pushable btn-gray">
+            <span className="shadow"></span>
+            <span className="edge"></span>
+            <span className="front font-semibold px-4 py-2 flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </span>
+          </button>
+        )}
+        
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              const newValue = !audioManager.isSFXEnabled();
+              audioManager.toggleSFX(newValue);
+            }}
+            className="w-10 h-10 rounded-lg bg-white shadow-md flex items-center justify-center hover:bg-gray-100 transition-colors"
+            title="Toggle Sound Effects"
+          >
+            {audioManager.isSFXEnabled() ? (
+              <Volume2 className="w-5 h-5 text-gray-700" />
+            ) : (
+              <VolumeX className="w-5 h-5 text-gray-400" />
+            )}
+          </button>
+          <button
+            onClick={() => {
+              const newValue = !audioManager.isMusicEnabled();
+              audioManager.toggleMusic(newValue);
+            }}
+            className="w-10 h-10 rounded-lg bg-white shadow-md flex items-center justify-center hover:bg-gray-100 transition-colors"
+            title="Toggle Music"
+          >
+            <Music className={`w-5 h-5 ${audioManager.isMusicEnabled() ? 'text-gray-700' : 'text-gray-400'}`} />
+          </button>
+        </div>
+      </div>
+
       {/* Score and Timer Display */}
-      <div className="flex justify-between items-center w-full px-2 sm:px-4">
-        <div className="text-left">
-          <div className="text-xs sm:text-sm text-gray-600">Score</div>
-          <div className="text-2xl sm:text-3xl font-bold text-gray-900">{score}</div>
-          {combo > 0 && <div className="text-xs text-orange-600 font-semibold mt-1">{combo}x Combo</div>}
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full px-2 sm:px-4">
+        <div className="bg-white rounded-lg shadow-md p-3 text-center">
+          <div className="text-xs text-gray-600 mb-1">Score</div>
+          <div className="text-xl sm:text-2xl font-bold text-gray-900">{score}</div>
+          {combo > 0 && <div className="text-xs text-orange-600 font-semibold mt-1">{combo}x</div>}
+          <div className="text-xs text-gray-500 mt-1">{difficultyConfig.name}</div>
         </div>
 
-        <div className="text-center">
-          <div className="text-xs sm:text-sm text-gray-600">Timer</div>
+        <div className="bg-white rounded-lg shadow-md p-3 text-center">
+          <div className="text-xs text-gray-600 mb-1">Timer</div>
           <div
-            className={`text-2xl sm:text-3xl font-bold ${getTimerColor()} px-3 sm:px-4 py-1 sm:py-2 rounded-lg ${getTimerBgColor()} transition-colors duration-300`}
+            className={`text-xl sm:text-2xl font-bold ${getTimerColor()} px-2 py-1 rounded-lg ${getTimerBgColor()} transition-colors duration-300`}
           >
             {timer}s
           </div>
         </div>
 
-        <div className="text-right">
-          <div className="text-xs sm:text-sm text-gray-600">Rounds</div>
-          <div className="text-2xl sm:text-3xl font-bold text-gray-900">{roundsCompleted}</div>
+        <div className="bg-white rounded-lg shadow-md p-3 text-center">
+          <div className="text-xs text-gray-600 mb-1">Rounds</div>
+          <div className="text-xl sm:text-2xl font-bold text-gray-900">{roundsCompleted}</div>
+          <div className="text-xs text-gray-500 mt-1">{difficultyConfig.scoreMultiplier}x</div>
         </div>
       </div>
 
-      {/* Debug Info */}
-      {showDebug && matchingEmoji && (
-        <div className="bg-yellow-100 border border-yellow-400 rounded-lg px-3 sm:px-4 py-2">
-          <p className="text-xs sm:text-sm text-yellow-800">
-            🐛 Debug: Matching emoji is <span className="text-xl sm:text-2xl">{matchingEmoji}</span>
-          </p>
-        </div>
-      )}
+
     </div>
   );
 }
