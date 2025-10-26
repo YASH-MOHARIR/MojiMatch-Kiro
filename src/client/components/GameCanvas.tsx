@@ -270,6 +270,8 @@ function checkEmojiClick(
   // Check each emoji (in reverse order to match rendering order)
   for (let i = card.emojis.length - 1; i >= 0; i--) {
     const emoji = card.emojis[i];
+    if (!emoji) continue;
+    
     const absoluteX = cardX + emoji.x;
     const absoluteY = cardY + emoji.y;
 

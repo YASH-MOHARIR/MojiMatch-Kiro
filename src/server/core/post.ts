@@ -6,20 +6,28 @@ export const createPost = async () => {
     throw new Error('subredditName is required');
   }
 
+  // Get current user for personalization
+  const username = await reddit.getCurrentUsername();
+  const displayName = username ? `u/${username}` : 'Redditor';
+
   return await reddit.submitCustomPost({
     splash: {
-      // Eye-catching Splash Screen for Reddit Feed
+      // Engaging splash screen with animated background and personalized message
       appDisplayName: 'MojiMatcher',
-      buttonLabel: '🎮 Play Now',
+      appIconUri: 'logo.png',
+      backgroundUri: 'splash-background.gif',
+      heading: `Welcome, ${displayName}! 👋`,
       description:
-        '⚡ 30-second rounds • 🎯 Build combos • 🏆 Daily challenges • 📊 Compete on leaderboards\n\nFind the ONE emoji that appears on both cards before time runs out!',
-      heading: '🎮 MojiMatcher - Lightning-Fast Emoji Matching!',
+        "Think you're quick? This game isn't as easy as it looks! 😏\n\n" +
+        '⚡ 30-second rounds • 🎯 Build combos • 🏆 Beat the leaderboard\n\n' +
+        "Find the ONE emoji that appears on both cards. Can you handle the pressure? Let's see what you've got! 🔥",
+      buttonLabel: '🎮 I Accept the Challenge!',
     },
     postData: {
       gameState: 'ready',
       version: '1.0.0',
     },
     subredditName: subredditName,
-    title: '🎮 MojiMatcher - Find the Matching Emoji! [Daily Challenge Available]',
+    title: '🎮 MojiMatcher - Think You Can Beat the High Score? 🏆',
   });
 };

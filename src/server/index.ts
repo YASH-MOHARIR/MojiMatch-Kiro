@@ -384,7 +384,7 @@ router.get('/api/stats/global', async (_req, res): Promise<void> => {
     let stats = statsData ? JSON.parse(statsData) : { totalGames: 0, playersToday: 0 };
 
     // Get today's date for daily challenge
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0]!;
     const dailyChallengeData = await redis.get(`mojimatcher:daily:challenge:${today}`);
     let dailyChallenge = dailyChallengeData ? JSON.parse(dailyChallengeData) : null;
 
@@ -397,13 +397,17 @@ router.get('/api/stats/global', async (_req, res): Promise<void> => {
         date: today,
         emoji: randomEmoji,
       };
+      // Set expiration to end of today (midnight)
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
       await redis.set(`mojimatcher:daily:challenge:${today}`, JSON.stringify(dailyChallenge), {
-        expiration: new Date(new Date().setHours(24, 0, 0, 0)),
+        expiration: tomorrow,
       });
     }
 
     // Get unique players today from stored array
-    const playersData = await redis.get(`mojimatcher:players:${today}`);
+    const playersData = await redis.get(`mojimatcher:players:${today!}`);
     const playersToday = playersData ? JSON.parse(playersData).length : 0;
 
     res.json({
@@ -577,7 +581,7 @@ router.post('/api/achievements/unlock', async (req, res): Promise<void> => {
 
     // Check if already unlocked
     const achievementsData = await redis.get(achievementsKey);
-    const achievements = achievementsData ? JSON.parse(achievementsData) : [];
+    const achievements: string[] = achievementsData ? JSON.parse(achievementsData) : [];
 
     if (achievements.includes(achievementId)) {
       res.json({ success: true, alreadyUnlocked: true });
@@ -638,6 +642,8 @@ router.get('/api/achievements/:username', async (req, res): Promise<void> => {
     const achievementsKey = `mojimatcher:user:${username}:achievements`;
     const achievementsData = await redis.get(achievementsKey);
     const unlockedIds: string[] = achievementsData ? JSON.parse(achievementsData) : [];
+
+    // Note: Redis doesn't have sMembers, we're using get/set with JSON arrays instead
 
     // Get rarity for each achievement
     const allPlayersData = await redis.get('mojimatcher:all:players');

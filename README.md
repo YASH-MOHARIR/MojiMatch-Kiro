@@ -12,7 +12,7 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 
 **The Goal:** Build the highest combo streak possible to maximize your score and earn time bonuses. The longer your combo, the more time you earn per match (4-13 seconds), creating a snowball effect where skilled players can extend their games significantly. Compete on multiple leaderboards (All-Time, Daily, Weekly) and unlock achievements as you master the game.
 
-**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts. Players can jump straight into the game from an eye-catching animated splash screen with floating emoji particles, compete with the Reddit community on daily challenges and leaderboards, and have their scores automatically tied to their Reddit usernames for seamless social gaming.
+**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts. Players can compete with the Reddit community on daily challenges and leaderboards, with scores automatically tied to their Reddit usernames for seamless social gaming.
 
 ### Core Features
 
@@ -22,7 +22,6 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 - **Time Bonuses**: Earn 4-13 seconds per match based on your combo level (higher combos = more time)
 - **Visual Chaos**: Every emoji has random size (0.8x-2.5x) and rotation (0-360°) for unique challenges
 - **Daily Challenge Mode**: Compete with the Reddit community on the same deterministic puzzle each day
-- **Animated Splash Screen**: Eye-catching entry screen with floating emoji particles, live player stats, and daily challenge preview
 - **Multi-Tier Leaderboards**: All-Time, Daily, and Weekly leaderboards with Reddit username integration
 - **Achievement System**: Unlock 15 achievements across 6 categories (Speed, Combo, Accuracy, Score, Participation, Daily)
 - **Streak Tracking**: Build consecutive day streaks by playing daily challenges with 🔥 streak indicators
