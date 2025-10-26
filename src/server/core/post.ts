@@ -16,11 +16,11 @@ export const createPost = async () => {
       appDisplayName: 'MojiMatcher',
       appIconUri: 'logo.png',
       backgroundUri: 'splash-background.gif',
-      heading: `Welcome, ${displayName}! 👋`,
+      heading: `Hey ${displayName}! Think You're Fast Enough? 🔥`,
       description:
-        "Think you're quick? This game isn't as easy as it looks! 😏\n\n" +
-        '⚡ 30-second rounds • 🎯 Build combos • 🏆 Beat the leaderboard\n\n' +
-        "Find the ONE emoji that appears on both cards. Can you handle the pressure? Let's see what you've got! 🔥",
+        "Most players can't beat the top score. 😏\n\n" +
+        '⚡ 30 seconds • 🎯 Lightning reflexes required • 🏆 Prove yourself\n\n' +
+        "Can you handle the pressure? Let's see what you've got! 💪",
       buttonLabel: '🎮 I Accept the Challenge!',
     },
     postData: {
