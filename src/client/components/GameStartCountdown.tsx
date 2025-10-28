@@ -64,20 +64,3 @@ function playBeep(frequency: number, duration: number, volume: number = 0.1) {
     console.warn('Audio not supported:', error);
   }
 }
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 animate-fadeIn">
-      <div className="text-center">
-        {count > 0 ? (
-          <div className="text-9xl font-bold text-white animate-bounceIn" key={count}>
-            {count}
-          </div>
-        ) : (
-          <div className="text-7xl font-bold text-white animate-scaleIn">
-            🎮 GO! 🎮
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
