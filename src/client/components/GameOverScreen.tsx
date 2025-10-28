@@ -9,9 +9,8 @@ interface GameOverScreenProps {
     correctClicks: number;
     highestCombo: number;
   };
-  matchingEmoji?: string;
+  matchingEmoji?: string | undefined;
   newAchievements?: Achievement[];
-  isDailyChallenge?: boolean;
   onPlayAgain: () => void;
   onReturnToMenu: () => void;
 }
@@ -22,7 +21,6 @@ export function GameOverScreen({
   stats,
   matchingEmoji,
   newAchievements = [],
-  isDailyChallenge = false,
   onPlayAgain,
   onReturnToMenu,
 }: GameOverScreenProps) {
@@ -33,9 +31,7 @@ export function GameOverScreen({
   return (
     <div className="flex flex-col items-center justify-center gap-6 p-8 animate-fadeIn">
       <div className="text-center animate-bounceIn">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">
-          {isDailyChallenge ? 'Daily Challenge Complete!' : 'Time\'s Up!'}
-        </h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Time's Up!</h1>
         <p className="text-lg text-gray-600">Game Over</p>
         {matchingEmoji && (
           <div className="mt-2 text-sm text-gray-500 animate-pulse">

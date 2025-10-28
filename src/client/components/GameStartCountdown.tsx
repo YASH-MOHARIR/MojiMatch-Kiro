@@ -33,9 +33,7 @@ export function GameStartCountdown({ onComplete }: GameStartCountdownProps) {
             {count}
           </div>
         ) : (
-          <div className="text-7xl font-bold text-white animate-scaleIn">
-            GO!
-          </div>
+          <div className="text-7xl font-bold text-white animate-scaleIn">GO!</div>
         )}
       </div>
     </div>

@@ -11,7 +11,7 @@ interface GameUIProps {
   matchingEmoji?: string | null;
   showDebug?: boolean;
   onBack?: () => void;
-  difficulty?: Difficulty;
+  difficulty: Difficulty;
 }
 
 export function GameUI({
@@ -19,8 +19,6 @@ export function GameUI({
   timer,
   roundsCompleted,
   combo,
-  matchingEmoji,
-  showDebug = false,
   onBack,
   difficulty = 'easy',
 }: GameUIProps) {

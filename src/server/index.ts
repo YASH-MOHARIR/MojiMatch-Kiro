@@ -420,165 +420,22 @@ router.get('/api/stats/global', async (_req, res): Promise<void> => {
     const statsData = await redis.get('mojimatcher:global:stats');
     let stats = statsData ? JSON.parse(statsData) : { totalGames: 0, playersToday: 0 };
 
-    // Get today's date for daily challenge
+    // Get today's date
     const today = new Date().toISOString().split('T')[0]!;
-    const dailyChallengeData = await redis.get(`mojimatcher:daily:challenge:${today}`);
-    let dailyChallenge = dailyChallengeData ? JSON.parse(dailyChallengeData) : null;
-
-    // Generate daily challenge if it doesn't exist
-    if (!dailyChallenge) {
-      const emojis = ['🎯', '🎮', '⚡', '🔥', '⭐', '💫', '🎊', '🎉', '✨', '💎'];
-      const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-      dailyChallenge = {
-        seed: parseInt(today.replace(/-/g, '')),
-        date: today,
-        emoji: randomEmoji,
-      };
-      // Set expiration to end of today (midnight)
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(0, 0, 0, 0);
-      await redis.set(`mojimatcher:daily:challenge:${today}`, JSON.stringify(dailyChallenge), {
-        expiration: tomorrow,
-      });
-    }
 
     // Get unique players today from stored array
-    const playersData = await redis.get(`mojimatcher:players:${today!}`);
+    const playersData = await redis.get(`mojimatcher:players:${today}`);
     const playersToday = playersData ? JSON.parse(playersData).length : 0;
 
     res.json({
       totalGames: stats.totalGames || 0,
       playersToday: playersToday,
-      dailyChallengeEmoji: dailyChallenge.emoji,
-      dailyChallengeDate: dailyChallenge.date,
     });
   } catch (error) {
     console.error('Error fetching global stats:', error);
     res.status(500).json({
       success: false,
       error: { code: 'SERVER_ERROR', message: 'Failed to fetch global stats' },
-    });
-  }
-});
-
-// MojiMatcher: Get daily challenge
-router.get('/api/daily-challenge', async (_req, res): Promise<void> => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const dailyChallengeData = await redis.get(`mojimatcher:daily:challenge:${today}`);
-    let dailyChallenge = dailyChallengeData ? JSON.parse(dailyChallengeData) : null;
-
-    // Generate daily challenge if it doesn't exist
-    if (!dailyChallenge) {
-      const emojis = ['🎯', '🎮', '⚡', '🔥', '⭐', '💫', '🎊', '🎉', '✨', '💎'];
-      const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-      dailyChallenge = {
-        seed: parseInt(today.replace(/-/g, ''), 10),
-        date: today,
-        emoji: randomEmoji,
-      };
-      await redis.set(`mojimatcher:daily:challenge:${today}`, JSON.stringify(dailyChallenge), {
-        expiration: new Date(new Date().setHours(24, 0, 0, 0)),
-      });
-    }
-
-    // Get user's best score for today
-    const username = (await reddit.getCurrentUsername()) ?? 'anonymous';
-    const userScoreKey = `mojimatcher:daily:${today}:user:${username}`;
-    const userScoreData = await redis.get(userScoreKey);
-    const bestScore = userScoreData ? JSON.parse(userScoreData).score : null;
-
-    // Get user's streak
-    const streakData = await redis.get(`mojimatcher:streak:${username}`);
-    const streak = streakData ? JSON.parse(streakData) : { count: 0, lastPlayed: null };
-
-    res.json({
-      seed: dailyChallenge.seed,
-      date: dailyChallenge.date,
-      emoji: dailyChallenge.emoji,
-      hasPlayed: bestScore !== null,
-      bestScore: bestScore,
-      streak: streak.count,
-    });
-  } catch (error) {
-    console.error('Error fetching daily challenge:', error);
-    res.status(500).json({
-      success: false,
-      error: { code: 'SERVER_ERROR', message: 'Failed to fetch daily challenge' },
-    });
-  }
-});
-
-// MojiMatcher: Save daily challenge score
-router.post('/api/daily-challenge/score', async (req, res): Promise<void> => {
-  try {
-    const { score, rounds, highestCombo, accuracy } = req.body;
-
-    if (typeof score !== 'number' || typeof rounds !== 'number') {
-      res.status(400).json({
-        success: false,
-        error: { code: 'INVALID_INPUT', message: 'Score and rounds are required' },
-      });
-      return;
-    }
-
-    const username = (await reddit.getCurrentUsername()) ?? 'anonymous';
-    const today = new Date().toISOString().split('T')[0];
-
-    // Check if this is user's best score for today
-    const userScoreKey = `mojimatcher:daily:${today}:user:${username}`;
-    const existingScoreData = await redis.get(userScoreKey);
-    const existingScore = existingScoreData ? JSON.parse(existingScoreData).score : 0;
-
-    if (score > existingScore) {
-      // Save user's best score for today
-      await redis.set(
-        userScoreKey,
-        JSON.stringify({ score, rounds, highestCombo, accuracy, timestamp: Date.now() }),
-        { expiration: new Date(new Date().setHours(48, 0, 0, 0)) } // Keep for 2 days
-      );
-
-      // Update daily leaderboard (sorted set)
-      const leaderboardKey = `mojimatcher:daily:leaderboard:${today}`;
-      await redis.zAdd(leaderboardKey, {
-        member: `${username}:${score}:${rounds}:${Date.now()}`,
-        score: score,
-      });
-      await redis.expire(leaderboardKey, 172800); // 2 days
-
-      // Update streak
-      const streakData = await redis.get(`mojimatcher:streak:${username}`);
-      const streak = streakData ? JSON.parse(streakData) : { count: 0, lastPlayed: null };
-
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-      if (streak.lastPlayed === yesterday) {
-        // Consecutive day
-        streak.count += 1;
-      } else if (streak.lastPlayed !== today) {
-        // Streak broken or first time
-        streak.count = 1;
-      }
-      streak.lastPlayed = today;
-
-      await redis.set(`mojimatcher:streak:${username}`, JSON.stringify(streak));
-    }
-
-    // Get user's rank on daily leaderboard
-    const leaderboardKey = `mojimatcher:daily:leaderboard:${today}`;
-    const leaderboard = await redis.zRange(leaderboardKey, 0, -1, { by: 'rank', reverse: true });
-    const rank = leaderboard.findIndex((entry) => entry.member.startsWith(`${username}:`)) + 1;
-
-    res.json({
-      success: true,
-      rank: rank > 0 ? rank : undefined,
-      isNewBest: score > existingScore,
-    });
-  } catch (error) {
-    console.error('Error saving daily challenge score:', error);
-    res.status(500).json({
-      success: false,
-      error: { code: 'SERVER_ERROR', message: 'Failed to save daily challenge score' },
     });
   }
 });

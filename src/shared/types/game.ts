@@ -34,8 +34,6 @@ export interface GameState {
   showEmojiHighlight?: boolean;
   showCountdown?: boolean;
   showResults?: boolean;
-  isDailyChallenge?: boolean;
-  dailyChallengeSeed?: number | undefined;
   difficulty?: Difficulty;
 }
 
