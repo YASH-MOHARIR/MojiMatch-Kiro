@@ -29,7 +29,8 @@ export const createPost = async () => {
   return await reddit.submitCustomPost({
     splash: {
       appDisplayName: 'MojiMatcher',
-      backgroundUri: 'splash-background.gif',
+      // Using mobile-optimized background since most users are on mobile
+      backgroundUri: 'splash-background-mobile.gif',
       description: topPlayerInfo || 'Be the first to set a high score!',
       buttonLabel: '🎮 Play Now',
     },
