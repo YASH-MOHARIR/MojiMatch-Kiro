@@ -3,6 +3,9 @@
  * Handles all sound effects and music playback
  */
 
+// Import the audio file as a module
+import buttonClickSound from '/btn-click.mp3?url';
+
 type SoundName =
   | 'start'
   | 'correct'
@@ -12,15 +15,47 @@ type SoundName =
   | 'combo10'
   | 'tick'
   | 'fasttick'
-  | 'gameover';
+  | 'gameover'
+  | 'buttonclick';
 
 class AudioManager {
   private music: HTMLAudioElement | null = null;
   private sfxEnabled: boolean = true;
   private musicEnabled: boolean = true;
+  private buttonClickAudio: HTMLAudioElement | null = null;
 
   constructor() {
     this.loadSettings();
+    this.loadButtonClickSound();
+  }
+
+  /**
+   * Load button click sound
+   */
+  private loadButtonClickSound() {
+    try {
+      console.log('🔊 Loading button click sound from:', buttonClickSound);
+      this.buttonClickAudio = new Audio(buttonClickSound);
+      this.buttonClickAudio.volume = 0.5; // Increased volume
+      this.buttonClickAudio.preload = 'auto';
+      
+      // Add error handler
+      this.buttonClickAudio.addEventListener('error', (e) => {
+        console.error('❌ Failed to load button click sound:', e);
+        console.error('Attempted path:', buttonClickSound);
+      });
+      
+      // Add loaded handler for debugging
+      this.buttonClickAudio.addEventListener('canplaythrough', () => {
+        console.log('✅ Button click sound loaded successfully!');
+      });
+      
+      this.buttonClickAudio.addEventListener('loadeddata', () => {
+        console.log('✅ Button click sound data loaded');
+      });
+    } catch (error) {
+      console.error('❌ Error initializing button click sound:', error);
+    }
   }
 
   /**
@@ -150,6 +185,26 @@ class AudioManager {
         gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
         oscillator2.start();
         oscillator2.stop(audioContext.currentTime + 0.8);
+        break;
+
+      case 'buttonclick':
+        // Play the button click MP3 file
+        console.log('🔊 Button click requested, audio loaded:', !!this.buttonClickAudio);
+        if (this.buttonClickAudio) {
+          try {
+            this.buttonClickAudio.currentTime = 0;
+            console.log('🎵 Playing button click sound...');
+            this.buttonClickAudio.play()
+              .then(() => console.log('✅ Button click sound played successfully'))
+              .catch((error) => {
+                console.warn('⚠️ Button click sound play failed:', error.name, error.message);
+              });
+          } catch (error) {
+            console.error('❌ Error playing button click sound:', error);
+          }
+        } else {
+          console.warn('⚠️ Button click audio not loaded');
+        }
         break;
     }
   }

@@ -143,7 +143,7 @@ export const App = () => {
             <span className="shadow"></span>
             <span className="edge"></span>
             <span className="front text-base sm:text-xl font-bold px-6 sm:px-8 py-3 sm:py-4 flex items-center justify-center gap-2">
-              <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 inline-block align-middle" />
+              <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 mr-2 inline-block align-middle" />
               <span className="inline-block align-middle">See Results</span>
             </span>
           </button>

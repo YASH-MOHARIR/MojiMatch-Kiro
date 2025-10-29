@@ -18,12 +18,14 @@ export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: 
   const [musicEnabled, setMusicEnabled] = useState(audioManager.isMusicEnabled());
 
   const handleToggleSFX = () => {
+    audioManager.playSound('buttonclick');
     const newValue = !sfxEnabled;
     setSfxEnabled(newValue);
     audioManager.toggleSFX(newValue);
   };
 
   const handleToggleMusic = () => {
+    audioManager.playSound('buttonclick');
     const newValue = !musicEnabled;
     setMusicEnabled(newValue);
     audioManager.toggleMusic(newValue);
@@ -41,38 +43,38 @@ export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: 
       </div>
 
       <div className="flex flex-col gap-4 w-full max-w-xs animate-stagger">
-        <button onClick={() => setShowDifficulty(true)} className="pushable btn-primary w-full">
+        <button onClick={() => { audioManager.playSound('buttonclick'); setShowDifficulty(true); }} className="pushable btn-primary w-full">
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front text-xl font-bold px-8 py-4 flex items-center justify-center gap-3">
-            <Play className="w-6 h-6 flex-shrink-0 inline-block align-middle" />
+            <Play className="w-6 h-6 mr-2 flex-shrink-0 inline-block align-middle" />
             <span className="inline-block align-middle">Play Game</span>
           </span>
         </button>
 
-        <button onClick={onViewLeaderboard} className="pushable btn-secondary w-full">
+        <button onClick={() => { audioManager.playSound('buttonclick'); onViewLeaderboard(); }} className="pushable btn-secondary w-full">
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
-            <Trophy className="w-5 h-5 flex-shrink-0 inline-block align-middle" />
+            <Trophy className="w-5 h-5 mr-2 flex-shrink-0 inline-block align-middle" />
             <span className="inline-block align-middle">Leaderboard</span>
           </span>
         </button>
 
-        <button onClick={onViewHowToPlay} className="pushable btn-green w-full">
+        <button onClick={() => { audioManager.playSound('buttonclick'); onViewHowToPlay(); }} className="pushable btn-green w-full">
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
-            <HelpCircle className="w-5 h-5 flex-shrink-0 inline-block align-middle" />
+            <HelpCircle className="w-5 h-5 mr-2 flex-shrink-0 inline-block align-middle" />
             <span className="inline-block align-middle">How to Play</span>
           </span>
         </button>
 
-        <button onClick={() => setShowSettings(!showSettings)} className="pushable btn-gray w-full">
+        <button onClick={() => { audioManager.playSound('buttonclick'); setShowSettings(!showSettings); }} className="pushable btn-gray w-full">
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
-            <Settings className="w-5 h-5 flex-shrink-0 inline-block align-middle" />
+            <Settings className="w-5 h-5 mr-2 flex-shrink-0 inline-block align-middle" />
             <span className="inline-block align-middle">Settings</span>
           </span>
         </button>

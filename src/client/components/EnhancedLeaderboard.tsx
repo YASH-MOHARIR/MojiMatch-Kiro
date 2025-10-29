@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Trophy, TrendingUp, Zap, ArrowLeft, RefreshCw } from 'lucide-react';
+import { audioManager } from '../utils/audioManager';
 
 interface LeaderboardEntry {
   rank: number;
@@ -143,7 +144,7 @@ export function EnhancedLeaderboard({ onBack, currentUsername = 'anonymous' }: E
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => { audioManager.playSound('buttonclick'); setActiveTab(tab.id); }}
             className={`px-4 py-2 rounded-lg font-semibold transition-all-smooth transform hover:scale-105 active:scale-95 flex items-center gap-2 ${
               activeTab === tab.id
                 ? 'bg-blue-600 text-white shadow-md'
@@ -166,7 +167,7 @@ export function EnhancedLeaderboard({ onBack, currentUsername = 'anonymous' }: E
           <div className="text-center text-red-500 py-8">
             <p className="text-lg mb-2">⚠️ {error}</p>
             <button
-              onClick={handleRefresh}
+              onClick={() => { audioManager.playSound('buttonclick'); handleRefresh(); }}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all-smooth transform hover:scale-105 active:scale-95"
             >
               Retry
@@ -182,7 +183,7 @@ export function EnhancedLeaderboard({ onBack, currentUsername = 'anonymous' }: E
                 {activeTab === 'god' && 'GOD Mode Top 10'}
               </h2>
               <button
-                onClick={handleRefresh}
+                onClick={() => { audioManager.playSound('buttonclick'); handleRefresh(); }}
                 className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm transition-all-smooth transform hover:scale-105 active:scale-95 flex items-center gap-1"
               >
                 <RefreshCw className="w-4 h-4 inline-block align-middle" />
@@ -259,7 +260,7 @@ export function EnhancedLeaderboard({ onBack, currentUsername = 'anonymous' }: E
         )}
       </div>
 
-      <button onClick={onBack} className="pushable btn-gray animate-slideUp">
+      <button onClick={() => { audioManager.playSound('buttonclick'); onBack(); }} className="pushable btn-gray animate-slideUp">
         <span className="shadow"></span>
         <span className="edge"></span>
         <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">

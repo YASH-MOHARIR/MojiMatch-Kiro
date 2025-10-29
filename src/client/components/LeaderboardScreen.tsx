@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LeaderboardEntry, LeaderboardResponse } from '../../shared/types/api';
 import { ArrowLeft } from 'lucide-react';
+import { audioManager } from '../utils/audioManager';
 
 interface LeaderboardScreenProps {
   onBack: () => void;
@@ -105,7 +106,7 @@ export function LeaderboardScreen({ onBack }: LeaderboardScreenProps) {
         )}
       </div>
 
-      <button onClick={onBack} className="pushable btn-gray animate-slideUp">
+      <button onClick={() => { audioManager.playSound('buttonclick'); onBack(); }} className="pushable btn-gray animate-slideUp">
         <span className="shadow"></span>
         <span className="edge"></span>
         <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">

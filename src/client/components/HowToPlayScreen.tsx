@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { audioManager } from '../utils/audioManager';
 
 interface HowToPlayScreenProps {
   onBack: () => void;
@@ -192,11 +193,11 @@ export function HowToPlayScreen({ onBack }: HowToPlayScreenProps) {
         </div>
       </div>
 
-      <button onClick={onBack} className="pushable btn-gray animate-slideUp">
+      <button onClick={() => { audioManager.playSound('buttonclick'); onBack(); }} className="pushable btn-gray animate-slideUp">
         <span className="shadow"></span>
         <span className="edge"></span>
         <span className="front font-semibold px-6 sm:px-8 py-2 sm:py-3 flex items-center justify-center gap-2 text-sm sm:text-base">
-          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 inline-block align-middle" />
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2 inline-block align-middle" />
           <span className="inline-block align-middle">Back to Menu</span>
         </span>
       </button>

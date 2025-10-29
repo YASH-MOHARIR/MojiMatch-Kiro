@@ -22,6 +22,6 @@ export const createPost = async () => {
     },
     subredditName: subredditName,
     title:
-      "🎮 MojiMatcher - Most Players can't malke it past 4 rounds, No one Dares to open GOD mode..can you? ",
+      "🎮 MojiMatch - Most Players can't malke it past 4 rounds, No one Dares to open GOD mode..can you? ",
   });
 };

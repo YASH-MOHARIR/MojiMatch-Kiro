@@ -43,11 +43,11 @@ export function GameUI({
       {/* Top Bar with Back Button and Settings */}
       <div className="w-full px-2 sm:px-4 flex justify-between items-center">
         {onBack && (
-          <button onClick={onBack} className="pushable btn-gray">
+          <button onClick={() => { audioManager.playSound('buttonclick'); onBack(); }} className="pushable btn-gray">
             <span className="shadow"></span>
             <span className="edge"></span>
             <span className="front font-semibold px-3 sm:px-4 py-2 flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4 inline-block align-middle" />
+              <ArrowLeft className="w-4 h-4 mr-2 inline-block align-middle" />
               <span className="inline-block align-middle hidden sm:inline">Back</span>
             </span>
           </button>

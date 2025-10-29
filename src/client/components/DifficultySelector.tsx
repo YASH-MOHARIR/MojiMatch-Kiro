@@ -1,5 +1,6 @@
 import { Difficulty } from '../../shared/types/game';
 import { DIFFICULTY_CONFIGS } from '../../shared/constants/difficulty';
+import { audioManager } from '../utils/audioManager';
 
 interface DifficultySelectorProps {
   selectedDifficulty: Difficulty;
@@ -21,7 +22,7 @@ export function DifficultySelector({ selectedDifficulty, onSelect }: DifficultyS
           return (
             <button
               key={difficulty}
-              onClick={() => onSelect(difficulty)}
+              onClick={() => { audioManager.playSound('buttonclick'); onSelect(difficulty); }}
               className={`pushable w-full ${
                 isSelected ? 'ring-4 ring-blue-400' : ''
               }`}

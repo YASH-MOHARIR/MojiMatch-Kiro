@@ -94,28 +94,86 @@ function getRandomRotation(rng: RandomGenerator): number {
 }
 
 /**
- * Checks if two emojis overlap
+ * Checks if two emojis overlap with improved collision detection
  */
 function checkOverlap(e1: EmojiInstance, e2: EmojiInstance): boolean {
   const baseFontSize = 40;
-  const minDistance = 60; // Increased minimum distance between emoji centers
-
-  // Calculate effective radius for each emoji (accounting for size)
-  const radius1 = (baseFontSize * e1.size) / 2 + minDistance / 2;
-  const radius2 = (baseFontSize * e2.size) / 2 + minDistance / 2;
+  
+  // Calculate actual visual radius for each emoji (accounting for size)
+  // Add extra padding to ensure clear separation
+  const padding = 15; // Extra space between emojis
+  const radius1 = (baseFontSize * e1.size) / 2 + padding;
+  const radius2 = (baseFontSize * e2.size) / 2 + padding;
 
   // Calculate distance between centers
   const dx = e1.x - e2.x;
   const dy = e1.y - e2.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
 
+  // Minimum distance should be sum of radii
+  const minDistance = radius1 + radius2;
+
   // Check if they overlap
-  return distance < radius1 + radius2;
+  return distance < minDistance;
 }
 
 /**
- * Generates random position within card boundaries with overlap prevention
- * Card dimensions: 350px × 450px
+ * Grid-based spatial partitioning for faster overlap checks
+ */
+class SpatialGrid {
+  private grid: Map<string, EmojiInstance[]>;
+  private cellSize: number;
+
+  constructor(cellSize: number = 80) {
+    this.grid = new Map();
+    this.cellSize = cellSize;
+  }
+
+  private getCellKey(x: number, y: number): string {
+    const cellX = Math.floor(x / this.cellSize);
+    const cellY = Math.floor(y / this.cellSize);
+    return `${cellX},${cellY}`;
+  }
+
+  private getNearbyCells(x: number, y: number): string[] {
+    const cells: string[] = [];
+    const cellX = Math.floor(x / this.cellSize);
+    const cellY = Math.floor(y / this.cellSize);
+
+    // Check current cell and 8 surrounding cells
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        cells.push(`${cellX + dx},${cellY + dy}`);
+      }
+    }
+    return cells;
+  }
+
+  add(emoji: EmojiInstance): void {
+    const key = this.getCellKey(emoji.x, emoji.y);
+    if (!this.grid.has(key)) {
+      this.grid.set(key, []);
+    }
+    this.grid.get(key)!.push(emoji);
+  }
+
+  getNearby(x: number, y: number): EmojiInstance[] {
+    const nearby: EmojiInstance[] = [];
+    const cells = this.getNearbyCells(x, y);
+
+    for (const cell of cells) {
+      const emojis = this.grid.get(cell);
+      if (emojis) {
+        nearby.push(...emojis);
+      }
+    }
+    return nearby;
+  }
+}
+
+/**
+ * Generates random position within card boundaries with improved overlap prevention
+ * Uses grid-based spatial partitioning and progressive relaxation
  */
 function getRandomPositionWithoutOverlap(
   existingEmojis: EmojiInstance[],
@@ -123,33 +181,133 @@ function getRandomPositionWithoutOverlap(
   rng: RandomGenerator,
   cardWidth: number = 350,
   cardHeight: number = 450,
-  maxAttempts: number = 50
+  maxAttempts: number = 100
 ): { x: number; y: number } {
-  const padding = 40;
+  const baseFontSize = 40;
+  const emojiRadius = (baseFontSize * size) / 2;
+  
+  // Dynamic padding based on emoji count - less padding for more emojis
+  const emojiCount = existingEmojis.length;
+  let padding = 40;
+  if (emojiCount > 12) padding = 30;
+  if (emojiCount > 16) padding = 25;
 
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const x = padding + rng.nextFloat(0, cardWidth - 2 * padding);
-    const y = padding + rng.nextFloat(0, cardHeight - 2 * padding);
+  // Create spatial grid for faster overlap checks
+  const spatialGrid = new SpatialGrid(80);
+  existingEmojis.forEach(emoji => spatialGrid.add(emoji));
 
-    const tempEmoji: EmojiInstance = {
-      emoji: '',
-      x,
-      y,
-      size,
-      rotation: 0,
-    };
+  // Progressive relaxation: try with strict requirements first, then relax
+  const attempts = [
+    { maxTries: 50, minDistanceMultiplier: 1.0 }, // Full distance
+    { maxTries: 30, minDistanceMultiplier: 0.85 }, // 85% distance
+    { maxTries: 20, minDistanceMultiplier: 0.7 }, // 70% distance
+  ];
 
-    // Check if this position overlaps with any existing emoji
-    const hasOverlap = existingEmojis.some(existing => checkOverlap(tempEmoji, existing));
+  for (const { maxTries, minDistanceMultiplier } of attempts) {
+    for (let attempt = 0; attempt < maxTries; attempt++) {
+      // Ensure emoji stays within bounds
+      const minX = padding + emojiRadius;
+      const maxX = cardWidth - padding - emojiRadius;
+      const minY = padding + emojiRadius;
+      const maxY = cardHeight - padding - emojiRadius;
 
-    if (!hasOverlap) {
-      return { x, y };
+      // Generate random position
+      const x = minX + rng.nextFloat(0, maxX - minX);
+      const y = minY + rng.nextFloat(0, maxY - minY);
+
+      const tempEmoji: EmojiInstance = {
+        emoji: '',
+        x,
+        y,
+        size,
+        rotation: 0,
+      };
+
+      // Only check nearby emojis using spatial grid
+      const nearbyEmojis = spatialGrid.getNearby(x, y);
+      
+      // Check overlap with relaxed distance requirements
+      let hasOverlap = false;
+      for (const existing of nearbyEmojis) {
+        const baseFontSize = 40;
+        const padding = 15 * minDistanceMultiplier;
+        const radius1 = (baseFontSize * tempEmoji.size) / 2 + padding;
+        const radius2 = (baseFontSize * existing.size) / 2 + padding;
+        
+        const dx = tempEmoji.x - existing.x;
+        const dy = tempEmoji.y - existing.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const minDistance = radius1 + radius2;
+
+        if (distance < minDistance) {
+          hasOverlap = true;
+          break;
+        }
+      }
+
+      if (!hasOverlap) {
+        return { x, y };
+      }
     }
   }
 
-  // If we couldn't find a non-overlapping position, return a random one
-  const x = padding + rng.nextFloat(0, cardWidth - 2 * padding);
-  const y = padding + rng.nextFloat(0, cardHeight - 2 * padding);
+  // Last resort: use Poisson disk sampling for guaranteed non-overlap
+  return poissonDiskSampling(existingEmojis, size, rng, cardWidth, cardHeight, padding);
+}
+
+/**
+ * Poisson disk sampling as fallback for guaranteed non-overlapping placement
+ */
+function poissonDiskSampling(
+  existingEmojis: EmojiInstance[],
+  size: number,
+  rng: RandomGenerator,
+  cardWidth: number,
+  cardHeight: number,
+  padding: number
+): { x: number; y: number } {
+  const baseFontSize = 40;
+  const emojiRadius = (baseFontSize * size) / 2 + 15;
+  
+  // Create a grid of valid positions
+  const gridSize = emojiRadius * 2;
+  const cols = Math.floor((cardWidth - 2 * padding) / gridSize);
+  const rows = Math.floor((cardHeight - 2 * padding) / gridSize);
+  
+  // Mark occupied cells
+  const occupied = new Set<string>();
+  for (const emoji of existingEmojis) {
+    const col = Math.floor((emoji.x - padding) / gridSize);
+    const row = Math.floor((emoji.y - padding) / gridSize);
+    // Mark cell and surrounding cells as occupied
+    for (let dc = -1; dc <= 1; dc++) {
+      for (let dr = -1; dr <= 1; dr++) {
+        occupied.add(`${col + dc},${row + dr}`);
+      }
+    }
+  }
+  
+  // Find available cells
+  const available: { col: number; row: number }[] = [];
+  for (let col = 0; col < cols; col++) {
+    for (let row = 0; row < rows; row++) {
+      if (!occupied.has(`${col},${row}`)) {
+        available.push({ col, row });
+      }
+    }
+  }
+  
+  // Pick random available cell
+  if (available.length > 0) {
+    const cell = available[Math.floor(rng.next() * available.length)]!;
+    const x = padding + cell.col * gridSize + gridSize / 2;
+    const y = padding + cell.row * gridSize + gridSize / 2;
+    return { x, y };
+  }
+  
+  // Absolute fallback: place at center with slight random offset
+  const x = cardWidth / 2 + rng.nextFloat(-20, 20);
+  const y = cardHeight / 2 + rng.nextFloat(-20, 20);
   return { x, y };
 }
 
