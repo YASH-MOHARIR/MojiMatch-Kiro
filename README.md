@@ -4,6 +4,8 @@ A lightning-fast emoji matching game built for Reddit using Devvit. Race against
 
 > **Quick Summary:** Find the matching emoji between two cards before time runs out! Each card shows 8-20 emojis (depending on difficulty) with random sizes and rotations. Build combos for bonus points and time extensions. Choose from 4 difficulty levels (Easy, Medium, Hard, GOD). Compete on multiple leaderboards (All-Time, Weekly, GOD Mode) with the Reddit community. Built with React, TypeScript, HTML5 Canvas, and Redis.
 
+**Play directly on Reddit** - MojiMatcher runs natively in Reddit posts using Devvit's webview technology. Click the splash screen to launch the full-screen game experience!
+
 ## 🎯 What is MojiMatcher?
 
 MojiMatcher is a fast-paced visual puzzle game where players must quickly identify the single matching emoji between two cards. With only 30 seconds on the clock, players race to complete as many rounds as possible while building combos for massive point bonuses and time extensions.
@@ -18,7 +20,7 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 
 **The Goal:** Build the highest combo streak possible to maximize your score and earn time bonuses. The longer your combo, the more time you earn per match (4-13+ seconds), creating a snowball effect where skilled players can extend their games significantly. Compete on multiple leaderboards (All-Time, Weekly, GOD Mode) as you master the game.
 
-**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts using Devvit. Players can compete with the Reddit community on leaderboards, with scores automatically tied to their Reddit usernames for seamless social gaming. The game features a custom splash screen that appears in the Reddit feed, inviting users to click "🎮 I Accept the Challenge!" and play in full-screen mode.
+**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts using Devvit's webview technology. Players can compete with the Reddit community on leaderboards, with scores automatically tied to their Reddit usernames for seamless social gaming. The game features a custom splash screen that appears in the Reddit feed, inviting users to click "🎮 I Accept the Challenge!" and play in full-screen mode.
 
 ### Core Features
 
@@ -29,13 +31,14 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 - **Difficulty Multipliers**: Earn 1x (Easy), 1.5x (Medium), 2x (Hard), or 3x (GOD) score multipliers
 - **Time Bonuses**: Earn 4-13+ seconds per match based on your combo level (higher combos = more time)
 - **Visual Chaos**: Every emoji has random size (0.8x-2.5x) and rotation (0-360°) for unique challenges
-- **Moving Emojis**: Hard and GOD modes feature emojis that drift smoothly across the cards
+- **Moving Emojis**: Hard and GOD modes feature emojis that drift smoothly across the cards in circular patterns
 - **Multi-Tier Leaderboards**: All-Time, Weekly, and GOD Mode leaderboards with Reddit username integration
 - **Audio Feedback**: Web Audio API-powered sound effects with pitch variation based on combo level
 - **Game-End Emoji Reveal**: See the matching emoji highlighted with a golden pulsing glow when time expires
 - **Combo Celebrations**: Special animated badges at 3x (✨ COMBO!), 5x (⚡ AMAZING!), and 10x (🔥 LEGENDARY!)
-- **Interactive Hover Effects**: Emojis glow and scale up when you hover over them for better targeting
+- **Interactive Hover Effects**: Emojis glow blue and scale up 15% when you hover over them for better targeting
 - **Mobile Optimized**: Touch-friendly controls and responsive design for seamless mobile gameplay
+- **React-Powered UI**: Built with React, TypeScript, and HTML5 Canvas for smooth 60 FPS rendering
 
 ## 🌟 What Makes MojiMatcher Innovative
 
@@ -196,14 +199,14 @@ React hooks-based architecture:
 
 ### Quick Start
 
-1. **Find MojiMatcher** in a Reddit post - you'll see a custom splash screen with an engaging challenge message
-2. **Click "🎮 I Accept the Challenge!"** button to launch the game in full-screen mode
+1. **Find MojiMatcher** in a Reddit post - you'll see a custom splash screen with a personalized challenge message
+2. **Click "🎮 I Accept the Challenge!"** button to launch the game in full-screen webview mode
 3. **Choose a difficulty level** from the main menu (Easy, Medium, Hard, or GOD)
 4. **Watch the 3-2-1-GO countdown** as the game starts with audio beeps
 5. **Find the matching emoji** between two cards before time runs out
 6. **Click/tap the matching emoji** on either card (works on both desktop and mobile)
 7. **Build combos** for bonus points and time extensions
-8. **Compete** on leaderboards with the Reddit community
+8. **Compete** on leaderboards with the Reddit community using your Reddit username
 
 ### Detailed Instructions
 
@@ -213,9 +216,9 @@ When you first open MojiMatcher in a Reddit post, you'll see a custom splash scr
 - **Personalized Message**: "Hey [your Reddit username]! Think You're Fast Enough? 🔥"
 - **Challenge Text**: "Most players can't beat the top score. 😏 Can you handle the pressure? Let's see what you've got! 💪"
 - **Launch Button**: "🎮 I Accept the Challenge!" button to start the game
-- **Animated Background**: Eye-catching animated GIF background (splash-background.gif) that makes the post stand out in the Reddit feed
+- **Animated Background**: Eye-catching animated GIF background that makes the post stand out in the Reddit feed
 
-Click the **"🎮 I Accept the Challenge!"** button to launch the game in full-screen webview mode! The game will open in a new view where you can play without distractions.
+Click the **"🎮 I Accept the Challenge!"** button to launch the game in full-screen webview mode! The game opens in Devvit's webview where you can play without distractions.
 
 #### Step 1: Navigate the Main Menu
 After launching the game, you'll see the main menu with four options:
@@ -244,9 +247,11 @@ After launching the game, you'll see the main menu with four options:
    - Toggle music on/off
    - Settings persist in browser localStorage across sessions
 
-**Logo Display:**
-- Large MojiMatcher logo at the top
+**Visual Elements:**
+- Large MojiMatcher logo at the top (logo.png)
 - "Find the matching emoji!" tagline
+- Gradient background (orange-50 to orange-100)
+- Animated entrance effects for all UI elements
 
 #### Step 2: Choose Your Difficulty Level
 
@@ -284,30 +289,36 @@ Click your chosen difficulty to start the game!
 After the 3-2-1-GO countdown (with audio beeps), the game begins. Here's what you'll see:
 
 #### Top Bar (Game Stats)
-- **Score (Top Left)**: Your current point total in large bold text
+Three white cards display your game statistics:
+
+- **Score (Left Card)**: Your current point total in large bold text
   - Below score: Current combo multiplier (e.g., "5x" in orange)
   - Below combo: Difficulty name and multiplier (e.g., "GOD 3x")
-- **Timer (Top Center)**: Countdown in seconds with color-coded background
+- **Timer (Center Card)**: Countdown in seconds with color-coded background
   - **Green background** (>15s): Safe zone
   - **Yellow background** (8-15s): Caution
   - **Red background** (<8s): Danger zone
   - Timer text also changes color to match
   - Audio warnings: Tick sound at 10s, fast tick in final 5s
-- **Rounds (Top Right)**: Number of rounds completed
+- **Rounds (Right Card)**: Number of rounds completed
   - Below rounds: Difficulty score multiplier
+
+**Controls:**
 - **Audio Controls**: Volume (🔊) and music (🎵) toggle buttons in top right corner
 - **Back Button**: Return to menu (top left with arrow icon)
 
 #### Main Play Area
-- **Two white cards** with dashed borders displayed side-by-side (desktop) or vertically (mobile)
+Two white cards with dashed borders display the emojis:
+
+- **Layout**: Side-by-side on desktop, stacked vertically on mobile
 - **8-20 emojis per card** depending on difficulty (16-40 total visible)
 - **Random sizes**: Emojis range from tiny (0.8x) to huge (2.5x) scale
 - **Random rotations**: Emojis can be upside-down, sideways, or at any angle (0-360°)
 - **Smart spacing**: Emojis positioned to avoid overlaps (60px minimum distance between centers)
 - **Moving emojis** (Hard/GOD modes): Emojis drift in smooth circular patterns at different speeds
-- **Canvas rendering**: HTML5 Canvas with responsive scaling for mobile (adapts to screen width)
+- **HTML5 Canvas rendering**: Smooth 60 FPS rendering with responsive scaling for mobile
 - **Interactive hover**: Emojis glow blue and scale up 15% when you hover over them
-- **Selection feedback**: Emojis glow green and bounce when clicked correctly
+- **Selection feedback**: Emojis glow green and bounce when clicked correctly, red shake when wrong
 
 #### Special Indicators
 - **Combo Badge** (appears at 3x+): Floating animated badge at top center
@@ -323,9 +334,10 @@ Find the **ONE emoji that appears on BOTH cards** and click/tap it before time r
 **The Difficulty:**
 - Emojis have random sizes and rotations, making the same emoji look completely different on each card
 - A 🎯 might appear tiny and upside-down on the left card, then huge and sideways on the right card
-- In Hard/GOD modes, emojis are constantly moving in circular patterns
+- In Hard/GOD modes, emojis are constantly moving in circular patterns at different speeds
 - You must recognize the emoji by its shape and pattern, not by size or orientation
 - Visual chaos increases difficulty - no two rounds look the same
+- 30 unique emojis in the pool ensure variety across games
 
 **The Strategy:**
 - **Scan systematically**: Develop a pattern (left-to-right, top-to-bottom)
@@ -458,34 +470,35 @@ When you click the wrong emoji:
 **Phase 1: Emoji Highlight Screen**
 - Game freezes with current cards visible on screen
 - "Time's Up!" header appears at top
-- "The matching emoji was:" text with large emoji display (6xl size, 4rem)
+- "The matching emoji was:" text with large emoji display (text-6xl size)
 - Golden glowing circles appear around matching emoji on both cards with pulsing animation
 - Pulsing effect: opacity cycles between 0.6 and 1.0 with 30px shadow blur for dramatic effect
-- Canvas shows the highlighted matching emoji with golden glow to help you learn
+- Canvas highlights the matching emoji with golden glow to help you learn
 - "📊 See Results" button appears at bottom
 - This educational moment helps you understand what you missed and improve your pattern recognition
 - Click button to proceed to detailed results
+- Game over buzzer sound plays when time expires
 
 **Phase 2: Game Over Screen**
 - Header: "Time's Up!" with "Game Over" subtitle
-- **Large Score Display**: Final score in red (#d93900) at 6xl size (e.g., "1,250")
+- **Large Score Display**: Final score in red (#d93900) at text-6xl size (e.g., "1,250")
 - **Statistics Grid** (4 boxes in 2x2 layout with gray-50 backgrounds):
   - Rounds completed
   - Accuracy percentage (correct clicks / total clicks × 100)
   - Best combo achieved during game
   - Total clicks (correct + wrong)
 - **Action Buttons:**
-  - "🔄 Play Again" (large red pushable button) - Restart immediately in same difficulty
-  - "🏠 Back to Menu" (gray pushable button) - Return to main menu
+  - "🔄 Play Again" (large red pushable 3D button) - Restart immediately in same difficulty
+  - "🏠 Back to Menu" (gray pushable 3D button) - Return to main menu
 - **Score saved automatically** to appropriate leaderboards (All-Time, Weekly, and/or GOD Mode) via Redis
-- **Game over buzzer sound** plays when time expires (harsh sawtooth wave for attention-grabbing effect)
+- Scores are tied to your Reddit username for seamless leaderboard integration
 
 #### 4. Leaderboard Screen
 **Tab Navigation:**
 - Three tabs at top: All-Time | Weekly | GOD Mode
-- Active tab highlighted in blue (#2563eb) with white text
+- Active tab highlighted in blue with white text
 - Inactive tabs have gray background with hover effect
-- Click tabs to switch views (lazy loading on first access)
+- Click tabs to switch views (data fetched from Redis)
 
 **All-Time Tab:**
 - Top 10 scores ever recorded (fetched from Redis sorted set)

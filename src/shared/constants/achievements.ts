@@ -3,7 +3,7 @@ export interface Achievement {
   name: string;
   description: string;
   icon: string;
-  category: 'speed' | 'combo' | 'accuracy' | 'score' | 'participation' | 'daily';
+  category: 'speed' | 'combo' | 'accuracy' | 'score' | 'participation';
   tier: 'bronze' | 'silver' | 'gold' | 'platinum';
   condition: AchievementCondition;
 }
@@ -16,8 +16,6 @@ export interface AchievementCondition {
   rounds?: number;
   score?: number;
   streak?: number;
-  dailyCount?: number;
-  dailyRank?: number;
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
@@ -155,26 +153,6 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'participation',
     tier: 'platinum',
     condition: { streak: 30 },
-  },
-
-  // Daily Challenge Achievements
-  {
-    id: 'daily_warrior',
-    name: 'Daily Warrior',
-    description: 'Complete 10 daily challenges',
-    icon: '🗡️',
-    category: 'daily',
-    tier: 'silver',
-    condition: { dailyCount: 10 },
-  },
-  {
-    id: 'daily_champion',
-    name: 'Daily Champion',
-    description: 'Rank #1 on daily leaderboard',
-    icon: '🏆',
-    category: 'daily',
-    tier: 'gold',
-    condition: { dailyRank: 1 },
   },
 ];
 

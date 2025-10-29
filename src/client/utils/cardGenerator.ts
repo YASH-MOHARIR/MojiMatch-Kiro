@@ -138,7 +138,7 @@ function getRandomPositionWithoutOverlap(
 
 /**
  * Generates a pair of cards with exactly 1 matching emoji
- * @param seed Optional seed for deterministic generation (for daily challenges)
+ * @param seed Optional seed for deterministic generation
  * @param emojiCount Number of emojis per card (default: 8)
  */
 export function generateCardPair(seed?: number, emojiCount: number = 8): {

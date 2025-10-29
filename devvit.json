@@ -2,7 +2,9 @@
   "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
   "name": "mojimatch2",
   "version": "1.0.0",
-  "permissions": ["redis"],
+  "permissions": {
+    "redis": true
+  },
   "post": {
     "dir": "dist/client",
     "entrypoints": {

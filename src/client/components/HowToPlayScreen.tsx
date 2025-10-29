@@ -76,7 +76,7 @@ export function HowToPlayScreen({ onBack }: HowToPlayScreenProps) {
               <li>• Build combos to maximize your score and time</li>
               <li>• Don't rush - wrong clicks cost you time!</li>
               <li>• Watch the timer color: Green → Yellow → Red</li>
-              <li>• Try the Daily Challenge for special rewards!</li>
+              <li>• Try different difficulty modes for bigger challenges!</li>
             </ul>
           </div>
         </div>
