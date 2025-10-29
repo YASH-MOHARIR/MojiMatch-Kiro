@@ -106,16 +106,16 @@ export function GameOverScreen({
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front text-xl font-bold px-8 py-4 flex items-center justify-center gap-3">
-            <RotateCcw className="w-6 h-6 flex-shrink-0" />
-            <span className="leading-none">Play Again</span>
+            <RotateCcw className="w-6 h-6 flex-shrink-0 inline-block align-middle" />
+            <span className="inline-block align-middle">Play Again</span>
           </span>
         </button>
         <button onClick={onReturnToMenu} className="pushable btn-gray w-full">
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
-            <Home className="w-5 h-5 flex-shrink-0" />
-            <span className="leading-none">Back to Menu</span>
+            <Home className="w-5 h-5 flex-shrink-0 inline-block align-middle" />
+            <span className="inline-block align-middle">Back to Menu</span>
           </span>
         </button>
       </div>

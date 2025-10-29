@@ -150,8 +150,8 @@ export function EnhancedLeaderboard({ onBack, currentUsername = 'anonymous' }: E
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            <tab.Icon className="w-4 h-4" />
-            <span>{tab.label}</span>
+            <tab.Icon className="w-4 h-4 inline-block align-middle" />
+            <span className="inline-block align-middle">{tab.label}</span>
           </button>
         ))}
       </div>
@@ -185,8 +185,8 @@ export function EnhancedLeaderboard({ onBack, currentUsername = 'anonymous' }: E
                 onClick={handleRefresh}
                 className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm transition-all-smooth transform hover:scale-105 active:scale-95 flex items-center gap-1"
               >
-                <RefreshCw className="w-4 h-4" />
-                <span>Refresh</span>
+                <RefreshCw className="w-4 h-4 inline-block align-middle" />
+                <span className="inline-block align-middle">Refresh</span>
               </button>
             </div>
 
@@ -263,8 +263,8 @@ export function EnhancedLeaderboard({ onBack, currentUsername = 'anonymous' }: E
         <span className="shadow"></span>
         <span className="edge"></span>
         <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back to Menu</span>
+          <ArrowLeft className="w-5 h-5 inline-block align-middle" />
+          <span className="inline-block align-middle">Back to Menu</span>
         </span>
       </button>
     </div>

@@ -129,6 +129,28 @@
   }
 }
 
+/* Smooth bounce animation for logo */
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Pointer pulse animation */
+@keyframes pointerPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.8;
+  }
+}
+
 /* Utility classes */
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-out;
@@ -170,6 +192,14 @@
 
 .animate-rotate {
   animation: rotate 2s linear infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounceSlow 3s ease-in-out infinite;
+}
+
+.animate-pointer-pulse {
+  animation: pointerPulse 1s ease-in-out infinite;
 }
 
 /* Stagger animations for lists */

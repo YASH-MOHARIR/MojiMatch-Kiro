@@ -45,8 +45,8 @@ export function GameUI({
             <span className="shadow"></span>
             <span className="edge"></span>
             <span className="front font-semibold px-4 py-2 flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
+              <ArrowLeft className="w-4 h-4 inline-block align-middle" />
+              <span className="inline-block align-middle">Back</span>
             </span>
           </button>
         )}

@@ -149,8 +149,8 @@ export const App = () => {
             <span className="shadow"></span>
             <span className="edge"></span>
             <span className="front text-xl font-bold px-8 py-4 flex items-center justify-center gap-2">
-              <BarChart3 className="w-6 h-6" />
-              <span>See Results</span>
+              <BarChart3 className="w-6 h-6 inline-block align-middle" />
+              <span className="inline-block align-middle">See Results</span>
             </span>
           </button>
         </div>

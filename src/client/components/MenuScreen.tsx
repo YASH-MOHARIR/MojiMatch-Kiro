@@ -35,7 +35,7 @@ export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: 
         <img 
           src="/logo.png" 
           alt="MojiMatcher" 
-          className="w-80 h-80 mx-auto mb-4 animate-pulse drop-shadow-2xl"
+          className="w-96 h-96 mx-auto mb-4 animate-bounce-slow drop-shadow-2xl"
         />
         <p className="text-lg text-gray-600">Find the matching emoji!</p>
       </div>
@@ -45,8 +45,8 @@ export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: 
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front text-xl font-bold px-8 py-4 flex items-center justify-center gap-3">
-            <Play className="w-6 h-6 flex-shrink-0" />
-            <span className="leading-none">Play Game</span>
+            <Play className="w-6 h-6 flex-shrink-0 inline-block align-middle" />
+            <span className="inline-block align-middle">Play Game</span>
           </span>
         </button>
 
@@ -54,8 +54,8 @@ export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: 
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
-            <Trophy className="w-5 h-5 flex-shrink-0" />
-            <span className="leading-none">Leaderboard</span>
+            <Trophy className="w-5 h-5 flex-shrink-0 inline-block align-middle" />
+            <span className="inline-block align-middle">Leaderboard</span>
           </span>
         </button>
 
@@ -63,8 +63,8 @@ export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: 
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
-            <HelpCircle className="w-5 h-5 flex-shrink-0" />
-            <span className="leading-none">How to Play</span>
+            <HelpCircle className="w-5 h-5 flex-shrink-0 inline-block align-middle" />
+            <span className="inline-block align-middle">How to Play</span>
           </span>
         </button>
 
@@ -72,8 +72,8 @@ export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: 
           <span className="shadow"></span>
           <span className="edge"></span>
           <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
-            <Settings className="w-5 h-5 flex-shrink-0" />
-            <span className="leading-none">Settings</span>
+            <Settings className="w-5 h-5 flex-shrink-0 inline-block align-middle" />
+            <span className="inline-block align-middle">Settings</span>
           </span>
         </button>
       </div>

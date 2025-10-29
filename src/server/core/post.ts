@@ -6,20 +6,15 @@ export const createPost = async () => {
     throw new Error('subredditName is required');
   }
 
-  // Get current user for personalization
-  const username = await reddit.getCurrentUsername();
-  const displayName = username ? `u/${username}` : 'Redditor';
-
   return await reddit.submitCustomPost({
     splash: {
       // Engaging splash screen with animated background
       appDisplayName: 'MojiMatcher',
       backgroundUri: 'splash-background-mobile.gif',
-      heading: `Hey ${displayName}! Think You're Fast Enough? 🔥`,
+      heading: ``,
       description:
-        "Most players can't beat the top score. 😏\n\n" +
-        "Can you handle the pressure? Let's see what you've got! 💪",
-      buttonLabel: '🎮 I Accept the Challenge!',
+        "", 
+      buttonLabel: '',
     },
     postData: {
       gameState: 'ready',

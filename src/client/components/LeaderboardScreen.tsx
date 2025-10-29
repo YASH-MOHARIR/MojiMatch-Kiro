@@ -109,8 +109,8 @@ export function LeaderboardScreen({ onBack }: LeaderboardScreenProps) {
         <span className="shadow"></span>
         <span className="edge"></span>
         <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back to Menu</span>
+          <ArrowLeft className="w-5 h-5 inline-block align-middle" />
+          <span className="inline-block align-middle">Back to Menu</span>
         </span>
       </button>
     </div>
