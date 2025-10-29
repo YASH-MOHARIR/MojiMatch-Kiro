@@ -200,42 +200,56 @@ export function EnhancedLeaderboard({ onBack, currentUsername = 'anonymous' }: E
                 {leaderboard.map((entry) => (
                   <div
                     key={`${entry.username}-${entry.timestamp}`}
-                    className={`flex items-center justify-between p-4 rounded-lg transition-all-smooth transform hover:scale-105 hover:shadow-md ${
+                    className={`grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center p-4 rounded-lg transition-all-smooth transform hover:scale-105 hover:shadow-md ${
                       entry.rank === 1
-                        ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 border-2 border-yellow-400 animate-glow'
-                        : entry.username === currentUsername
-                          ? 'bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-400'
-                          : 'bg-gray-50 hover:bg-gray-100'
+                        ? 'bg-gradient-to-r from-yellow-200 via-yellow-100 to-yellow-50 border-2 border-yellow-500 shadow-lg'
+                        : entry.rank === 2
+                          ? 'bg-gradient-to-r from-gray-300 via-gray-200 to-gray-100 border-2 border-gray-400 shadow-md'
+                          : entry.rank === 3
+                            ? 'bg-gradient-to-r from-orange-200 via-orange-100 to-orange-50 border-2 border-orange-400 shadow-md'
+                            : entry.username === currentUsername
+                              ? 'bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-400'
+                              : 'bg-gray-50 hover:bg-gray-100'
                     }`}
                   >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`text-2xl font-bold ${
-                          entry.rank === 1
-                            ? 'text-yellow-600'
-                            : entry.rank === 2
-                              ? 'text-gray-400'
-                              : entry.rank === 3
-                                ? 'text-orange-600'
-                                : 'text-gray-600'
-                        }`}
-                      >
-                        {getRankBadge(entry.rank)}
+                    {/* Rank Badge */}
+                    <div
+                      className={`text-2xl font-bold ${
+                        entry.rank === 1
+                          ? 'text-yellow-600'
+                          : entry.rank === 2
+                            ? 'text-gray-500'
+                            : entry.rank === 3
+                              ? 'text-orange-600'
+                              : 'text-gray-600'
+                      }`}
+                    >
+                      {getRankBadge(entry.rank)}
+                    </div>
+
+                    {/* Username */}
+                    <div>
+                      <div className="font-bold text-gray-900 flex items-center gap-2">
+                        {entry.username}
+                        {entry.username === currentUsername && (
+                          <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-full">You</span>
+                        )}
                       </div>
-                      <div>
-                        <div className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                          {entry.score}
-                          {entry.username === currentUsername && (
-                            <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-full">You</span>
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-600">
-                          {entry.username} • {entry.rounds} rounds
-                        </div>
+                      <div className="text-xs text-gray-500">
+                        {new Date(entry.timestamp).toLocaleDateString()}
                       </div>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(entry.timestamp).toLocaleDateString()}
+
+                    {/* Score Column */}
+                    <div className="text-center">
+                      <div className="text-xs text-gray-600 mb-1">Score</div>
+                      <div className="text-xl font-bold text-gray-900">{entry.score}</div>
+                    </div>
+
+                    {/* Rounds Column - Highlighted */}
+                    <div className="text-center bg-blue-100 rounded-lg px-3 py-2 border-2 border-blue-300">
+                      <div className="text-xs text-blue-700 font-semibold mb-1">Rounds</div>
+                      <div className="text-xl font-bold text-blue-900">{entry.rounds}</div>
                     </div>
                   </div>
                 ))}

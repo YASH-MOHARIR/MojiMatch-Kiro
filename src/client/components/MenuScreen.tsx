@@ -44,36 +44,36 @@ export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: 
         <button onClick={() => setShowDifficulty(true)} className="pushable btn-primary w-full">
           <span className="shadow"></span>
           <span className="edge"></span>
-          <span className="front text-xl font-bold px-8 py-4 flex items-center justify-center gap-2">
-            <Play className="w-6 h-6" />
-            <span>Play Game</span>
+          <span className="front text-xl font-bold px-8 py-4 flex items-center justify-center gap-3">
+            <Play className="w-6 h-6 flex-shrink-0" />
+            <span className="leading-none">Play Game</span>
           </span>
         </button>
 
         <button onClick={onViewLeaderboard} className="pushable btn-secondary w-full">
           <span className="shadow"></span>
           <span className="edge"></span>
-          <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
-            <Trophy className="w-5 h-5" />
-            <span>Leaderboard</span>
+          <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
+            <Trophy className="w-5 h-5 flex-shrink-0" />
+            <span className="leading-none">Leaderboard</span>
           </span>
         </button>
 
         <button onClick={onViewHowToPlay} className="pushable btn-green w-full">
           <span className="shadow"></span>
           <span className="edge"></span>
-          <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
-            <HelpCircle className="w-5 h-5" />
-            <span>How to Play</span>
+          <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
+            <HelpCircle className="w-5 h-5 flex-shrink-0" />
+            <span className="leading-none">How to Play</span>
           </span>
         </button>
 
         <button onClick={() => setShowSettings(!showSettings)} className="pushable btn-gray w-full">
           <span className="shadow"></span>
           <span className="edge"></span>
-          <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
-            <Settings className="w-5 h-5" />
-            <span>Settings</span>
+          <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-3">
+            <Settings className="w-5 h-5 flex-shrink-0" />
+            <span className="leading-none">Settings</span>
           </span>
         </button>
       </div>

@@ -104,6 +104,19 @@ export function GameUI({
         </div>
       </div>
 
+      {/* Time Progress Bar */}
+      <div className="w-full px-2 sm:px-4">
+        <div className="bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
+          <div
+            className={`h-full transition-all duration-1000 ease-linear ${
+              timer > 15 ? 'bg-gradient-to-r from-green-500 to-green-600' :
+              timer > 7 ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' :
+              'bg-gradient-to-r from-red-500 to-red-600'
+            } ${timer <= 5 ? 'animate-pulse' : ''}`}
+            style={{ width: `${(timer / 30) * 100}%` }}
+          />
+        </div>
+      </div>
 
     </div>
   );

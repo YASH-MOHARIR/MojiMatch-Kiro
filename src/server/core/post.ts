@@ -1,7 +1,7 @@
 import { context, reddit } from '@devvit/web/server';
 
 export const createPost = async () => {
-  const { subredditName } = context;
+  const { subredditName, redis } = context;
   if (!subredditName) {
     throw new Error('subredditName is required');
   }
@@ -10,16 +10,28 @@ export const createPost = async () => {
   const username = await reddit.getCurrentUsername();
   const displayName = username ? `u/${username}` : 'Redditor';
 
+  // Get top player from leaderboard
+  let topPlayerInfo = '';
+  try {
+    const leaderboard = await redis.zRange('mojimatcher:leaderboard:alltime', 0, 0, {
+      by: 'rank',
+      reverse: true,
+    });
+    
+    if (leaderboard.length > 0) {
+      const [topUsername, topScore, topRounds] = leaderboard[0].member.split(':');
+      topPlayerInfo = `🏆 Top Player: ${topUsername}\n💯 Score: ${topScore} | 🎯 Rounds: ${topRounds}`;
+    }
+  } catch (error) {
+    console.error('Error fetching top player:', error);
+  }
+
   return await reddit.submitCustomPost({
     splash: {
-      // Engaging splash screen with animated background (logo baked into background)
       appDisplayName: 'MojiMatcher',
       backgroundUri: 'splash-background.gif',
-      heading: `Hey ${displayName}! Think You're Fast Enough? 🔥`,
-      description:
-        "Most players can't beat the top score. 😏\n\n" +
-        "Can you handle the pressure? Let's see what you've got! 💪",
-      buttonLabel: '🎮 I Accept the Challenge!',
+      description: topPlayerInfo || 'Be the first to set a high score!',
+      buttonLabel: '🎮 Play Now',
     },
     postData: {
       gameState: 'ready',
