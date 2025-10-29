@@ -10,16 +10,18 @@ export const createPost = async () => {
     splash: {
       // Engaging splash screen with animated background
       appDisplayName: 'MojiMatcher',
-      backgroundUri: 'splash-background-mobile.gif',
+      backgroundUri: 'splash-background.gif',
+      appIconUri: 'logo.png',
       heading: ``,
       description: '',
-      buttonLabel: '',
+      buttonLabel: 'PAST',
     },
     postData: {
       gameState: 'ready',
       version: '1.0.0',
     },
     subredditName: subredditName,
-    title: '🎮 MojiMatcher - Think You Can Beat the High Score? 🏆',
+    title:
+      "🎮 MojiMatcher - Most Players can't malke it past 4 rounds, No one Dares to open GOD mode..can you? ",
   });
 };

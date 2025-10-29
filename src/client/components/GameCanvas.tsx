@@ -45,9 +45,11 @@ export function GameCanvas({ cards, onEmojiClick, difficulty = 'easy', highlight
     const updateDimensions = () => {
       const isMobile = window.innerWidth < 768;
       if (isMobile) {
-        // Mobile: vertical layout
+        // Mobile: vertical layout - use actual available container space
         const width = Math.min(window.innerWidth - 32, 400);
-        setCanvasDimensions({ width, height: 950 });
+        // Calculate available height: viewport - info bar (approx 140px)
+        const availableHeight = Math.max(window.innerHeight - 160, 450);
+        setCanvasDimensions({ width, height: availableHeight });
       } else {
         // Desktop: horizontal layout
         setCanvasDimensions({ width: 800, height: 500 });
@@ -246,15 +248,11 @@ export function GameCanvas({ cards, onEmojiClick, difficulty = 'easy', highlight
       onMouseMove={handleCanvasMouseMove}
       onMouseLeave={handleCanvasMouseLeave}
       onTouchEnd={handleCanvasTouch}
+      className="w-full max-w-full rounded-xl bg-gray-100 shadow-2xl"
       style={{
-        maxWidth: '100%',
-        width: '100%',
-        height: 'auto',
-        borderRadius: '12px',
-        backgroundColor: '#f5f5f5',
         cursor: hoveredEmoji ? 'pointer' : 'default',
         touchAction: 'manipulation',
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)',
+        aspectRatio: `${canvasDimensions.width} / ${canvasDimensions.height}`,
       }}
     />
   );
@@ -278,25 +276,49 @@ function renderCards(
   const isVertical = canvasWidth < 768;
 
   if (isVertical) {
-    // Vertical layout for mobile - make cards fit the canvas width
-    const cardWidth = Math.min(canvasWidth - 40, 350); // Leave 20px padding on each side
-    const cardHeight = 450;
-    const gap = 20;
-    const totalHeight = cardHeight * 2 + gap;
+    // Vertical layout for mobile - 45% height for each card
+    const cardWidth = Math.min(canvasWidth - 20, 380); // Minimal side padding
+    const gap = Math.floor(canvasHeight * 0.02); // 2% gap between cards
+    // Each card gets 45% of canvas height
+    const cardHeight = Math.floor(canvasHeight * 0.45);
     const startX = (canvasWidth - cardWidth) / 2;
-    const startY = (canvasHeight - totalHeight) / 2;
+    const topPadding = Math.floor(canvasHeight * 0.04); // 4% top padding
 
     // Card 1 position (top)
     const card1X = startX;
-    const card1Y = startY;
+    const card1Y = topPadding;
 
     // Card 2 position (bottom)
     const card2X = startX;
-    const card2Y = startY + cardHeight + gap;
+    const card2Y = topPadding + cardHeight + gap;
 
     // Render cards
-    renderCard(ctx, cards[0], card1X, card1Y, cardWidth, cardHeight, 0, hoveredEmoji, selectedEmoji, emojiOffsets, highlightEmoji);
-    renderCard(ctx, cards[1], card2X, card2Y, cardWidth, cardHeight, 1, hoveredEmoji, selectedEmoji, emojiOffsets, highlightEmoji);
+    renderCard(
+      ctx,
+      cards[0],
+      card1X,
+      card1Y,
+      cardWidth,
+      cardHeight,
+      0,
+      hoveredEmoji,
+      selectedEmoji,
+      emojiOffsets,
+      highlightEmoji
+    );
+    renderCard(
+      ctx,
+      cards[1],
+      card2X,
+      card2Y,
+      cardWidth,
+      cardHeight,
+      1,
+      hoveredEmoji,
+      selectedEmoji,
+      emojiOffsets,
+      highlightEmoji
+    );
   } else {
     // Horizontal layout for desktop
     const cardWidth = 350;
@@ -466,18 +488,17 @@ function getHoveredEmoji(mouseX: number, mouseY: number, cards: [Card, Card], ca
   const isVertical = canvasWidth < 768;
 
   if (isVertical) {
-    // Vertical layout - responsive card width
-    const cardWidth = Math.min(canvasWidth - 40, 350);
-    const cardHeight = 450;
-    const gap = 20;
-    const totalHeight = cardHeight * 2 + gap;
+    // Vertical layout - 45% height for each card
+    const cardWidth = Math.min(canvasWidth - 20, 380);
+    const gap = Math.floor(canvasHeight * 0.02);
+    const cardHeight = Math.floor(canvasHeight * 0.45);
     const startX = (canvasWidth - cardWidth) / 2;
-    const startY = (canvasHeight - totalHeight) / 2;
+    const topPadding = Math.floor(canvasHeight * 0.04);
 
     const card1X = startX;
-    const card1Y = startY;
+    const card1Y = topPadding;
     const card2X = startX;
-    const card2Y = startY + cardHeight + gap;
+    const card2Y = topPadding + cardHeight + gap;
 
     // Check card 1
     const hover1 = checkEmojiHover(mouseX, mouseY, cards[0], card1X, card1Y, 0);
@@ -556,18 +577,17 @@ function getClickedEmoji(clickX: number, clickY: number, cards: [Card, Card], ca
   const isVertical = canvasWidth < 768;
 
   if (isVertical) {
-    // Vertical layout - responsive card width
-    const cardWidth = Math.min(canvasWidth - 40, 350);
-    const cardHeight = 450;
-    const gap = 20;
-    const totalHeight = cardHeight * 2 + gap;
+    // Vertical layout - 45% height for each card
+    const cardWidth = Math.min(canvasWidth - 20, 380);
+    const gap = Math.floor(canvasHeight * 0.02);
+    const cardHeight = Math.floor(canvasHeight * 0.45);
     const startX = (canvasWidth - cardWidth) / 2;
-    const startY = (canvasHeight - totalHeight) / 2;
+    const topPadding = Math.floor(canvasHeight * 0.04);
 
     const card1X = startX;
-    const card1Y = startY;
+    const card1Y = topPadding;
     const card2X = startX;
-    const card2Y = startY + cardHeight + gap;
+    const card2Y = topPadding + cardHeight + gap;
 
     // Check card 1
     const emoji1 = checkEmojiClick(clickX, clickY, cards[0], card1X, card1Y);

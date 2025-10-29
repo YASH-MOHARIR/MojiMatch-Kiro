@@ -61,18 +61,35 @@ function selectRandomEmojis(count: number, exclude: string[], rng: RandomGenerat
 }
 
 /**
- * Generates a random size between 0.8x and 2.5x
+ * Generates a random size with weighted distribution
+ * Favors medium sizes but allows extremes for variety
  */
 function getRandomSize(rng: RandomGenerator): number {
-  const minSize = 0.8;
-  const maxSize = 2.5;
-  return rng.nextFloat(minSize, maxSize);
+  const minSize = 0.7;
+  const maxSize = 2.8;
+  
+  // Use a weighted random to favor medium sizes
+  const random1 = rng.next();
+  const random2 = rng.next();
+  const weighted = (random1 + random2) / 2; // Tends toward middle values
+  
+  return minSize + weighted * (maxSize - minSize);
 }
 
 /**
  * Generates a random rotation between 0 and 360 degrees
+ * With slight bias toward cardinal directions for visual variety
  */
 function getRandomRotation(rng: RandomGenerator): number {
+  const random = rng.next();
+  
+  // 20% chance of cardinal/ordinal angles for visual interest
+  if (random < 0.2) {
+    const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+    return angles[Math.floor(rng.next() * angles.length)]!;
+  }
+  
+  // Otherwise fully random
   return rng.nextFloat(0, 360);
 }
 

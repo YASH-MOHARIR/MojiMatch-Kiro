@@ -35,7 +35,7 @@ export function MenuScreen({ onStartGame, onViewLeaderboard, onViewHowToPlay }: 
         <img 
           src="/logo.png" 
           alt="MojiMatcher" 
-          className="w-96 h-96 mx-auto mb-4 animate-bounce-slow drop-shadow-2xl"
+          className="mx-auto mb-4 animate-bounce-slow drop-shadow-2xl"
         />
         <p className="text-lg text-gray-600">Find the matching emoji!</p>
       </div>

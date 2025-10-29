@@ -53,30 +53,30 @@ export function HowToPlayScreen({ onBack }: HowToPlayScreenProps) {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6 p-8 animate-fadeIn max-w-2xl mx-auto">
+    <div className="flex flex-col items-center justify-center gap-4 sm:gap-6 p-4 sm:p-8 animate-fadeIn max-w-2xl mx-auto">
       <div className="text-center animate-slideDown">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2 animate-pulse">How to Play</h1>
-        <p className="text-lg text-gray-600">Master the art of emoji matching!</p>
+        <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2 animate-pulse">How to Play</h1>
+        <p className="text-base sm:text-lg text-gray-600">Master the art of emoji matching!</p>
       </div>
 
       {/* Animated Tutorial Demo */}
-      <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg shadow-2xl p-8 w-full animate-scaleIn border-4 border-blue-200">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Interactive Demo</h2>
-          <p className="text-lg text-blue-600 font-semibold animate-pulse min-h-[60px] flex items-center justify-center">
+      <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg shadow-2xl p-4 sm:p-8 w-full animate-scaleIn border-4 border-blue-200">
+        <div className="text-center mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Interactive Demo</h2>
+          <p className="text-sm sm:text-lg text-blue-600 font-semibold animate-pulse min-h-[48px] sm:min-h-[60px] flex items-center justify-center px-2">
             {currentStep.caption}
           </p>
         </div>
 
         {/* Demo Cards */}
-        <div className="grid grid-cols-2 gap-6 relative">
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 relative">
           {/* Left Card */}
-          <div className={`bg-white rounded-xl shadow-lg p-6 border-4 ${currentStep.showSuccess ? 'border-green-400 animate-pulse' : 'border-gray-200'}`}>
-            <div className="grid grid-cols-3 gap-3">
+          <div className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 border-2 sm:border-4 ${currentStep.showSuccess ? 'border-green-400 animate-pulse' : 'border-gray-200'}`}>
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {currentStep.leftEmojis.map((emoji, idx) => (
                 <div
                   key={idx}
-                  className={`text-4xl flex items-center justify-center transition-all duration-500 ${
+                  className={`text-2xl sm:text-4xl flex items-center justify-center transition-all duration-500 ${
                     currentStep.highlightMatch && emoji === currentStep.matchEmoji
                       ? 'scale-125 animate-bounce-slow'
                       : ''
@@ -96,12 +96,12 @@ export function HowToPlayScreen({ onBack }: HowToPlayScreenProps) {
           </div>
 
           {/* Right Card */}
-          <div className={`bg-white rounded-xl shadow-lg p-6 border-4 ${currentStep.showSuccess ? 'border-green-400 animate-pulse' : 'border-gray-200'}`}>
-            <div className="grid grid-cols-3 gap-3">
+          <div className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 border-2 sm:border-4 ${currentStep.showSuccess ? 'border-green-400 animate-pulse' : 'border-gray-200'}`}>
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {currentStep.rightEmojis.map((emoji, idx) => (
                 <div
                   key={idx}
-                  className={`text-4xl flex items-center justify-center transition-all duration-500 ${
+                  className={`text-2xl sm:text-4xl flex items-center justify-center transition-all duration-500 ${
                     currentStep.highlightMatch && emoji === currentStep.matchEmoji
                       ? 'scale-125 animate-bounce-slow'
                       : ''
@@ -123,7 +123,7 @@ export function HowToPlayScreen({ onBack }: HowToPlayScreenProps) {
           {/* Animated Pointer */}
           {currentStep.pointerPosition && (
             <div
-              className="absolute pointer-events-none animate-pointer-pulse"
+              className="absolute pointer-events-none animate-pointer-pulse hidden sm:block"
               style={{
                 left: currentStep.pointerPosition.card === 'left' ? '20%' : '70%',
                 top: '60%',
@@ -143,18 +143,18 @@ export function HowToPlayScreen({ onBack }: HowToPlayScreenProps) {
           {/* Success Effect */}
           {currentStep.showSuccess && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="text-8xl animate-bounceIn">✅</div>
+              <div className="text-5xl sm:text-8xl animate-bounceIn">✅</div>
             </div>
           )}
         </div>
 
         {/* Step Indicators */}
-        <div className="flex justify-center gap-2 mt-6">
+        <div className="flex justify-center gap-2 mt-4 sm:mt-6">
           {tutorialSteps.map((_, idx) => (
             <div
               key={idx}
-              className={`w-3 h-3 rounded-full transition-all ${
-                idx === step ? 'bg-blue-600 w-8' : 'bg-gray-300'
+              className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all ${
+                idx === step ? 'bg-blue-600 w-6 sm:w-8' : 'bg-gray-300'
               }`}
             />
           ))}
@@ -162,29 +162,29 @@ export function HowToPlayScreen({ onBack }: HowToPlayScreenProps) {
       </div>
 
       {/* Quick Tips */}
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full animate-slideUp">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Tips</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full animate-slideUp">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Quick Tips</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
           <div className="flex items-start gap-2">
-            <span className="text-green-600 font-bold text-lg">✓</span>
+            <span className="text-green-600 font-bold text-base sm:text-lg">✓</span>
             <div>
               <strong>Correct match:</strong> +25 points + time bonus
             </div>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-red-600 font-bold text-lg">✗</span>
+            <span className="text-red-600 font-bold text-base sm:text-lg">✗</span>
             <div>
               <strong>Wrong click:</strong> -2 seconds, combo resets
             </div>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-blue-600 font-bold text-lg">🔥</span>
+            <span className="text-blue-600 font-bold text-base sm:text-lg">🔥</span>
             <div>
               <strong>Build combos:</strong> More points & time!
             </div>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-orange-600 font-bold text-lg">⏱️</span>
+            <span className="text-orange-600 font-bold text-base sm:text-lg">⏱️</span>
             <div>
               <strong>Watch timer:</strong> Green → Yellow → Red
             </div>
@@ -195,8 +195,8 @@ export function HowToPlayScreen({ onBack }: HowToPlayScreenProps) {
       <button onClick={onBack} className="pushable btn-gray animate-slideUp">
         <span className="shadow"></span>
         <span className="edge"></span>
-        <span className="front font-semibold px-8 py-3 flex items-center justify-center gap-2">
-          <ArrowLeft className="w-5 h-5 inline-block align-middle" />
+        <span className="front font-semibold px-6 sm:px-8 py-2 sm:py-3 flex items-center justify-center gap-2 text-sm sm:text-base">
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 inline-block align-middle" />
           <span className="inline-block align-middle">Back to Menu</span>
         </span>
       </button>

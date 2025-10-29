@@ -4,7 +4,7 @@ A lightning-fast emoji matching game built for Reddit using Devvit. Race against
 
 > **Quick Summary:** Find the matching emoji between two cards before time runs out! Each card shows 8-20 emojis (depending on difficulty) with random sizes and rotations. Build combos for bonus points and time extensions. Choose from 4 difficulty levels (Easy, Medium, Hard, GOD). Compete on multiple leaderboards (All-Time, Weekly, GOD Mode) with the Reddit community. Built with React, TypeScript, HTML5 Canvas, and Redis.
 
-**Play directly on Reddit** - MojiMatcher runs natively in Reddit posts using Devvit's webview technology. Click the "🎮 I Accept the Challenge!" button on the splash screen to launch the full-screen game experience!
+**Play directly on Reddit** - MojiMatcher runs natively in Reddit posts using Devvit's webview technology. The game appears in your Reddit feed with an animated splash screen. Click to launch the full-screen game experience and start playing!
 
 ## 🎯 What is MojiMatcher?
 
@@ -14,7 +14,7 @@ MojiMatcher is a fast-paced visual puzzle game where players must quickly identi
 
 **The Goal:** Build the highest combo streak possible to maximize your score and earn time bonuses. The longer your combo, the more time you earn per match (4-13+ seconds), creating a snowball effect where skilled players can extend their games significantly. Compete on multiple leaderboards (All-Time, Weekly, GOD Mode) as you master the game.
 
-**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts using Devvit's webview technology. Players can compete with the Reddit community on leaderboards, with scores automatically tied to their Reddit usernames for seamless social gaming. The game features a custom splash screen with an animated background that appears in the Reddit feed, inviting users to click "🎮 I Accept the Challenge!" and play in full-screen mode.
+**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts using Devvit's webview technology. Players can compete with the Reddit community on leaderboards, with scores automatically tied to their Reddit usernames for seamless social gaming. The game features a custom animated splash screen that appears in the Reddit feed, inviting users to click and play in full-screen mode.
 
 ## 🎯 Game Overview
 
@@ -244,11 +244,10 @@ React hooks-based architecture:
 When you first open MojiMatcher in a Reddit post, you'll see a custom splash screen with:
 
 - **App Name**: "MojiMatcher" displayed prominently
-- **Animated Background**: Eye-catching `splash-background-mobile.gif` that makes the post stand out in the Reddit feed
-- **Launch Button**: "🎮 I Accept the Challenge!" button to start the game (configured in `src/server/core/post.ts`)
+- **Animated Background**: Eye-catching animated GIF (`splash-background-mobile.gif`) that makes the post stand out in the Reddit feed
 - **Post Title**: "🎮 MojiMatcher - Think You Can Beat the High Score? 🏆"
 
-Click the **"🎮 I Accept the Challenge!"** button to launch the game in full-screen webview mode! The game opens in Devvit's webview where you can play without distractions. The splash screen is configured in `src/server/core/post.ts` using Devvit's `submitCustomPost()` API with custom splash properties.
+Click the splash screen to launch the game in full-screen webview mode! The game opens in Devvit's webview where you can play without distractions. The splash screen is configured in `src/server/core/post.ts` using Devvit's `submitCustomPost()` API with custom splash properties.
 
 #### Step 1: Navigate the Main Menu
 After launching the game, you'll see the main menu with four options:
@@ -283,7 +282,7 @@ After launching the game, you'll see the main menu with four options:
    - Settings persist in browser localStorage as `mojimatcher:audio-settings`
 
 **Visual Elements:**
-- Large MojiMatcher logo at the top (logo.png, 384x384px with bounce animation)
+- Large MojiMatcher logo at the top (logo.png with bounce animation)
 - "Find the matching emoji!" tagline
 - Gradient background (from-orange-50 to-orange-100)
 - Animated entrance effects (fadeIn, slideDown, stagger) for all UI elements
