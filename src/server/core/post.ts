@@ -12,8 +12,7 @@ export const createPost = async () => {
       appDisplayName: 'MojiMatcher',
       backgroundUri: 'splash-background-mobile.gif',
       heading: ``,
-      description:
-        "", 
+      description: '',
       buttonLabel: '',
     },
     postData: {

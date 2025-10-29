@@ -4,17 +4,17 @@ A lightning-fast emoji matching game built for Reddit using Devvit. Race against
 
 > **Quick Summary:** Find the matching emoji between two cards before time runs out! Each card shows 8-20 emojis (depending on difficulty) with random sizes and rotations. Build combos for bonus points and time extensions. Choose from 4 difficulty levels (Easy, Medium, Hard, GOD). Compete on multiple leaderboards (All-Time, Weekly, GOD Mode) with the Reddit community. Built with React, TypeScript, HTML5 Canvas, and Redis.
 
-**Play directly on Reddit** - MojiMatcher runs natively in Reddit posts using Devvit's webview technology. Click the custom splash screen to launch the full-screen game experience!
+**Play directly on Reddit** - MojiMatcher runs natively in Reddit posts using Devvit's webview technology. Click the "🎮 I Accept the Challenge!" button on the splash screen to launch the full-screen game experience!
 
 ## 🎯 What is MojiMatcher?
 
 MojiMatcher is a fast-paced visual puzzle game where players must quickly identify the single matching emoji between two cards. With only 30 seconds on the clock, players race to complete as many rounds as possible while building combos for massive point bonuses and time extensions.
 
-**The Challenge:** Each card displays 8-20 emojis (depending on difficulty) with random sizes (0.8x-2.5x) and rotations (0-360°), making the same emoji look completely different on each card. You must use pattern recognition skills to spot the one matching emoji before time runs out. Every correct match generates new cards with fresh challenges, while wrong clicks cost precious seconds and reset your combo multiplier.
+**The Challenge:** Each card displays 8-20 emojis (depending on difficulty) selected from a pool of 30 unique emojis (😀, 🎉, 🚀, ⭐, 🎮, and more). Every emoji has random sizes (0.8x-2.5x) and rotations (0-360°), making the same emoji look completely different on each card. You must use pattern recognition skills to spot the one matching emoji before time runs out. Every correct match generates new cards with fresh challenges, while wrong clicks cost precious seconds and reset your combo multiplier.
 
 **The Goal:** Build the highest combo streak possible to maximize your score and earn time bonuses. The longer your combo, the more time you earn per match (4-13+ seconds), creating a snowball effect where skilled players can extend their games significantly. Compete on multiple leaderboards (All-Time, Weekly, GOD Mode) as you master the game.
 
-**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts using Devvit's webview technology. Players can compete with the Reddit community on leaderboards, with scores automatically tied to their Reddit usernames for seamless social gaming.
+**Built for Reddit:** MojiMatcher is a native Reddit app that runs directly in Reddit posts using Devvit's webview technology. Players can compete with the Reddit community on leaderboards, with scores automatically tied to their Reddit usernames for seamless social gaming. The game features a custom splash screen with an animated background that appears in the Reddit feed, inviting users to click "🎮 I Accept the Challenge!" and play in full-screen mode.
 
 ## 🎯 Game Overview
 
@@ -62,15 +62,15 @@ MojiMatcher stands out from traditional matching games through several unique de
 
 ### 1. **Progressive Difficulty System with Moving Emojis**
 Unlike static matching games, MojiMatcher offers four distinct difficulty levels that fundamentally change the gameplay:
-- **Easy Mode**: 8 stationary emojis for learning the mechanics
+- **Easy Mode**: 8 stationary emojis selected from a 30-emoji pool for learning the mechanics
 - **Medium Mode**: 12 stationary emojis with 1.5x score multiplier
 - **Hard Mode**: 16 emojis that drift smoothly across the cards in circular patterns at moderate speed (0.8x movement)
 - **GOD Mode**: 20 fast-moving emojis with 3x score multiplier for the ultimate challenge (1.2x movement speed)
 
-The moving emoji mechanic in Hard and GOD modes adds a dynamic layer of difficulty, requiring players to track targets while they drift in smooth circular patterns. Each emoji moves at a different phase and speed using sine/cosine functions with phase offsets, creating a mesmerizing yet challenging visual experience that tests both pattern recognition and hand-eye coordination. The animation runs at 60 FPS using requestAnimationFrame for smooth movement.
+The moving emoji mechanic in Hard and GOD modes adds a dynamic layer of difficulty, requiring players to track targets while they drift in smooth circular patterns. Each emoji moves at a different phase and speed using sine/cosine functions (`Math.sin(phase)` and `Math.cos(phase * 0.7)`) with unique phase offsets, creating a mesmerizing yet challenging visual experience that tests both pattern recognition and hand-eye coordination. The animation runs at 60 FPS using requestAnimationFrame for smooth movement with 10px radius (Hard) or 15px radius (GOD).
 
-### 2. **Dynamic Visual Chaos**
-Every emoji has random size (0.8x-2.5x) and rotation (0-360°), making pattern recognition genuinely challenging. The same emoji might appear tiny and upside-down on one card, then huge and sideways on the other. This prevents memorization strategies and keeps every round fresh.
+### 2. **Dynamic Visual Chaos with 30 Unique Emojis**
+Every emoji is selected from a pool of 30 unique emojis (😀, 😎, 🥳, 😍, 🎉, 🎈, 🎁, 🎮, 🎯, 🎨, 🎭, 🎪, 🎸, ⚽, 🏀, 🎾, 🎳, 🎲, 🃏, 🎰, 🚀, ⭐, 🌟, and more) and has random size (0.8x-2.5x) and rotation (0-360°), making pattern recognition genuinely challenging. The same emoji might appear tiny and upside-down on one card, then huge and sideways on the other. This prevents memorization strategies and keeps every round fresh.
 
 ### 3. **Escalating Combo System with Time Rewards**
 The combo system doesn't just increase points - it also increases time bonuses using the formula: **3 + combo level seconds**. This creates a snowball effect:
@@ -83,12 +83,13 @@ Skilled players can extend their games indefinitely by maintaining high combos, 
 ### 4. **High-Stakes Risk-Reward Balance**
 Wrong clicks cost **2 seconds AND reset your combo**, making every decision meaningful. At 10x combo, a wrong click doesn't just cost 2 seconds - it costs the potential for 13-second time bonuses. This creates intense pressure as combos build.
 
-### 5. **Seeded Random Generation**
-The game uses a sophisticated seeded random number generator (Linear Congruential Generator) that enables:
+### 5. **Seeded Random Generation with 30-Emoji Pool**
+The game uses a sophisticated seeded random number generator (Linear Congruential Generator) with a pool of 30 unique emojis that enables:
 - Deterministic card generation for testing and debugging
-- Consistent emoji distribution across difficulty levels
-- Fair gameplay with predictable randomness
+- Consistent emoji distribution across difficulty levels (8, 12, 16, or 20 emojis per card)
+- Fair gameplay with predictable randomness from the 30-emoji pool
 - Reproducible game states for development
+- LCG parameters: a=1664525, c=1013904223, m=2^32 for optimal randomness
 
 ### 6. **30-Second Sprint Format**
 Quick, intense sessions designed for "one more game" appeal - perfect for Reddit's mobile-first browsing experience. Games last 30-90 seconds, making it easy to play during short breaks.
@@ -106,7 +107,8 @@ As combos build, the stakes get higher. Lose your 10x combo and you lose:
 Built specifically for Reddit with:
 - Automatic username integration (no login required) via Devvit's Reddit API
 - Redis-backed leaderboards (All-Time, Weekly, GOD Mode) with sorted sets for efficient queries
-- Custom splash screen with personalized challenge message: "Hey [username]! Think You're Fast Enough? 🔥"
+- Custom splash screen with animated background (splash-background-mobile.gif) and "🎮 I Accept the Challenge!" button
+- Post title: "🎮 MojiMatcher - Think You Can Beat the High Score? 🏆"
 - Game-end emoji reveal with golden pulsing glow effect (opacity cycles 0.6-1.0) that helps players learn
 - Seamless integration with Reddit's Devvit platform using Express server and React client
 - Runs directly in Reddit posts using Devvit's webview technology
@@ -137,13 +139,13 @@ Three separate leaderboards create multiple ways to compete:
 ## 🎮 Game Features
 
 ### Core Gameplay
-- **30-Second Sprint**: Fast-paced countdown timer with 3-2-1-GO! countdown animation that creates urgency and excitement
-- **Two-Card System**: Each card displays 8-20 emojis (depending on difficulty) with exactly one matching emoji between them
+- **30-Second Sprint**: Fast-paced countdown timer with 3-2-1-GO! countdown animation (audio beeps at 800Hz, final GO at 1200Hz)
+- **Two-Card System**: Each card displays 8-20 emojis (depending on difficulty) selected from a 30-emoji pool with exactly one matching emoji between them
 - **Visual Variety**: Every emoji has random size (0.8x-2.5x) and rotation (0-360°) for unique challenges
-- **Smart Positioning**: Physics-based emoji placement with 60px minimum spacing prevents overlaps
-- **Moving Emojis**: Hard and GOD modes feature emojis that drift in smooth circular patterns at different speeds
-- **Interactive Hover**: Emojis glow blue and scale up 15% when you hover over them for better targeting
-- **Visual Timer Progress Bar**: Full-width color-coded progress bar shows remaining time at a glance
+- **Smart Positioning**: Physics-based emoji placement with 60px minimum spacing prevents overlaps using distance formula
+- **Moving Emojis**: Hard and GOD modes feature emojis that drift in smooth circular patterns at different speeds (10px/15px radius)
+- **Interactive Hover**: Emojis glow blue (rgba(59, 130, 246, 0.8)) and scale up 15% + 5% pulse when you hover over them
+- **Visual Timer Progress Bar**: Full-width color-coded progress bar shows remaining time at a glance with smooth transitions
 
 ### Scoring & Progression
 - **Base Points**: 25 points per correct match
@@ -155,21 +157,22 @@ Three separate leaderboards create multiple ways to compete:
 - **Penalty System**: Wrong clicks cost 2 seconds and reset your combo
 
 ### Visual & Audio Feedback
-- **Combo Celebrations**: Special animated badges at 3x (✨ COMBO!), 5x (⚡ AMAZING!), and 10x (🔥 LEGENDARY!) with bouncing animations
-- **Selection Feedback**: Emojis glow green and bounce when clicked correctly, red shake when wrong
-- **Audio System**: Web Audio API-powered sound effects with pitch variation based on combo level
-- **Timer Colors**: Green (>15s), Yellow (8-15s), Red (<8s) for visual urgency cues with smooth color transitions
-- **Visual Progress Bar**: Full-width timer bar with color-coded gradients and pulse animation when time is critical
-- **Audio Warnings**: Ticking sound at 10 seconds, fast ticking in final 5 seconds
-- **Game-End Highlight**: Golden pulsing glow reveals the matching emoji on both cards when time expires, helping players learn
+- **Combo Celebrations**: Special animated badges at 3x (✨ COMBO!), 5x (⚡ AMAZING!), and 10x (🔥 LEGENDARY!) with bounceIn animations
+- **Selection Feedback**: Emojis glow green (rgba(34, 197, 94, 0.9)) and bounce 30% when clicked correctly, red shake when wrong
+- **Audio System**: Web Audio API-powered oscillator-based sound effects with pitch variation (523Hz-1046Hz) based on combo level
+- **Timer Colors**: Green (>15s), Yellow (8-15s), Red (<8s) for visual urgency cues with smooth 300ms color transitions
+- **Visual Progress Bar**: Full-width timer bar with color-coded gradients and pulse animation when time drops below 5 seconds
+- **Audio Warnings**: Ticking sound at 10 seconds (440Hz), fast ticking in final 5 seconds (554Hz)
+- **Game-End Highlight**: Golden pulsing glow (opacity cycles 0.6-1.0) reveals the matching emoji on both cards when time expires
 
 ### Reddit Integration
-- **Custom Splash Screen**: Personalized entry screen with "Hey [username]! Think You're Fast Enough? 🔥" challenge message
+- **Custom Splash Screen**: Animated entry screen with splash-background-mobile.gif and "🎮 I Accept the Challenge!" button
+- **Post Title**: "🎮 MojiMatcher - Think You Can Beat the High Score? 🏆"
 - **Multi-Tier Leaderboards**: All-Time, Weekly, and GOD Mode leaderboards (top 10 each) with tab navigation
-- **Automatic Username**: Your Reddit username appears automatically on leaderboards with no login required
+- **Automatic Username**: Your Reddit username appears automatically on leaderboards with no login ddit API
 - **Game Statistics**: Track rounds completed, accuracy percentage, highest combo, and total clicks
-- **Redis Persistence**: Scores stored in Redis for reliable leaderboard tracking across all players
-- **Rank Badges**: Special visual treatment for top 3 positions (🥇🥈🥉) with gradient backgrounds
+- **Redis Persistence**: Scores stored in Redis sorted sets for reliable leaderboard tracking acroayers
+ze)er/bron(gold/silvnds ackgroudient bd gramedal-coloreth 🥇🥈🥉) wi positions ( for top 3ntual treatme vis Special**:ank Badges- **Rl pl alss
 
 ### Mobile & Accessibility
 - **Touch Optimized**: Responsive design with touch-friendly hit detection and touch-action manipulation
@@ -240,12 +243,12 @@ React hooks-based architecture:
 #### Step 0: Custom Splash Screen
 When you first open MojiMatcher in a Reddit post, you'll see a custom splash screen with:
 
-- **Personalized Message**: "Hey [your Reddit username]! Think You're Fast Enough? 🔥"
-- **Challenge Text**: "Most players can't beat the top score. 😏 Can you handle the pressure? Let's see what you've got! 💪"
-- **Launch Button**: "🎮 I Accept the Challenge!" button to start the game
-- **Custom Background**: Eye-catching logo.png background that makes the post stand out in the Reddit feed
+- **App Name**: "MojiMatcher" displayed prominently
+- **Animated Background**: Eye-catching `splash-background-mobile.gif` that makes the post stand out in the Reddit feed
+- **Launch Button**: "🎮 I Accept the Challenge!" button to start the game (configured in `src/server/core/post.ts`)
+- **Post Title**: "🎮 MojiMatcher - Think You Can Beat the High Score? 🏆"
 
-Click the **"🎮 I Accept the Challenge!"** button to launch the game in full-screen webview mode! The game opens in Devvit's webview where you can play without distractions. The splash screen is configured in `src/server/core/post.ts` using Devvit's `submitCustomPost()` API.
+Click the **"🎮 I Accept the Challenge!"** button to launch the game in full-screen webview mode! The game opens in Devvit's webview where you can play without distractions. The splash screen is configured in `src/server/core/post.ts` using Devvit's `submitCustomPost()` API with custom splash properties.
 
 #### Step 1: Navigate the Main Menu
 After launching the game, you'll see the main menu with four options:
@@ -254,7 +257,7 @@ After launching the game, you'll see the main menu with four options:
    - Click to open difficulty selector modal
    - Choose from 4 difficulty levels (Easy, Medium, Hard, GOD)
    - Each difficulty shows emoji count and score multiplier
-   - Start a game with randomly generated cards
+   - Start a game with randomly generated cards from a pool of 30 unique emojis
    - Scores count toward All-Time and difficulty-specific leaderboards
 
 2. **🏆 Leaderboard** (Blue Button)
@@ -264,12 +267,14 @@ After launching the game, you'll see the main menu with four options:
    - Your entry highlighted with blue gradient background
    - Refresh button to fetch latest scores from Redis
    - Rank badges: 🥇 (1st), 🥈 (2nd), 🥉 (3rd), #4-10
+   - Medal colors: Gold gradient (1st), Silver gradient (2nd), Bronze gradient (3rd)
 
 3. **❓ How to Play** (Green Button)
-   - Comprehensive instructions on game mechanics
+   - Interactive animated tutorial with demo cards
+   - Step-by-step visual guide showing how to find matching emojis
    - Scoring system explanation with examples
-   - Time management tips
-   - Pro tips for improving your gameplay
+   - Quick tips section with game mechanics
+   - Auto-cycling tutorial steps every 3 seconds
 
 4. **⚙️ Settings** (Gray Button)
    - Expandable settings panel
@@ -278,11 +283,12 @@ After launching the game, you'll see the main menu with four options:
    - Settings persist in browser localStorage as `mojimatcher:audio-settings`
 
 **Visual Elements:**
-- Large MojiMatcher logo at the top (logo.png, 320x320px)
+- Large MojiMatcher logo at the top (logo.png, 384x384px with bounce animation)
 - "Find the matching emoji!" tagline
 - Gradient background (from-orange-50 to-orange-100)
 - Animated entrance effects (fadeIn, slideDown, stagger) for all UI elements
 - 3D pushable button styles with shadow and edge effects
+- Custom fonts: Fredoka for headings, Press Start 2P for retro elements
 
 #### Step 2: Choose Your Difficulty Level
 

@@ -1,5 +1,28 @@
 @import 'tailwindcss';
 
+/* Game-like font configuration */
+:root {
+  --font-game: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+  --font-retro: 'Press Start 2P', 'Courier New', monospace;
+}
+
+body {
+  font-family: var(--font-game);
+}
+
+/* Use retro font for specific elements */
+.font-retro {
+  font-family: var(--font-retro);
+  font-size: 0.875rem; /* Smaller size for pixel font readability */
+  line-height: 1.6;
+}
+
+/* Headings use the game font with extra weight */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-game);
+  font-weight: 700;
+}
+
 /* Floating score animation */
 @keyframes float {
   0% {
